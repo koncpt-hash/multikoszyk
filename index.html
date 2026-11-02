@@ -1,0 +1,827 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Konfigurator pakietu z panelem</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: clickable flow LP → loading screen (3 s) → cart. Styling follows the Figma Multikoszyk screens. Single light look on purpose, like the Figma file. */
+:root{
+  color-scheme:light;
+  --bg:#ffffff; --surface:#ffffff; --ink:#000000; --muted:#595959; --line:#cccccc; --line-soft:#dddddd;
+  --orange:#ff7900; --orange-ring:#f15e00; --check:#32c832; --info:#4170d8; --plus:#1d8a4a;
+  --t-net:#b8ebd6; --t-mob:#b5e8f7; --t-tv:#dccdf5; --t-dek:#fff0a8; --t-usl:#ffd9ef; --t-multi:#ffe0c2;
+  --grey:#eeeeee; --grey-2:#f4f4f4; --fresh:#fff1e2; --bar:#000000; --bar-ink:#ffffff; --dark-2:#1b1b1b; --dark-3:#2a2a2a;
+  --scrim:rgba(0,0,0,.45);
+  --f:"Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f);font-size:14px;line-height:1.4;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.gutter{padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px))}
+.wrap{max-width:1024px;margin:0 auto}
+.wide{max-width:1200px;margin:0 auto}
+.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* prototype strip */
+.proto{background:var(--grey-2);border-bottom:1px solid var(--line-soft);padding-block:8px;font-size:12px;color:var(--muted)}
+.proto .wrap{max-width:1200px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
+.proto-actions{display:flex;gap:8px;flex-wrap:wrap}
+
+/* buttons */
+.btn-s{background:var(--surface);border:2px solid var(--ink);border-radius:4px;padding:5px 14px;font-weight:700;font-size:14px;line-height:1.3;white-space:nowrap}
+.btn-s:hover{background:var(--ink);color:var(--bar-ink)}
+.btn-s.inv{background:transparent;border-color:#fff;color:#fff}
+.btn-s.inv:hover{background:#fff;color:#000}
+.btn-l{background:var(--surface);border:2px solid var(--ink);border-radius:8px;padding:11px 22px;font-weight:700;font-size:16px}
+.btn-p{background:var(--orange);color:#ffffff;border:2px solid var(--orange);border-radius:8px;padding:11px 22px;font-weight:700;font-size:16px}
+.btn-p.sm{padding:8px 16px;font-size:14px;border-radius:4px}
+.btn-p:disabled{opacity:.35;cursor:not-allowed}
+.link{background:none;border:0;padding:0;text-decoration:underline;font-weight:700;font-size:14px}
+
+/* ================= LP ================= */
+.hero{background:var(--bar);color:#fff;padding-block:40px 120px;position:relative;overflow:hidden}
+.hero-img{position:absolute;inset:0 0 0 38%;background:radial-gradient(60% 70% at 70% 45%, #6b3a1a 0%, #2b1709 45%, #000 80%)}
+.hero-img::after{content:"zdjęcie: para ogląda film na laptopie";position:absolute;right:24px;bottom:96px;font-size:11px;color:#ffffff88;border:1px dashed #ffffff55;padding:2px 6px}
+.hero .wide{position:relative}
+.hero h1{font-size:clamp(30px,4.4vw,44px);line-height:1.12;margin:0 0 20px;font-weight:700;max-width:14ch;text-wrap:balance}
+.cd-l{font-size:12px;font-weight:700;margin-bottom:8px}
+.cd{display:flex;gap:10px}
+.cd div{background:var(--dark-3);border-radius:4px;width:56px;padding:8px 0 6px;text-align:center}
+.cd b{display:block;font-size:24px;font-variant-numeric:tabular-nums}
+.cd span{font-size:10px;color:#ccc}
+
+.addr{background:#fff;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:20px 24px;margin-top:-88px;position:relative;z-index:2}
+.addr h2{margin:0 0 14px;font-size:22px;font-weight:700}
+.addr-row{display:grid;grid-template-columns:2fr 2fr 1fr 1fr auto;gap:10px}
+@media (max-width:820px){.addr-row{grid-template-columns:1fr 1fr}.addr-row .btn-p{grid-column:1 / -1}}
+.field{border:2px solid var(--line);border-radius:4px;padding:10px 12px;font:inherit;font-size:13px;background:#fff;color:var(--ink);width:100%;min-width:0}
+.addr-opt{display:flex;flex-direction:column;gap:8px;margin-top:12px;font-size:12px}
+.addr-opt label{display:flex;gap:8px;align-items:center}
+.addr-opt a{color:var(--info);font-weight:700}
+
+.offers{padding-block:40px 56px;text-align:center}
+.offers h2{font-size:26px;margin:0 0 4px;font-weight:700}
+.offers .sub{font-size:13px;margin:0 0 20px}
+.offers .sub a{color:var(--ink);font-weight:700}
+.toggles{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:660px;margin:0 auto 18px}
+@media (max-width:600px){.toggles{grid-template-columns:1fr}}
+.tgl{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--grey-2);border-radius:6px;padding:10px 14px;text-align:left;cursor:pointer}
+.tgl b{display:block;font-size:13px}
+.tgl span{font-size:12px}
+.tgl input{position:absolute;opacity:0;width:1px;height:1px}
+.sw{width:40px;height:22px;border-radius:11px;background:#bbb;position:relative;flex:none;transition:background .2s}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s}
+.tgl input:checked + .sw{background:var(--check)}
+.tgl input:checked + .sw::after{transform:translateX(18px)}
+.tgl:has(input:focus-visible){outline:3px solid var(--orange);outline-offset:2px}
+.period-l{font-size:13px;font-weight:700;margin-bottom:8px}
+.seg{display:inline-grid;grid-template-columns:1fr 1fr;gap:12px;width:min(500px,100%);margin-bottom:24px}
+.seg button{background:#fff;border:2px solid var(--line);border-radius:4px;padding:8px;font-weight:700;font-size:13px}
+.seg button[aria-pressed="true"]{border-color:var(--orange)}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;text-align:center}
+@media (max-width:900px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:480px){.tiles{grid-template-columns:minmax(0,1fr)}}
+.ot{border:2px solid var(--line);border-radius:8px;padding:24px 16px 16px;display:flex;flex-direction:column;align-items:center;gap:6px;transition:border-color .15s, box-shadow .15s}
+.ot:hover{border-color:var(--orange);box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.ot svg{width:44px;height:44px}
+.ot .k{font-size:13px;margin-top:8px}
+.ot h3{font-size:24px;margin:0;font-weight:700}
+.chip{display:inline-flex;gap:6px;align-items:center;background:var(--grey);font-size:11px;font-weight:700;padding:3px 8px;border-radius:2px}
+.ot .price{margin-top:14px;font-size:13px}
+.ot .price b{font-size:26px;color:var(--orange);font-variant-numeric:tabular-nums}
+.ot .fine{font-size:10px;color:var(--muted);min-height:2.6em}
+.ot .extra{font-size:11px;font-weight:700;color:var(--plus);min-height:1.4em}
+.ot .btn-p{width:100%;margin-top:6px;font-size:14px;padding:10px}
+
+.why{background:var(--bar);color:#fff;padding-block:40px 32px}
+.why h2{font-size:26px;margin:0 0 20px;font-weight:700}
+.why-big{border-radius:8px;min-height:300px;padding:32px;display:flex;flex-direction:column;justify-content:center;gap:12px;background:radial-gradient(50% 80% at 78% 50%, #3a3a3a 0%, #111 60%);position:relative}
+.why-big h3{font-size:28px;margin:0;font-weight:700}
+.why-big ul{margin:0;padding-left:18px;font-size:13px;font-weight:700;display:flex;flex-direction:column;gap:6px}
+.why-big li::marker{color:var(--orange)}
+.why-big .btn-s{align-self:flex-start}
+.ph{position:absolute;right:16px;bottom:12px;font-size:11px;color:#ffffff88;border:1px dashed #ffffff55;padding:2px 6px}
+.why-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}
+@media (max-width:760px){.why-row{grid-template-columns:minmax(0,1fr)}}
+.why-c{border-radius:8px;min-height:190px;padding:20px;display:flex;flex-direction:column;justify-content:space-between;gap:12px;background:linear-gradient(135deg,#2c2c2c,#121212);position:relative}
+.why-c h3{font-size:17px;margin:0;font-weight:700;max-width:18ch}
+.why-c h3 em{color:var(--orange);font-style:normal}
+.why-c .btn-s{align-self:flex-start;background:#fff;color:#000;border-color:#fff}
+.why-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--dark-3);border-radius:6px;padding:10px 14px;margin-top:12px;font-size:12px;font-weight:700}
+.why-bar .btn-s{background:#fff;color:#000;border-color:#fff;min-width:160px}
+
+.power{padding-block:40px 24px}
+.power h2{text-align:center;font-size:24px;margin:0 0 20px;font-weight:700}
+.arts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;max-width:820px;margin:0 auto}
+@media (max-width:700px){.arts{grid-template-columns:minmax(0,1fr)}}
+.art{border:1px solid var(--line-soft);border-radius:4px;overflow:hidden;display:flex;flex-direction:column}
+.art .in{padding:12px;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.art .tag{background:#000;color:#fff;font-size:10px;font-weight:700;padding:2px 6px}
+.art h3{font-size:15px;margin:0;font-weight:700}
+.art p{font-size:12px;color:var(--muted);margin:0}
+.art .img{aspect-ratio:1/1;max-width:100%;background:linear-gradient(160deg,#cfcfcf,#8a8a8a);display:grid;place-items:end start;padding:8px;font-size:10px;color:#fff}
+
+.faq{padding-block:24px 48px}
+.faq-in{max-width:820px;margin:0 auto}
+.tabs{display:grid;grid-template-columns:1fr 1fr;border:2px solid #000;border-radius:4px;overflow:hidden;margin-bottom:12px}
+.tabs button{border:0;background:#fff;padding:8px;font-weight:700;font-size:13px}
+.tabs button[aria-selected="true"]{background:#000;color:#fff}
+.faq details{border-bottom:1px solid var(--line-soft)}
+.faq summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 4px;font-weight:700;font-size:14px;cursor:pointer}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";width:28px;height:28px;display:grid;place-items:center;background:var(--grey);border-radius:4px;font-size:18px;flex:none}
+.faq details[open] summary::after{content:"–"}
+.faq details p{margin:0 4px 16px;font-size:14px;color:var(--muted);max-width:65ch}
+.faq .more{display:block;margin:20px auto 0;background:var(--grey);border:0;border-radius:4px;padding:10px 36px;font-weight:700}
+.more-l{max-width:1200px;margin:0 auto;padding-block:8px 32px}
+.more-l h2{font-size:20px;margin:0 0 8px}
+.more-l p{font-size:12px;color:var(--muted);margin:0;max-width:110ch}
+
+.foot{background:var(--bar);color:#fff;padding-block:28px 20px;font-size:11px}
+.foot-cols{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+@media (max-width:640px){.foot-cols{grid-template-columns:1fr 1fr}}
+.foot b{display:block;font-size:12px;margin-bottom:8px}
+.foot span{display:block;color:#ccc;margin-bottom:4px}
+.foot .copy{margin-top:20px;color:#999}
+
+/* ================= loading ================= */
+.loading{min-height:100vh;display:grid;place-items:center;text-align:center;padding-block:40px}
+.loading .logo-ph{width:74px;height:74px;border:2px dashed var(--orange);color:var(--orange);display:grid;place-items:center;font-size:10px;font-weight:700;margin:0 auto 32px;animation:pulse 1.2s ease-in-out infinite}
+.loading p{font-size:clamp(20px,2.4vw,30px);font-weight:700;margin:0;max-width:24ch;text-wrap:balance}
+.loading .bar{width:220px;height:4px;background:var(--grey);border-radius:2px;margin:28px auto 0;overflow:hidden}
+.loading .bar i{display:block;height:100%;width:0;background:var(--orange)}
+.loading.run .bar i{animation:fill 3s linear forwards}
+@keyframes pulse{50%{opacity:.45}}
+@keyframes fill{to{width:100%}}
+
+/* ================= cart ================= */
+#view-cart{padding-bottom:84px}
+.page{padding-block:20px 40px}
+.page-head{display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-bottom:20px}
+h1.ph1{font-size:28px;font-weight:700;margin:0}
+.steps{font-size:14px;margin-top:4px}
+.grid{display:grid;grid-template-columns:minmax(0,608px) minmax(0,400px);gap:16px;align-items:start;justify-content:space-between}
+@media (max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0}
+
+.card{border-radius:8px;overflow:hidden;border:1px solid var(--tint)}
+.card-h{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;background:var(--tint);min-height:56px}
+.card-h h2{font-size:18px;margin:0;font-weight:700}
+.card-h .btn-s{border-color:color-mix(in srgb, var(--tint) 30%, #000)}
+.card-b{background:var(--surface);padding:16px;display:flex;flex-direction:column;gap:12px}
+.card-b > .lead{font-weight:700;font-size:14px}
+
+.tile{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:16px;align-items:center;border:2px solid var(--line);border-radius:8px;padding:16px;cursor:pointer;background:var(--surface)}
+.tile input{position:absolute;opacity:0;width:1px;height:1px}
+.tile .ind{width:24px;height:24px;border-radius:50%;border:2px solid #999;display:grid;place-items:center}
+.tile.cb .ind{border-radius:4px}
+.tile:has(input:checked){border-color:var(--orange-ring);box-shadow:0 0 0 3px #ffe2cc}
+.tile:has(input:checked) .ind{background:var(--check);border-color:var(--check)}
+.tile:has(input:checked) .ind::after{content:"";width:10px;height:6px;border:solid #fff;border-width:0 0 2.5px 2.5px;transform:translateY(-1px) rotate(-45deg)}
+.tile:has(input:focus-visible){outline:3px solid var(--orange);outline-offset:2px}
+.tile .t{font-weight:700;font-size:14px}
+.tile .d{font-size:12px;margin-top:2px}
+.tile .p{font-weight:700;font-size:14px;text-align:right}
+.tile .p small{display:block;font-weight:400;font-size:12px;color:var(--muted)}
+.speeds-tile{grid-template-columns:24px minmax(0,1fr)}
+.speeds-tile .p{text-align:left;margin-top:14px}
+
+.sec-head h2{font-size:20px;margin:8px 0 2px;font-weight:700}
+.sec-head p{margin:0;font-size:14px;color:var(--muted)}
+
+.svc{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:16px;align-items:center;padding:20px;background:var(--surface);border:2px solid var(--line);border-radius:8px}
+.svc .ico{width:40px;height:40px}
+.svc h3{margin:0;font-size:16px;font-weight:700}
+.svc .d{font-size:13px;color:var(--muted);margin-top:2px}
+.svc .from{font-weight:700;font-size:14px;margin-top:4px}
+.badge{display:inline-block;background:var(--t-mob);font-size:12px;font-weight:700;padding:3px 8px;margin-bottom:6px}
+@media (max-width:520px){.svc{grid-template-columns:32px minmax(0,1fr)}.svc .ico{width:32px;height:32px}.svc > .btn-s{grid-column:2;justify-self:start}}
+
+.picked{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.picked li{display:flex;justify-content:space-between;gap:12px;font-size:14px}
+.picked li span:first-child{font-weight:700}
+.picked li small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.card-b .foot-b{display:flex;justify-content:flex-start}
+
+.side{display:flex;flex-direction:column;gap:16px;position:sticky;top:16px}
+.sum{background:var(--surface);border:2px solid var(--line-soft);border-radius:8px;padding:20px}
+.sum h2{font-size:20px;margin:0 0 12px;font-weight:700}
+.disc-box{border:2px solid var(--info);border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:14px}
+.disc-box > b{display:block;font-size:13px;margin-bottom:6px}
+.disc-box ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
+.disc-box li::marker{color:var(--info)}
+.sum h3{font-size:14px;font-weight:700;margin:14px 0 6px}
+.rows{display:flex;flex-direction:column}
+.row{display:flex;justify-content:space-between;gap:12px;padding:4px 6px;margin:0 -6px;border-radius:4px;font-size:12px;transition:background-color 1.2s ease}
+.row.minus span:last-child{color:var(--plus);font-weight:700}
+.row.fresh{background:var(--fresh)}
+.total{display:flex;justify-content:space-between;border-top:1px solid var(--line-soft);margin-top:6px;padding-top:8px;font-weight:700;font-size:14px}
+.sum .fine{color:var(--muted);font-size:11px;margin:12px 0 0}
+.voucher{display:flex;justify-content:space-between;align-items:center;border:2px solid var(--line-soft);border-radius:8px;padding:14px 16px;font-weight:700;font-size:18px;background:var(--surface)}
+.voucher span:last-child{width:32px;height:32px;display:grid;place-items:center;background:var(--grey);border-radius:4px;font-size:20px}
+
+.bottom{position:fixed;left:0;right:0;bottom:0;background:var(--surface);box-shadow:0 -2px 8px rgba(0,0,0,.08);padding-block:14px calc(14px + env(safe-area-inset-bottom, 0px));z-index:20}
+.bottom .wrap{display:flex;justify-content:flex-end;gap:8px}
+
+.scrim{position:fixed;inset:0;background:var(--scrim);z-index:40;opacity:0;transition:opacity .25s ease}
+.scrim.on{opacity:1}
+.panel{position:fixed;top:0;right:0;bottom:0;width:min(480px,100%);background:var(--surface);z-index:50;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .3s cubic-bezier(.2,.8,.2,1);box-shadow:-8px 0 24px rgba(0,0,0,.2);padding-top:env(safe-area-inset-top, 0px);padding-right:env(safe-area-inset-right, 0px)}
+.panel.on{transform:none}
+.p-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:0 20px;min-height:64px;background:var(--tint)}
+.p-head h2{margin:0;font-size:20px;font-weight:700}
+.x{background:var(--surface);border:2px solid var(--ink);border-radius:4px;width:36px;height:36px;font-size:16px;line-height:1;flex:none;display:grid;place-items:center}
+.p-lead{padding:16px 20px 0;font-weight:700}
+.p-body{padding:12px 20px 20px;overflow:auto;display:flex;flex-direction:column;gap:12px;flex:1}
+.p-foot{border-top:1px solid var(--line-soft);padding:14px 20px calc(16px + env(safe-area-inset-bottom, 0px));display:flex;flex-direction:column;gap:12px}
+.p-sum{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.p-sum b{font-size:18px}
+.p-foot .btn-p{width:100%}
+.p-foot .link{align-self:center}
+.qty{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-top:8px}
+.qty b{display:block;font-size:14px}
+.qty span.d{font-size:12px;color:var(--muted)}
+.stepper{display:flex;align-items:center;border:2px solid var(--ink);border-radius:4px;flex:none}
+.stepper button{width:40px;height:36px;background:none;border:0;font-size:18px;font-weight:700}
+.stepper button:disabled{opacity:.3;cursor:not-allowed}
+.stepper output{min-width:28px;text-align:center;font-weight:700;font-size:16px}
+@media (max-width:640px){
+  .panel{top:auto;left:0;width:100%;max-height:88vh;border-radius:16px 16px 0 0;overflow:hidden;transform:translateY(100%);padding-top:0}
+  .panel.on{transform:none}
+}
+
+.toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom, 0px));transform:translate(-50%,20px);background:var(--bar);color:var(--bar-ink);padding:12px 16px;border-radius:8px;display:flex;gap:16px;align-items:center;z-index:60;opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;max-width:calc(100% - 32px);font-size:14px}
+.toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast .link{color:inherit}
+
+.cursor{position:fixed;left:0;top:0;width:22px;height:22px;border-radius:50%;background:rgba(255,121,0,.35);border:2px solid var(--orange);z-index:70;pointer-events:none;opacity:0;transition:left .7s cubic-bezier(.4,0,.2,1), top .7s cubic-bezier(.4,0,.2,1), opacity .2s, transform .15s}
+.cursor.on{opacity:1}
+.cursor.tap{transform:scale(.7)}
+
+@media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important;animation:none!important}.loading .bar i{width:100%}}
+</style>
+</head>
+<body>
+<div class="proto gutter">
+  <div class="wrap">
+    <span>Prototyp · LP ze światłowodem → koszyk z panelem bocznym · ceny przykładowe</span>
+    <div class="proto-actions">
+      <button class="btn-s" id="go-lp" type="button">Od początku (LP)</button>
+      <button class="btn-s" id="demo" type="button" hidden>▶ Odtwórz demo</button>
+      <button class="btn-s" id="reset" type="button" hidden>Wyczyść koszyk</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= LP ================= -->
+<div id="view-lp">
+  <section class="hero gutter">
+    <div class="hero-img" aria-hidden="true"></div>
+    <div class="wide">
+      <h1>Światłowód nawet 12×0 i Netflix na 3 mies. w prezencie</h1>
+      <div class="cd-l">Do końca promocji pozostało</div>
+      <div class="cd" aria-label="Czas do końca promocji">
+        <div><b id="cd-d">00</b><span>dni</span></div>
+        <div><b id="cd-h">00</b><span>godz.</span></div>
+        <div><b id="cd-m">00</b><span>min.</span></div>
+        <div><b id="cd-s">00</b><span>sek.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="gutter">
+    <div class="wide">
+      <form class="addr" id="addr" onsubmit="return false" aria-labelledby="addr-h">
+        <h2 id="addr-h">Sprawdź, czy jesteś w zasięgu</h2>
+        <div class="addr-row">
+          <select class="field" id="a-city" aria-label="Miejscowość"><option>Miejscowość *</option><option>Warszawa</option><option>Kraków</option><option>Gdańsk</option></select>
+          <select class="field" id="a-street" aria-label="Ulica"><option>Ulica *</option><option>Marszałkowska</option><option>Długa</option></select>
+          <input class="field" id="a-no" placeholder="Nr domu *" aria-label="Numer domu">
+          <input class="field" id="a-flat" placeholder="Nr lokalu" aria-label="Numer lokalu">
+          <button class="btn-p sm" type="button" id="show-offers">Pokaż oferty</button>
+        </div>
+        <div class="addr-opt">
+          <label><input type="checkbox" id="a-nostreet"> W mojej miejscowości nie ma ulicy</label>
+          <span><a href="#addr">Przetwarzanie danych osobowych</a>, w tym adresu, służy jedynie do dopasowania oferty.</span>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <section class="offers gutter" id="offers" aria-labelledby="off-h">
+    <div class="wide">
+      <h2 id="off-h">Przykładowe oferty ze światłowodem</h2>
+      <p class="sub">Przedłużasz umowę? <a href="#offers">Zaloguj się</a>, by poznać oferty</p>
+      <div class="toggles">
+        <label class="tgl"><span><b>Telewizja z Amazon Prime</b><span>209 kanałów <u>Szczegóły</u></span></span><input type="checkbox" id="lp-tv"><span class="sw" aria-hidden="true"></span></label>
+        <label class="tgl"><span><b>Netflix</b><span>nawet 12 mies. za 0 zł</span></span><input type="checkbox" id="lp-nfx"><span class="sw" aria-hidden="true"></span></label>
+      </div>
+      <div class="period-l" id="period-l">Czas trwania umowy</div>
+      <div class="seg" role="group" aria-labelledby="period-l">
+        <button type="button" data-period="24" aria-pressed="true">24 miesiące</button>
+        <button type="button" data-period="bez" aria-pressed="false">Bezterminowo</button>
+      </div>
+      <div class="tiles" id="tiles"></div>
+    </div>
+  </section>
+
+  <section class="why gutter" aria-labelledby="why-h">
+    <div class="wide">
+      <h2 id="why-h">Dlaczego warto wybrać światłowód Orange?</h2>
+      <div class="why-big">
+        <h3>Najlepsze Wi‑Fi w Twoim domu</h3>
+        <ul><li>Wi‑Fi 7 – szybko, stabilnie, od laptopa i konsoli, po kamery i smart głośniki</li><li>Niski ping, zero zacięć – do grania i streamingu</li><li>Masz wsparcie przez czat, infolinię lub apkę</li></ul>
+        <button class="btn-s" type="button">Szczegóły</button>
+        <span class="ph">zdjęcie: router Wi‑Fi 7</span>
+      </div>
+      <div class="why-row">
+        <div class="why-c"><h3>Najszybszy internet wg SpeedTest – idealny nie tylko dla graczy</h3><button class="btn-s" type="button">Szczegóły</button><span class="ph">zdjęcie: gracz</span></div>
+        <div class="why-c"><h3>Poznaj telewizję od Orange – <em>nawet 209 kanałów TV</em> i wiele więcej</h3><button class="btn-s" type="button">Szczegóły</button><span class="ph">zdjęcie: pilot TV</span></div>
+        <div class="why-c"><h3>Twój internet, Twoje show nawet na 6 mies. za 0 zł</h3><button class="btn-s" type="button">Szczegóły</button><span class="ph">logo Netflix</span></div>
+      </div>
+      <div class="why-bar"><span>Dobrze? To sprawdź, czy jesteś w zasięgu.</span><button class="btn-s" type="button" id="why-check">Sprawdź</button></div>
+    </div>
+  </section>
+
+  <section class="power gutter" aria-labelledby="pw-h">
+    <div class="wide">
+      <h2 id="pw-h">Twój internet, Twoja moc</h2>
+      <div class="arts">
+        <article class="art"><div class="in"><span class="tag">Baza wiedzy</span><h3>Co to jest światłowód – co warto wiedzieć?</h3><p>Czyli wszystko, co musisz wiedzieć o tej technologii</p><button class="btn-s" type="button">Sprawdź</button></div><div class="img">zdjęcie</div></article>
+        <article class="art"><div class="in"><span class="tag">Wi‑Fi</span><h3>Standard Wi‑Fi 7 w Twoim domu</h3><p>Poznaj możliwości, jakie daje najnowszy standard Wi‑Fi</p><button class="btn-s" type="button">Sprawdź</button></div><div class="img">zdjęcie</div></article>
+        <article class="art"><div class="in"><span class="tag">Mocniejszy sygnał</span><h3>Internet do gier – jaki wybrać?</h3><p>Zobacz, jaki ping wystarczy do rozgrywki online</p><button class="btn-s" type="button">Sprawdź</button></div><div class="img">zdjęcie</div></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="faq gutter" aria-label="Pytania i dokumenty">
+    <div class="faq-in">
+      <div class="tabs" role="tablist">
+        <button type="button" role="tab" aria-selected="true" id="tab-faq">Najczęstsze pytania</button>
+        <button type="button" role="tab" aria-selected="false" id="tab-doc">Dokumenty</button>
+      </div>
+      <div id="faq-list">
+        <details><summary>Czym jest światłowód i jakie daje korzyści?</summary><p>To internet przesyłany wiązką światła. Daje wysokie i stabilne prędkości, także gdy w domu korzysta z sieci kilka osób naraz.</p></details>
+        <details><summary>Mam już światłowód – czy mogę zmienić prędkość?</summary><p>Tak, prędkość możesz zmienić w trakcie umowy. Szczegóły zależą od Twojego adresu i oferty.</p></details>
+        <details><summary>Czy mogę przenieść swój numer telefonu do Orange razem z internetem?</summary><p>Tak, numer przeniesiesz przy zamówieniu abonamentu komórkowego w tym samym koszyku.</p></details>
+        <details><summary>Co się stanie, jeśli się przeprowadzę?</summary><p>Sprawdzimy dostępność pod nowym adresem i przeniesiemy usługę, jeśli będzie to możliwe.</p></details>
+        <button class="more" type="button">Pokaż więcej</button>
+      </div>
+      <div id="doc-list" hidden><details><summary>Regulamin promocji</summary><p>Dokument PDF – w prototypie bez pliku.</p></details><details><summary>Cennik usług</summary><p>Dokument PDF – w prototypie bez pliku.</p></details></div>
+    </div>
+  </section>
+
+  <div class="gutter"><div class="more-l"><h2>W Orange dostajesz więcej!</h2><p>Sieć wyróżnia się na rynku dzięki wysokiej jakości usług i szerokiemu zasięgowi, co zapewnia stabilne połączenia w różnych lokalizacjach. Oferuje nowoczesne technologie, takie jak 5G i światłowód, oraz różnorodność usług dodatkowych.</p></div></div>
+
+  <footer class="foot gutter">
+    <div class="wide">
+      <div class="foot-cols">
+        <div><b>Oferta</b><span>Przedłuż umowę</span><span>Przenieś numer</span><span>Internet</span><span>Telewizja</span></div>
+        <div><b>Na skróty</b><span>Regulaminy i cenniki</span><span>Roaming</span><span>Status urządzenia</span></div>
+        <div><b>Serwisy</b><span>Dla inwestorów</span><span>Dla mediów</span><span>Dla dostawców</span></div>
+        <div><b>O firmie</b><span>O nas</span><span>Kariera</span><span>Znajdź salon</span></div>
+      </div>
+      <div class="copy">Prototyp UX · treści i ceny przykładowe</div>
+    </div>
+  </footer>
+</div>
+
+<!-- ================= loading ================= -->
+<div id="view-loading" class="loading gutter" hidden role="status" aria-live="polite">
+  <div>
+    <div class="logo-ph" aria-hidden="true">LOGO</div>
+    <p>Daj nam chwilę - właśnie przygotowujemy oferty tylko dla Ciebie!</p>
+    <div class="bar" aria-hidden="true"><i></i></div>
+  </div>
+</div>
+
+<!-- ================= cart ================= -->
+<div id="view-cart" hidden>
+  <main class="page gutter">
+    <div class="wrap">
+      <div class="page-head">
+        <div>
+          <h1 class="ph1">Twój pakiet</h1>
+          <div class="steps">Krok 1 z 3: Konfiguracja &nbsp;→&nbsp; Twoje dane &nbsp;→&nbsp; Podsumowanie i zamówienie</div>
+        </div>
+        <button class="btn-s" type="button">Wyczyść koszyk</button>
+      </div>
+
+      <div class="grid">
+        <div class="col">
+          <section class="card" style="--tint:var(--t-net)" aria-labelledby="net-h">
+            <div class="card-h"><h2 id="net-h">Internet światłowodowy</h2><button class="btn-s" type="button">Usuń</button></div>
+            <div class="card-b" id="speeds"></div>
+          </section>
+
+          <div class="sec-head">
+            <h2>Często kupowane razem</h2>
+            <p>Dodaj usługi do światłowodu. Ceny w podsumowaniu przeliczają się od razu.</p>
+          </div>
+          <div class="col" id="services"></div>
+        </div>
+
+        <div class="side">
+          <aside class="sum" id="summary" aria-labelledby="sum-h" aria-live="polite">
+            <h2 id="sum-h">Podsumowanie opłat</h2>
+            <div class="disc-box"><b>Ceny uwzględniają rabaty za:</b>
+              <ul><li><b>5,00 zł/mies.</b> rabat za e-fakturę</li><li><b>5,00 zł/mies.</b> rabat za zgodę marketingową</li></ul>
+            </div>
+            <h3>Co miesiąc</h3>
+            <div class="rows" id="monthly"></div>
+            <div class="total"><span>Razem miesięcznie</span><span class="num" id="tot-m"></span></div>
+            <h3>Jednorazowo</h3>
+            <div class="rows" id="once"></div>
+            <div class="total"><span>Razem jednorazowo</span><span class="num" id="tot-o"></span></div>
+            <p class="fine" id="sum-fine"></p>
+          </aside>
+          <div class="voucher"><span>Masz kod rabatowy?</span><span aria-hidden="true">+</span></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="bottom gutter">
+    <div class="wrap">
+      <button class="btn-l" type="button" id="back-lp">Wróć do sklepu</button>
+      <button class="btn-p" type="button">Przejdź dalej</button>
+    </div>
+  </div>
+</div>
+
+<div class="scrim" id="scrim" hidden></div>
+<div class="panel" id="panel" role="dialog" aria-modal="true" aria-labelledby="p-title" hidden>
+  <div class="p-head">
+    <h2 id="p-title"></h2>
+    <button class="x" id="p-close" type="button" aria-label="Zamknij panel">✕</button>
+  </div>
+  <div class="p-lead" id="p-lead"></div>
+  <form class="p-body" id="p-body" onsubmit="return false"></form>
+  <div class="p-foot">
+    <div class="p-sum"><span id="p-sum-l">Wybierz opcję</span><b class="num" id="p-sum-v"></b></div>
+    <button class="btn-p" id="p-add" type="button" disabled>Dodaj do pakietu</button>
+    <button class="link" id="p-remove" type="button" hidden>Usuń z pakietu</button>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"><span id="toast-t"></span><button class="link" id="toast-undo" type="button">Cofnij</button></div>
+<div class="cursor" id="cursor" aria-hidden="true"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const fmt = n => new Intl.NumberFormat('pl-PL',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n) + ' zł';
+const perLabel = o => o.per === 'm' ? '/mies.' : ' jednorazowo';
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+const GAUGE = a => `<svg viewBox="0 0 44 44" fill="none" stroke-width="4" stroke-linecap="round"><path d="M8 32a16 16 0 1 1 28 0" stroke="#ddd"/><path d="M8 32a16 16 0 0 1 ${a}" stroke="var(--orange)"/><circle cx="22" cy="24" r="2.5" fill="#000" stroke="none"/></svg>`;
+const SPEEDS = [
+  {id:'600', name:'do 600 Mb/s', tag:'Dla 1–2 osób', desc:'Dla 1–2 osób: seriale w HD, praca zdalna, wideorozmowy', price:59.99, arc:'6 -14'},
+  {id:'1g', name:'do 1 Gb/s', tag:'Dla rodziny', desc:'Dla rodziny: filmy 4K na kilku ekranach naraz, gry online', price:79.99, arc:'14 -10'},
+  {id:'2g', name:'do 2 Gb/s', tag:'Dla graczy i twórców', desc:'Dla graczy i twórców: duże pliki, streaming na żywo', price:99.99, arc:'24 -4'},
+  {id:'8g', name:'do 8 Gb/s', tag:'Dla domu pełnego sprzętu', desc:'Dla domu pełnego sprzętu: wiele urządzeń naraz, praca z chmurą', price:139.99, arc:'28 8'}
+];
+const NO_COMMIT_EXTRA = 20;
+const BUNDLE_DISCOUNT = 20;
+const NEXT_LINE_DISCOUNT = 10;
+const MAX_LINES = 5;
+const mobTotal = (price, n) => price * n - (n - 1) * NEXT_LINE_DISCOUNT;
+
+const ICONS = {
+  tv:'<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6"><rect x="4" y="8" width="32" height="20" rx="1"/><path d="M14 33h12M20 28v5"/></svg>',
+  mob:'<svg viewBox="0 0 40 40" fill="currentColor"><path d="M11 3h13l6 6v28H11z"/><g fill="#fff"><rect x="14" y="16" width="5" height="5"/><rect x="21" y="16" width="5" height="5"/><rect x="14" y="23" width="5" height="5"/><rect x="21" y="23" width="5" height="5"/><rect x="14" y="30" width="5" height="4"/><rect x="21" y="30" width="5" height="4"/></g></svg>',
+  dek:'<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6"><rect x="3" y="16" width="34" height="9" rx="1"/><circle cx="31" cy="20.5" r="1.4" fill="currentColor"/><path d="M8 20.5h10"/></svg>',
+  usl:'<svg viewBox="0 0 40 40" fill="currentColor"><circle cx="20" cy="9" r="6"/><path d="M8 37c0-9 5-14 12-14s12 5 12 14z"/><path d="M22 27l6 6-2 2-6-6z" fill="#fff"/></svg>',
+  multi:'<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="3" y="6" width="22" height="15" rx="1"/><rect x="15" y="17" width="22" height="15" rx="1" fill="#fff"/><path d="M22 36h8"/></svg>'
+};
+const SERVICES = [
+  {id:'tv', icon:'tv', tint:'--t-tv', title:'Pakiety TV i streamingi', desc:'Telewizja z Amazon Prime, CANAL+, HBO Max, Netflix', mode:'multi',
+   lead:'Wybierz jeden lub kilka pakietów', options:[
+    {id:'tvap', name:'Telewizja z Amazon Prime', meta:'209 kanałów i Amazon Prime', price:35, per:'m'},
+    {id:'c-sport', name:'Pakiet CANAL+ Super Sport', meta:'Kanały sportowe CANAL+', price:45, per:'m'},
+    {id:'c-film', name:'Pakiet CANAL+ Seriale i Filmy', meta:'Filmy i seriale CANAL+', price:30, per:'m'},
+    {id:'hbo', name:'HBO z HBO Max', meta:'Kanały HBO i aplikacja HBO Max', price:29.99, per:'m'},
+    {id:'nfx', name:'Netflix', meta:'W promocji 0 zł przez 12 mies., potem 43,00 zł/mies.', price:0, per:'m'}]},
+  {id:'mob', icon:'mob', tint:'--t-mob', title:'Abonament komórkowy', desc:'Rozmowy, SMS-y i internet 5G w telefonie', mode:'single', qty:true, badge:'Rabat za łączenie: −20,00 zł/mies.',
+   lead:'Wybierz plan – rozmowy i SMS-y bez limitu w każdym', options:[
+    {id:'xs', name:'Plan XS', meta:'10 GB', price:30, per:'m'},
+    {id:'s', name:'Plan S', meta:'50 GB', price:45, per:'m'},
+    {id:'m', name:'Plan M', meta:'150 GB', price:60, per:'m'},
+    {id:'l', name:'Plan L', meta:'Bez limitu GB', price:80, per:'m'}]},
+  {id:'dek', icon:'dek', tint:'--t-dek', title:'Dekoder', desc:'Oglądaj w 4K i nagrywaj w chmurze', mode:'single',
+   lead:'Wybierz dekoder', options:[
+    {id:'4k', name:'Dekoder 4K', meta:'Jeden telewizor', price:10, per:'m'},
+    {id:'duo', name:'Dekoder 4K Duo', meta:'Dwa telewizory w domu', price:18, per:'m'}]},
+  {id:'usl', icon:'usl', tint:'--t-usl', title:'Usługi i instalacja', desc:'Ochrona sieci domowej i pomoc technika', mode:'multi',
+   lead:'Wybierz usługi – część z nich płacisz raz', options:[
+    {id:'ct-b', name:'CyberTarcza stacjonarna podstawowa', meta:'Ochrona urządzeń w sieci domowej', price:5, per:'m'},
+    {id:'ct-r', name:'CyberTarcza stacjonarna rozszerzona', meta:'Rozszerzona ochrona i kontrola rodzicielska', price:10, per:'m'},
+    {id:'asysta', name:'Asysta instalacyjna', meta:'Technik podłączy i skonfiguruje urządzenia', price:99, per:'o'},
+    {id:'siec', name:'Wykonanie sieci domowej', meta:'Okablowanie i punkty Wi‑Fi w domu', price:199, per:'o'}]},
+  {id:'multi', icon:'multi', tint:'--t-multi', title:'Multiroom', desc:'Telewizja na kolejnym telewizorze', mode:'single',
+   lead:'Oglądaj telewizję w drugim pokoju', options:[
+    {id:'mr', name:'Multiroom', meta:'Drugi telewizor w domu', price:15, per:'m'}]}
+];
+const svcById = id => SERVICES.find(s => s.id === id);
+
+/* ---------- views ---------- */
+let loadTimer = null;
+function show(view){
+  for (const v of ['lp','loading','cart']) $('view-' + v).hidden = v !== view;
+  $('demo').hidden = $('reset').hidden = view !== 'cart';
+  if (panelSvc) closePanel();
+  window.scrollTo(0, 0);
+}
+
+/* ---------- LP ---------- */
+const lp = {tv:false, nfx:false, period:'24', speed:'1g'};
+const promoEnd = Date.now() + ((2*24 + 13)*3600 + 47*60 + 12) * 1000;
+function tick(){
+  let s = Math.max(0, Math.floor((promoEnd - Date.now()) / 1000));
+  const d = Math.floor(s / 86400); s -= d*86400; const h = Math.floor(s / 3600); s -= h*3600; const m = Math.floor(s / 60); s -= m*60;
+  [['cd-d',d],['cd-h',h],['cd-m',m],['cd-s',s]].forEach(([id,v]) => $(id).textContent = String(v).padStart(2,'0'));
+}
+setInterval(tick, 1000); tick();
+
+function lpPrice(sp){ return sp.price + (lp.period === 'bez' ? NO_COMMIT_EXTRA : 0) + (lp.tv ? svcById('tv').options[0].price : 0); }
+function renderTiles(){
+  const extras = [lp.tv ? '+ Telewizja z Amazon Prime' : '', lp.nfx ? '+ Netflix 0 zł' : ''].filter(Boolean).join(' · ');
+  $('tiles').innerHTML = SPEEDS.map(sp => {
+    const [i, f] = fmt(lpPrice(sp)).replace(' zł','').split(',');
+    return `<article class="ot">
+      ${GAUGE(sp.arc)}
+      <div class="k">Światłowód</div>
+      <h3>${sp.name}</h3>
+      <span class="chip">${sp.tag}</span>
+      <div class="price">od <b>${i},${f}</b> zł/mies.</div>
+      <div class="fine">${lp.period === 'bez' ? 'umowa bez okresu zobowiązania' : 'z rabatami, umowa na 24 mies.'}</div>
+      <div class="extra">${extras}</div>
+      <button class="btn-p" type="button" data-check="${sp.id}">Sprawdź dostępność</button>
+    </article>`;
+  }).join('');
+  $('tiles').querySelectorAll('[data-check]').forEach(b => b.addEventListener('click', () => checkAvailability(b.dataset.check)));
+}
+$('lp-tv').addEventListener('change', e => { lp.tv = e.target.checked; renderTiles(); });
+$('lp-nfx').addEventListener('change', e => { lp.nfx = e.target.checked; renderTiles(); });
+document.querySelectorAll('[data-period]').forEach(b => b.addEventListener('click', () => {
+  lp.period = b.dataset.period;
+  document.querySelectorAll('[data-period]').forEach(x => x.setAttribute('aria-pressed', x === b));
+  renderTiles();
+}));
+$('show-offers').addEventListener('click', () => $('offers').scrollIntoView({behavior:'smooth'}));
+$('why-check').addEventListener('click', () => $('addr').scrollIntoView({behavior:'smooth', block:'center'}));
+$('tab-faq').addEventListener('click', () => { $('tab-faq').setAttribute('aria-selected','true'); $('tab-doc').setAttribute('aria-selected','false'); $('faq-list').hidden = false; $('doc-list').hidden = true; });
+$('tab-doc').addEventListener('click', () => { $('tab-doc').setAttribute('aria-selected','true'); $('tab-faq').setAttribute('aria-selected','false'); $('faq-list').hidden = true; $('doc-list').hidden = false; });
+
+function checkAvailability(speedId){
+  lp.speed = speedId;
+  clearTimeout(loadTimer);
+  show('loading');
+  const l = $('view-loading'); l.classList.remove('run'); void l.offsetWidth; l.classList.add('run');
+  loadTimer = setTimeout(() => { startCart(); show('cart'); announceCart(); }, 3000);
+}
+
+/* ---------- cart ---------- */
+const emptyState = () => ({speed:lp.speed, period:lp.period, added:{}, qty:{}});
+let state = emptyState();
+let fresh = new Set();
+let undoState = null;
+let panelSvc = null, lastFocus = null, panelQty = 1;
+
+function startCart(){
+  state = emptyState();
+  const tv = [];
+  if (lp.tv) tv.push('tvap');
+  if (lp.nfx) tv.push('nfx');
+  if (tv.length) state.added.tv = tv;
+  fresh = new Set(['net', ...tv.map(id => `tv:${id}`)]);
+  renderSpeeds(); renderAll();
+}
+function announceCart(){
+  const sp = SPEEDS.find(s => s.id === state.speed);
+  const extra = (state.added.tv || []).map(id => svcById('tv').options.find(o => o.id === id).name);
+  undoState = null;
+  toast(`W koszyku: Światłowód ${sp.name}${extra.length ? ' + ' + extra.join(', ') : ''}`, false);
+}
+const netPrice = sp => sp.price + (state.period === 'bez' ? NO_COMMIT_EXTRA : 0);
+
+function renderSpeeds(){
+  $('speeds').innerHTML = '<div class="lead">Wybierz prędkość – dopasowaną do tego, jak korzystasz z internetu</div>' + SPEEDS.map(s => `
+    <label class="tile speeds-tile"><input type="radio" name="speed" id="speed-${s.id}" value="${s.id}" ${state.speed===s.id?'checked':''}>
+      <span class="ind" aria-hidden="true"></span>
+      <span><span class="t">${s.name}</span><span class="d" style="display:block">${s.desc}</span><span class="p num" style="display:block">${fmt(netPrice(s))}/mies.</span></span></label>`).join('');
+  $('speeds').querySelectorAll('input').forEach(i => i.addEventListener('change', () => { state.speed = i.value; fresh = new Set(['net']); renderSummary(); }));
+}
+
+function renderServices(){
+  $('services').innerHTML = SERVICES.map(s => {
+    const sel = state.added[s.id];
+    const minP = Math.min(...s.options.map(o => o.price));
+    if (sel && sel.length){
+      const items = sel.map(id => s.options.find(o => o.id === id));
+      const n = s.qty ? (state.qty[s.id] || 1) : 1;
+      const list = s.qty
+        ? items.map(o => `<li><span>${o.name} × ${n}<small>${o.meta} w każdym abonamencie${n > 1 ? ` · kolejne taniej o ${fmt(NEXT_LINE_DISCOUNT)}/mies.` : ''}</small></span><span class="num">${fmt(mobTotal(o.price, n))}/mies.</span></li>`).join('')
+        : items.map(o => `<li><span>${o.name}<small>${o.meta}</small></span><span class="num">${fmt(o.price)}${perLabel(o)}</span></li>`).join('');
+      return `<section class="card" id="svc-${s.id}" style="--tint:var(${s.tint})" aria-label="${s.title}">
+        <div class="card-h"><h2>${s.title}</h2><button class="btn-s" type="button" data-remove="${s.id}">Usuń</button></div>
+        <div class="card-b">
+          <ul class="picked">${list}</ul>
+          <div class="foot-b"><button class="btn-s" type="button" data-open="${s.id}">Zmień</button></div>
+        </div>
+      </section>`;
+    }
+    return `<article class="svc" id="svc-${s.id}">
+      <div class="ico">${ICONS[s.icon]}</div>
+      <div>${s.badge ? `<span class="badge">${s.badge}</span>` : ''}<h3>${s.title}</h3><div class="d">${s.desc}</div><div class="from num">od +${fmt(minP)}/mies.</div></div>
+      <button class="btn-s" type="button" data-open="${s.id}">+ Dodaj</button>
+    </article>`;
+  }).join('');
+  $('services').querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => openPanel(b.dataset.open, b)));
+  $('services').querySelectorAll('[data-remove]').forEach(b => b.addEventListener('click', () => removeSvc(b.dataset.remove)));
+}
+
+function rowsHtml(rows){
+  return rows.map(r => `<div class="row ${r.minus?'minus':''} ${fresh.has(r.key)?'fresh':''}"><span>${r.label}</span><span class="num">${r.value}</span></div>`).join('');
+}
+function renderSummary(){
+  const sp = SPEEDS.find(s => s.id === state.speed);
+  const m = [{key:'net', label:`Abonament za Orange Światłowód ${sp.name}`, value:fmt(netPrice(sp)), n:netPrice(sp)},
+             {key:'router', label:'Modem FunBox 7', value:'w cenie', n:0}];
+  const o = [{key:'akt', label:'Opłata aktywacyjna za Światłowód', value:fmt(99), n:99}];
+  for (const s of SERVICES){
+    for (const id of (state.added[s.id] || [])){
+      const op = s.options.find(x => x.id === id);
+      if (s.qty){
+        const n = state.qty[s.id] || 1;
+        for (let i = 1; i <= n; i++) m.push({key:`${s.id}:${id}:${i}`, label:`Abonament komórkowy ${n > 1 ? i + ' · ' : ''}${op.name} · ${op.meta}`, value:fmt(op.price), n:op.price});
+        if (n > 1) m.push({key:`${s.id}:next:${n}`, label:`Rabat za kolejne abonamenty (${n - 1} × ${fmt(NEXT_LINE_DISCOUNT)})`, value:'−' + fmt((n - 1) * NEXT_LINE_DISCOUNT), n:-(n - 1) * NEXT_LINE_DISCOUNT, minus:true});
+        continue;
+      }
+      const label = op.id === 'nfx' ? 'Netflix (0 zł przez 12 mies.)' : op.name;
+      (op.per === 'm' ? m : o).push({key:`${s.id}:${id}`, label, value:fmt(op.price), n:op.price});
+    }
+  }
+  if ((state.added.mob || []).length) m.push({key:'disc', label:'Rabat za łączenie usług', value:'−' + fmt(BUNDLE_DISCOUNT), n:-BUNDLE_DISCOUNT, minus:true});
+  $('monthly').innerHTML = rowsHtml(m);
+  $('once').innerHTML = rowsHtml(o);
+  $('tot-m').textContent = fmt(m.reduce((a,r) => a + r.n, 0));
+  $('tot-o').textContent = fmt(o.reduce((a,r) => a + r.n, 0));
+  $('sum-fine').textContent = 'Ceny przykładowe, brutto. ' + (state.period === 'bez' ? 'Umowa bez okresu zobowiązania.' : 'Umowa na 24 miesiące.');
+  if (fresh.size){ const keep = fresh; setTimeout(() => { if (fresh === keep){ document.querySelectorAll('.row.fresh').forEach(r => r.classList.remove('fresh')); fresh = new Set(); } }, 1800); }
+}
+function renderAll(){ renderServices(); renderSummary(); }
+
+/* panel */
+function openPanel(id, opener){
+  panelSvc = svcById(id); lastFocus = opener || document.activeElement;
+  const current = state.added[id] || [];
+  const editing = current.length > 0;
+  $('panel').style.setProperty('--tint', `var(${panelSvc.tint})`);
+  $('p-title').textContent = panelSvc.title;
+  $('p-lead').textContent = panelSvc.lead;
+  const type = panelSvc.mode === 'multi' || panelSvc.options.length === 1 ? 'checkbox' : 'radio';
+  const pre = editing ? current : (panelSvc.options.length === 1 ? [panelSvc.options[0].id] : []);
+  $('p-body').innerHTML = panelSvc.options.map(o => `
+    <label class="tile ${type==='checkbox'?'cb':''}"><input type="${type}" name="opt" id="opt-${o.id}" value="${o.id}" ${pre.includes(o.id)?'checked':''}>
+      <span class="ind" aria-hidden="true"></span>
+      <span><span class="t">${o.name}</span><span class="d" style="display:block">${o.meta}</span></span>
+      <span class="p num">${fmt(o.price)}<small>${o.per==='m'?'/mies.':'jednorazowo'}</small></span></label>`).join('')
+    + (panelSvc.qty ? `
+    <div class="qty"><span><b id="qty-label">Liczba abonamentów</b><span class="d">Każdy kolejny abonament w pakiecie: −${fmt(NEXT_LINE_DISCOUNT)}/mies. Maksymalnie ${MAX_LINES}.</span></span>
+      <div class="stepper" role="group" aria-labelledby="qty-label">
+        <button type="button" id="qty-minus" aria-label="Jeden abonament mniej">–</button>
+        <output id="qty-val" aria-live="polite"></output>
+        <button type="button" id="qty-plus" aria-label="Jeden abonament więcej">+</button>
+      </div></div>` : '');
+  panelQty = panelSvc.qty ? (state.qty[id] || 1) : 1;
+  $('p-body').querySelectorAll('input').forEach(i => i.addEventListener('change', updatePanelFoot));
+  if (panelSvc.qty){
+    $('qty-minus').addEventListener('click', () => { panelQty = Math.max(1, panelQty - 1); updatePanelFoot(); });
+    $('qty-plus').addEventListener('click', () => { panelQty = Math.min(MAX_LINES, panelQty + 1); updatePanelFoot(); });
+  }
+  $('p-add').dataset.editing = editing ? '1' : '';
+  $('p-remove').hidden = !editing;
+  updatePanelFoot();
+  $('scrim').hidden = false; $('panel').hidden = false;
+  requestAnimationFrame(() => { $('scrim').classList.add('on'); $('panel').classList.add('on'); });
+  setTimeout(() => ($('p-body').querySelector('input') || $('p-close')).focus({preventScroll:true}), 50);
+}
+function selectedInPanel(){ return [...$('p-body').querySelectorAll('input:checked')].map(i => i.value); }
+function updatePanelFoot(){
+  const sel = selectedInPanel().map(id => panelSvc.options.find(o => o.id === id));
+  if (panelSvc.qty){
+    $('qty-val').textContent = panelQty;
+    $('qty-minus').disabled = panelQty <= 1;
+    $('qty-plus').disabled = panelQty >= MAX_LINES;
+  }
+  const m = panelSvc.qty
+    ? sel.reduce((a,o) => a + mobTotal(o.price, panelQty), 0)
+    : sel.filter(o => o.per==='m').reduce((a,o) => a + o.price, 0);
+  const o = sel.filter(o => o.per==='o').reduce((a,x) => a + x.price, 0);
+  const editing = !!$('p-add').dataset.editing;
+  $('p-sum-l').textContent = sel.length ? (editing ? 'Po zmianie do pakietu' : 'Dodajesz do pakietu') : 'Wybierz opcję';
+  $('p-sum-v').textContent = sel.length ? [`+${fmt(m)}/mies.`, o ? `+${fmt(o)} jednorazowo` : ''].filter((x, i) => x && (i === 1 || m || !o)).join(' · ') : '';
+  $('p-add').disabled = !sel.length;
+  $('p-add').textContent = editing ? 'Zapisz zmiany' : 'Dodaj do pakietu';
+}
+function closePanel(){
+  $('scrim').classList.remove('on'); $('panel').classList.remove('on');
+  setTimeout(() => { $('scrim').hidden = true; $('panel').hidden = true; }, 300);
+  const id = panelSvc && panelSvc.id; panelSvc = null;
+  const target = id && document.querySelector(`#svc-${id} [data-open]`);
+  (target || lastFocus)?.focus({preventScroll:true});
+}
+function commit(){
+  const sel = selectedInPanel(); const s = panelSvc;
+  undoState = JSON.parse(JSON.stringify(state));
+  const before = new Set(state.added[s.id] || []);
+  state.added[s.id] = sel;
+  if (s.qty){
+    const prevN = before.size ? (state.qty[s.id] || 1) : 0;
+    state.qty[s.id] = panelQty;
+    fresh = new Set();
+    for (const id of sel) for (let i = 1; i <= panelQty; i++) if (!before.has(id) || i > prevN) fresh.add(`${s.id}:${id}:${i}`);
+    if (panelQty > 1) fresh.add(`${s.id}:next:${panelQty}`);
+  } else {
+    fresh = new Set(sel.filter(id => !before.has(id)).map(id => `${s.id}:${id}`));
+  }
+  if (s.id === 'mob' && !before.size) fresh.add('disc');
+  const names = sel.map(id => s.options.find(o => o.id === id).name + (s.qty && panelQty > 1 ? ` × ${panelQty}` : '')).join(', ');
+  closePanel(); renderAll();
+  toast(`${before.size ? 'Zmieniono' : 'Dodano do pakietu'}: ${names}`);
+}
+function removeSvc(id){
+  undoState = JSON.parse(JSON.stringify(state));
+  delete state.added[id]; delete state.qty[id]; fresh = new Set();
+  if (panelSvc) closePanel();
+  renderAll(); toast(`Usunięto z pakietu: ${svcById(id).title}`);
+}
+let toastTimer;
+function toast(t, undo = true){
+  $('toast-t').textContent = t; $('toast-undo').hidden = !undo; $('toast').classList.add('on');
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => $('toast').classList.remove('on'), 5000);
+}
+$('toast-undo').addEventListener('click', () => { if (undoState){ state = undoState; undoState = null; fresh = new Set(); renderSpeeds(); renderAll(); } $('toast').classList.remove('on'); });
+$('p-add').addEventListener('click', commit);
+$('p-remove').addEventListener('click', () => removeSvc(panelSvc.id));
+$('p-close').addEventListener('click', closePanel);
+$('scrim').addEventListener('click', closePanel);
+document.addEventListener('keydown', e => {
+  if (!panelSvc) return;
+  if (e.key === 'Escape') closePanel();
+  if (e.key === 'Tab'){
+    const f = [...$('panel').querySelectorAll('button:not([disabled]):not([hidden]), input')];
+    const first = f[0], last = f[f.length-1];
+    if (e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+  }
+});
+$('back-lp').addEventListener('click', () => { clearTimeout(loadTimer); show('lp'); });
+$('go-lp').addEventListener('click', () => { demoRun++; $('cursor').classList.remove('on'); clearTimeout(loadTimer); show('lp'); });
+
+/* demo (cart) */
+let demoRun = 0;
+async function point(el){
+  const c = $('cursor');
+  el.scrollIntoView({block:'center', behavior:'smooth'}); await wait(450);
+  const r = el.getBoundingClientRect();
+  c.style.left = (r.left + r.width/2 - 11) + 'px'; c.style.top = (r.top + r.height/2 - 11) + 'px';
+  c.classList.add('on'); await wait(800);
+}
+async function tap(el){ await point(el); const c = $('cursor'); c.classList.add('tap'); await wait(160); c.classList.remove('tap'); el.click(); await wait(250); }
+async function demo(){
+  const run = ++demoRun;
+  if (panelSvc) closePanel(); startCart(); await wait(400);
+  const steps = [
+    () => tap(document.querySelector('#svc-mob [data-open]')),
+    () => wait(500),
+    () => tap($('opt-m').closest('label')),
+    () => wait(300),
+    () => tap($('qty-plus')),
+    () => wait(400),
+    () => tap($('p-add')),
+    () => wait(500),
+    () => point(document.querySelector('.row.fresh') || $('summary')),
+    () => wait(1600),
+    () => tap(document.querySelector('#svc-tv [data-open]')),
+    () => wait(400),
+    () => tap($('opt-c-sport').closest('label')),
+    () => tap($('p-add')),
+    () => wait(500),
+    () => point(document.querySelector('.row.fresh') || $('summary')),
+    () => wait(1400)
+  ];
+  for (const s of steps){ if (run !== demoRun) return; await s(); }
+  $('cursor').classList.remove('on');
+}
+$('demo').addEventListener('click', demo);
+$('reset').addEventListener('click', () => { demoRun++; $('cursor').classList.remove('on'); if (panelSvc) closePanel(); state = emptyState(); fresh = new Set(); renderSpeeds(); renderAll(); });
+
+renderTiles(); renderSpeeds(); renderAll();
+</script>
+</body>
+</html>
