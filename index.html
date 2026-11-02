@@ -229,7 +229,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .faql .pl img{width:18px;height:18px;display:block;transition:transform .2s}
 .faql details[open] .pl img{transform:rotate(45deg)}
 .faql details p{margin-top:12px;font-weight:500;color:var(--c-text-light);max-width:70ch}
-.lp-faq .more{background:var(--c-ghost);border:0;border-radius:8px;padding:12px 24px;width:277px;font-weight:700;font-size:16px;line-height:22px;color:var(--c-text)}
+.lp-faq .more,.av-faq .more{background:var(--c-ghost);border:0;border-radius:8px;padding:12px 24px;width:277px;font-weight:700;font-size:16px;line-height:22px;color:var(--c-text)}
 
 /* seo */
 .lp-seo{background:#fff;padding-block:20px;display:flex;flex-direction:column;gap:8px}
@@ -259,6 +259,59 @@ button{font:inherit;color:inherit;cursor:pointer}
 .lp-foot .small i{width:1px;height:15px;background:#232323}
 .lp-foot .copy{font-weight:500;font-size:12px;line-height:18px;color:#ccc;padding:26px 20px 20px}
 
+/* ================= availability (Figma 6601:15298) ================= */
+.av-hero{position:relative;overflow:hidden;background:#000;border-top:2px solid #232323;padding:24px 0}
+.av-hero .gs{position:absolute;width:1025px;height:1025px;left:-260px;top:-173px;pointer-events:none}
+.av-hero .in{position:relative;max-width:1232px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+.av-hero .hd{display:flex;gap:16px;align-items:flex-start}
+.av-hero .bk{background:var(--c-ghost);border:0;border-radius:8px;padding:12px;display:flex;flex:none}
+.av-hero .bk img{width:22px;height:22px;display:block}
+.av-hero h1{margin:0;color:#fff;font-weight:700;font-size:40px;line-height:44px}
+.av-addr{background:#fff;border-radius:8px;box-shadow:0 4px 4px rgba(0,0,0,.25);padding:24px 20px;display:flex;gap:4px;align-items:center}
+.av-addr p{flex:1;min-width:0;font-weight:700}
+.btn-ter{background:var(--c-ghost);border:0;border-radius:8px;padding:12px 24px;font-weight:700;font-size:16px;line-height:22px;color:var(--c-text);white-space:nowrap}
+.av-offers{background:#fff;padding:24px 0}
+.av-offers .top{max-width:1232px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+.av-offers .tgls{margin-bottom:8px}
+.av-offers .lab{font-weight:700;font-size:16px;line-height:22px}
+.av-offers .hint{font-size:12px;line-height:18px;font-weight:500}
+.av-cards{max-width:1232px;margin:16px auto 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;padding-top:34px}
+.avd{position:relative;display:flex;flex-direction:column}
+.avd .stk{position:absolute;left:0;right:0;top:-34px;background:var(--c-bold-80);color:#fff;border-radius:8px;padding:8px 8px 20px 16px;text-align:center;font-weight:700;font-size:14px;line-height:20px}
+.avd .cb{position:relative;flex:1;background:#fff;border:2px solid var(--c-bold-80);border-radius:8px;padding:26px 22px;display:flex;flex-direction:column;align-items:center}
+.avd .nm{margin-top:6px;text-align:center}
+.avd .nm span{display:block;font-weight:500;color:var(--c-text-light)}
+.avd .nm h3{margin:0;font-weight:700;font-size:24px;line-height:28px}
+.avd .prs{margin-top:20px;display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
+.avd .pc{padding:6px 0;text-align:center;font-weight:700}
+.avd .pc .v{color:var(--c-active);font-size:34px;line-height:38px}
+.avd .pc .c{color:var(--c-text-light);font-size:18px;line-height:24px;margin-left:4px}
+.avd .pc small{display:block;color:var(--c-text-light);font-size:12px;line-height:18px}
+.avd .dv{height:2px;background:var(--c-divider);width:230px;max-width:100%}
+.avd .rab{background:var(--c-ghost);border:0;border-radius:4px;padding:6px 12px 6px 16px;display:flex;gap:12px;align-items:center;font-weight:700;font-size:14px;line-height:20px;color:var(--c-text)}
+.avd .rab img{width:18px;height:18px;transition:transform .2s}
+.avd .rab[aria-expanded="true"] img{transform:rotate(45deg)}
+.avd .rabt{font-size:12px;line-height:18px;color:var(--c-text-light);font-weight:500;text-align:center}
+.avd .cfg{margin-top:24px;width:100%;background:var(--c-active);color:#fff;border:0;border-radius:8px;padding:12px 24px;font-weight:700;font-size:16px;line-height:22px}
+.avd .cfg:hover{background:#d35200}
+.avd .lh{margin-top:20px;width:100%;font-weight:500;color:#666}
+.avd ul{list-style:none;margin:0;padding:12px 0 0;width:100%;display:flex;flex-direction:column;gap:16px}
+.avd ul.fee{gap:12px}
+.avd li{display:flex;gap:4px;align-items:flex-start;font-weight:500;color:var(--c-text-light)}
+.avd li + li{border-top:2px solid var(--c-divider);padding-top:16px}
+.avd ul.fee li + li{padding-top:12px}
+.avd li > img{width:18px;height:18px;flex:none;margin-top:1px}
+.avd li span{flex:1;min-width:0}
+.avd li b{font-weight:700;color:#333}
+.avd li i{width:32px;height:32px;margin:-6px 0;flex:none;background:var(--c-ghost);border-radius:4px;display:grid;place-items:center}
+.avd li i img{width:18px;height:18px}
+.avd ul.inc{border-bottom:2px solid var(--c-divider);padding-bottom:16px}
+.av-faq{background:#fff;padding:32px 0;display:flex;flex-direction:column;align-items:center;gap:16px}
+.av-faq .w{max-width:1024px;width:100%;display:flex;flex-direction:column;gap:16px}
+.av-faq h2{margin:0;font-weight:700;font-size:24px;line-height:28px}
+.av-faq .faql details p{white-space:pre-line;font-size:14px;line-height:20px;max-width:none}
+@media (max-width:1100px){.av-cards{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:50px}}
+@media (max-width:640px){.av-cards{grid-template-columns:1fr}.av-hero h1{font-size:28px;line-height:32px}.av-addr{flex-direction:column;align-items:stretch;gap:16px}}
 /* ================= loading ================= */
 .loading{min-height:100vh;display:grid;place-items:center;text-align:center;padding-block:40px}
 .loading .logo-ph{width:74px;height:74px;border:2px dashed var(--orange);color:var(--orange);display:grid;place-items:center;font-size:10px;font-weight:700;margin:0 auto 32px;animation:pulse 1.2s ease-in-out infinite}
@@ -563,6 +616,63 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
   </footer>
 </div>
 
+<!-- ================= availability ================= -->
+<div id="view-av" class="lp" hidden>
+  <div data-clone="lp-head"></div>
+  <section class="av-hero gutter" aria-labelledby="av-h">
+    <img class="gs" src="assets/lp/av-gauss.svg" alt="">
+    <div class="in">
+      <div class="hd"><button class="bk" type="button" id="av-back" aria-label="Wróć do strony z ofertą"><img src="assets/lp/av-arrow-left.svg" alt=""></button><h1 id="av-h">Dostępne prędkości pod tym adresem</h1></div>
+      <div class="av-addr"><p>Adres:<br><span id="av-addr"></span></p><button class="btn-ter" type="button" id="av-change">Zmień adres</button></div>
+    </div>
+  </section>
+  <section class="av-offers gutter" aria-label="Oferty pod Twoim adresem">
+    <div class="top">
+      <div class="tgls">
+        <label class="tgl"><span class="t"><b>Telewizja i Amazon Prime</b><span>230 kanałów z Extra TV <u>Szczegóły</u></span></span><input type="checkbox" id="av-tv"><span class="sw" aria-hidden="true"><i></i></span></label>
+        <label class="tgl"><span class="t"><b>Netflix</b><span>przez 6 mies. w prezencie</span></span><input type="checkbox" id="av-nfx"><span class="sw" aria-hidden="true"><i></i></span></label>
+      </div>
+      <p class="lab">Czas trwania umowy</p>
+      <p class="hint">Telewizja i Amazon Prime, Netflix są dostępne wyłącznie z umowami na 24 miesiące.</p>
+      <div class="czas"><div class="opts">
+        <button type="button" data-period="24" aria-pressed="true">24 miesiące</button>
+        <button type="button" data-period="bez" aria-pressed="false">Bezterminowo</button>
+      </div></div>
+    </div>
+    <div class="av-cards" id="av-cards"></div>
+  </section>
+  <section class="av-faq gutter" aria-labelledby="avf-h">
+    <div class="w">
+      <h2 id="avf-h">Najczęściej zadawane pytania</h2>
+      <div class="faql">
+        <details open><summary><span>Czym są pakiety usług dodatkowych dla firm - Paczka S i Paczka L?</span><span class="pl"><img src="assets/lp/plus.svg" alt=""></span></summary><p>Paczki usług dodatkowych to rozszerzenia oferty internetu firmowego Orange.
+Paczka S (10 zł/mies. netto) to:
+
+• Wsparcie zdalne – natychmiastowa pomoc naszych specjalistów IT, którzy w ramach bezpłatnej infolinii zdiagnozują i usuną usterkę na Twoim komputerze.
+• CyberTarcza rozszerzona – ochrona przed zagrożeniami online. Nie wymaga instalowania i aktualizacji, chroni przed różnymi rodzajami ataków.
+
+Paczka L (55 zł/mies. netto) to:
+
+• Wsparcie zdalne
+• Wsparcie rozszerzone – w ramach którego nasz technik przyjedzie na miejsce i naprawi komputer lub laptop do 24 godzin od zgłoszenia.
+• CyberTarcza rozszerzona
+• Stały adres IP – niezbędny m.in. do monitoringu online, hostingu stron www lub serwerów.
+• Gwarantowane naprawy internetu (SLA 8 h) – szybka reakcja serwisowa, naprawy łącza i przywrócenia działania naszych usług do 8 godzin.
+• Orange Office – możliwość wirtualnego prowadzenia biura i przechowywania swoich danych w chmurze.</p></details>
+        <hr>
+        <details><summary><span>Co to jest światłowód i technologia FTTH?</span><span class="pl"><img src="assets/lp/plus.svg" alt=""></span></summary><p>FTTH (Fiber To The Home) oznacza światłowód doprowadzony aż do mieszkania. Daje najwyższe i najbardziej stabilne prędkości.</p></details>
+        <hr>
+        <details><summary><span>Gdzie mogę sprawdzić mapę zasięgu światłowodu?</span><span class="pl"><img src="assets/lp/plus.svg" alt=""></span></summary><p>Na mapie zasięgu Orange – wystarczy wpisać adres.</p></details>
+        <hr>
+        <details><summary><span>Czy światłowód dla firm działa tylko pod konkretnym adresem?</span><span class="pl"><img src="assets/lp/plus.svg" alt=""></span></summary><p>Tak, usługa jest instalowana pod adresem podanym w zamówieniu.</p></details>
+
+      </div>
+    </div>
+    <button class="more" type="button">Pokaż więcej</button>
+  </section>
+  <div data-clone="lp-foot"></div>
+</div>
+
 <!-- ================= loading ================= -->
 <div id="view-loading" class="loading gutter" hidden role="status" aria-live="polite">
   <div>
@@ -713,7 +823,7 @@ const svcById = id => SERVICES.find(s => s.id === id);
 /* ---------- views ---------- */
 let loadTimer = null;
 function show(view){
-  for (const v of ['lp','loading','cart']) $('view-' + v).hidden = v !== view;
+  for (const v of ['lp','loading','av','cart']) $('view-' + v).hidden = v !== view;
   $('demo').hidden = $('reset').hidden = view !== 'cart';
   if (panelSvc) closePanel();
   window.scrollTo(0, 0);
@@ -760,12 +870,12 @@ $('a-city').addEventListener('change', e => {
   $('f-street').querySelector('.arr img').src = on ? 'assets/lp/select-arrow.svg' : 'assets/lp/select-arrow-disabled.svg';
 });
 $('a-street').addEventListener('change', e => syncSelect(e.target));
-$('lp-tv').addEventListener('change', e => { lp.tv = e.target.checked; renderTiles(); });
-$('lp-nfx').addEventListener('change', e => { lp.nfx = e.target.checked; renderTiles(); });
+for (const [k, ids] of [['tv',['lp-tv','av-tv']],['nfx',['lp-nfx','av-nfx']]])
+  for (const id of ids) $(id).addEventListener('change', e => { lp[k] = e.target.checked; ids.forEach(x => $(x).checked = lp[k]); renderTiles(); renderAv(); });
 document.querySelectorAll('[data-period]').forEach(b => b.addEventListener('click', () => {
   lp.period = b.dataset.period;
   document.querySelectorAll('[data-period]').forEach(x => x.setAttribute('aria-pressed', x === b));
-  renderTiles();
+  renderTiles(); renderAv();
 }));
 $('show-offers').addEventListener('click', () => $('offers').scrollIntoView({behavior:'smooth'}));
 $('why-check').addEventListener('click', () => $('addr').scrollIntoView({behavior:'smooth', block:'center'}));
@@ -777,8 +887,64 @@ function checkAvailability(speedId){
   clearTimeout(loadTimer);
   show('loading');
   const l = $('view-loading'); l.classList.remove('run'); void l.offsetWidth; l.classList.add('run');
-  loadTimer = setTimeout(() => { startCart(); show('cart'); announceCart(); }, 3000);
+  loadTimer = setTimeout(() => { renderAv(); show('av'); }, 3000);
 }
+
+/* ---------- availability (between loading and cart) ---------- */
+const MODEM = {'600':'Funbox 6', '1g':'Funbox 7', '2g':'Funbox 10', '8g':'Funbox 10'};
+document.querySelectorAll('[data-clone]').forEach(h => h.replaceWith(document.querySelector('#view-lp .' + h.dataset.clone).cloneNode(true)));
+function avAddress(){
+  const v = id => $(id).value.trim();
+  if (!v('a-city')) return 'Warszawa, Al. Jerozolimskie 102/3';
+  const no = v('a-no') + (v('a-flat') ? '/' + v('a-flat') : '');
+  return [v('a-city'), [v('a-street'), no].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+}
+const plusBtn = (src = 'av-plus-ic') => `<i aria-hidden="true"><img src="assets/lp/${src}.svg" alt=""></i>`;
+const bullet = '<img src="assets/lp/av-bullet.svg" alt="">';
+function renderAv(){
+  $('av-addr').textContent = avAddress();
+  const bez = lp.period === 'bez';
+  $('av-cards').innerHTML = SPEEDS.map((sp, i) => {
+    const p = lpPrice(sp), after = p + NO_COMMIT_EXTRA;
+    const big = n => { const [a, b] = fmt(n).replace(' zł','').split(','); return `<span class="v">${a},${b}</span><span class="c">zł/mies.</span>`; };
+    const sticker = i === 0 ? 'Hot Deal 🔥' : bez ? 'Umowa bez zobowiązania' : `Abonament średnio ${fmt(p).replace(',00','')} przez 24 m`;
+    return `<article class="avd" aria-label="Światłowód ${sp.name}">
+      <div class="stk">${sticker}</div>
+      <div class="cb">
+        <div class="nm"><span>Światłowód</span><h3>${sp.name}</h3></div>
+        <div class="prs">
+          <div class="pc">${big(p)}<small>${bez ? 'umowa bez okresu zobowiązania' : 'z rabatami, od 1. do 24. mies.'}</small></div>
+          ${bez ? '' : `<div class="dv"></div><div class="pc">${big(after)}<small>od 25. mies.</small></div>`}
+          <button class="rab" type="button" aria-expanded="false">Ceny zawierają rabaty<img src="assets/lp/av-plus-sm.svg" alt=""></button>
+          <p class="rabt" hidden>Cena uwzględnia rabat za e‑fakturę i zgody marketingowe.</p>
+        </div>
+        <button class="cfg" type="button" data-cfg="${sp.id}">Konfiguruj</button>
+        <p class="lh">W ofercie dostaniesz:</p>
+        <ul class="inc">
+          <li>${bullet}<span>Światłowód do <b>${sp.name.replace('do ','')}</b></span>${plusBtn()}</li>
+          ${lp.tv ? `<li>${bullet}<span>Telewizja <b>179 kanałów</b> i Amazon Prime</span>${plusBtn('av-info')}</li>` : ''}
+          ${lp.nfx ? `<li>${bullet}<span><b>Netflix</b> przez 6 mies. w prezencie</span>${plusBtn('av-info')}</li>` : ''}
+          <li>${bullet}<span>Rabat na dowolny abonament komórkowy <b>${BUNDLE_DISCOUNT} zł/ mies.</b></span>${plusBtn()}</li>
+          <li>${bullet}<span>Modem <b>${MODEM[sp.id]}</b></span>${plusBtn()}</li>
+        </ul>
+        <p class="lh">Dodatkowe opłaty:</p>
+        <ul class="fee">
+          <li>${bullet}<span><b>60 zł</b> jednorazowa aktywacja</span>${plusBtn()}</li>
+          <li>${bullet}<span><b>4,99 zł/mies.</b> za Modem ${MODEM[sp.id]}</span></li>
+        </ul>
+      </div>
+    </article>`;
+  }).join('');
+}
+$('av-cards').addEventListener('click', e => {
+  const r = e.target.closest('.rab');
+  if (r){ const on = r.getAttribute('aria-expanded') !== 'true'; r.setAttribute('aria-expanded', on); r.nextElementSibling.hidden = !on; return; }
+  const c = e.target.closest('[data-cfg]');
+  if (c){ lp.speed = c.dataset.cfg; startCart(); show('cart'); announceCart(); }
+});
+$('av-back').addEventListener('click', () => show('lp'));
+$('av-change').addEventListener('click', () => { show('lp'); $('addr').scrollIntoView({block:'center'}); });
+$('av-tv').checked = lp.tv; $('av-nfx').checked = lp.nfx;
 
 /* ---------- cart ---------- */
 const emptyState = () => ({speed:lp.speed, period:lp.period, added:{}, qty:{}});
@@ -976,7 +1142,7 @@ document.addEventListener('keydown', e => {
     else if (!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
   }
 });
-$('back-lp').addEventListener('click', () => { clearTimeout(loadTimer); show('lp'); });
+$('back-lp').addEventListener('click', () => { clearTimeout(loadTimer); renderAv(); show('av'); });
 $('go-lp').addEventListener('click', () => { demoRun++; $('cursor').classList.remove('on'); clearTimeout(loadTimer); show('lp'); });
 
 /* demo (cart) */
