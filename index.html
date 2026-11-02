@@ -1055,7 +1055,7 @@ function renderServices(){
     return `<article class="svc" id="svc-${s.id}">
       <div class="ico">${ICONS[s.icon]}</div>
       <div>${s.badge ? `<span class="badge">${s.badge}</span>` : ''}<h3>${s.title}</h3><div class="d">${s.desc}</div><div class="from num">od +${fmt(minP)}/mies.</div></div>
-      <button class="btn-s" type="button" data-open="${s.id}">+ Dodaj</button>
+      <button class="btn-s" type="button" data-open="${s.id}">${['tv','mob'].includes(s.id) ? 'Wybierz' : '+ Dodaj'}</button>
     </article>`;
   }).join('');
   $('services').querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => openPanel(b.dataset.open, b)));
