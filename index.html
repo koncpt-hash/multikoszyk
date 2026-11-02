@@ -282,6 +282,10 @@ button{font:inherit;color:inherit;cursor:pointer}
 .avd .nm{margin-top:6px;text-align:center}
 .avd .nm span{display:block;font-weight:500;color:var(--c-text-light)}
 .avd .nm h3{margin:0;font-weight:700;font-size:24px;line-height:28px}
+.avd .nm .pls{display:flex;justify-content:center;margin:2px 0}
+.avd .nm .pls img{width:8px;height:10px}
+.avd .nm .tv b{display:block;font-weight:700;font-size:24px;line-height:28px;color:var(--c-text)}
+.avd .nm .tv img{width:130px;height:36px;display:block;margin:0 auto}
 .avd .prs{margin-top:20px;display:flex;flex-direction:column;align-items:center;gap:6px;width:100%}
 .avd .pc{padding:6px 0;text-align:center;font-weight:700}
 .avd .pc .v{color:var(--c-active);font-size:34px;line-height:38px}
@@ -911,7 +915,7 @@ function renderAv(){
     return `<article class="avd" aria-label="Światłowód ${sp.name}">
       <div class="stk">${sticker}</div>
       <div class="cb">
-        <div class="nm"><span>Światłowód</span><h3>${sp.name}</h3></div>
+        <div class="nm"><span>Światłowód</span><h3>${sp.name}</h3>${lp.tv ? `<span class="pls"><img src="assets/lp/av-plus-tiny.svg" alt="plus"></span><div class="tv"><span>Telewizja i Amazon Prime</span><b>230 kanałów</b><img src="assets/lp/av-amazon-prime.svg" alt="Amazon Prime"></div>` : ''}</div>
         <div class="prs">
           <div class="pc">${big(p)}<small>${bez ? 'umowa bez okresu zobowiązania' : 'z rabatami, od 1. do 24. mies.'}</small></div>
           ${bez ? '' : `<div class="dv"></div><div class="pc">${big(after)}<small>od 25. mies.</small></div>`}
