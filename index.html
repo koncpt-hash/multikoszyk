@@ -142,15 +142,21 @@ button{font:inherit;color:inherit;cursor:pointer}
 .dishes{display:grid;grid-template-columns:repeat(4,minmax(0,294px));gap:16px;justify-content:center;margin-top:16px;padding-bottom:24px}
 @media (max-width:1260px){.dishes{grid-template-columns:repeat(2,minmax(0,294px))}}
 @media (max-width:640px){.dishes{grid-template-columns:minmax(0,294px)}}
-.dish{border:2px solid var(--c-input);border-radius:8px;overflow:hidden;background:#fff}
-.dish .c{display:flex;flex-direction:column;align-items:center;gap:16px;padding:32px 20px 24px}
-.dish .g{width:60px;height:60px;display:block}
-.dish .g svg{width:60px;height:60px;display:block}
-.dish .el{display:flex;flex-direction:column;align-items:center;gap:0;width:100%;text-align:center}
+.dish{border:2px solid var(--c-input);border-radius:8px;overflow:hidden;background:#fff;display:flex}
+.dish .c{flex:1;display:flex;flex-direction:column;align-items:center;gap:16px;padding:24px 20px}
+.dish .top{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;text-align:center}
+.dish .g{width:40px;height:39px;display:block}
+.dish .g svg{width:40px;height:39px;display:block}
+.dish .el{display:flex;flex-direction:column;align-items:center;gap:4px;width:100%}
 .dish .el .k{font-weight:500;color:var(--c-text-light)}
-.dish .el h3{margin:0;font-weight:700;font-size:30px;line-height:34px;color:var(--c-text);white-space:nowrap}
-.dish .stk{display:inline-flex;align-items:center;gap:8px;background:var(--c-divider);border-radius:4px;padding:4px 8px;font-weight:700;font-size:12px;line-height:18px}
-.dish .stk svg{width:18px;height:18px;flex:none}
+.dish .el h3{margin:0;font-weight:700;font-size:24px;line-height:28px;color:var(--c-text);white-space:nowrap}
+.dish .ds{font-weight:500;font-size:12px;line-height:18px;color:var(--c-text-light)}
+.dish .tv{display:flex;flex-direction:column;align-items:center;gap:8px}
+.dish .tv .pls{padding-top:2px;display:flex}
+.dish .tv .pls img{width:8px;height:10px;display:block}
+.dish .tv .t{display:flex;flex-direction:column;align-items:center;font-weight:500;color:var(--c-text-light)}
+.dish .tv .t b{font-weight:700;font-size:24px;line-height:28px;color:var(--c-text)}
+.dish .tv .t img{width:130px;height:36px;display:block}
 .dish .pr{display:flex;flex-direction:column;align-items:center;padding-block:6px;font-weight:700;text-align:center;width:100%}
 .dish .pr .hrow{display:flex;flex-wrap:wrap;gap:4px;align-items:baseline;justify-content:center;white-space:nowrap}
 .dish .pr .od, .dish .pr .cur{font-size:18px;line-height:24px;color:var(--c-text-light)}
@@ -844,13 +850,21 @@ function tick(){
 setInterval(tick, 1000); tick();
 
 function lpPrice(sp){ return sp.price + (lp.period === 'bez' ? NO_COMMIT_EXTRA : 0) + (lp.tv ? svcById('tv').options[0].price : 0); }
+const LP_DESC = {
+  '600':'Dla 1–2 osób: seriale w HD, praca zdalna, wideorozmowy',
+  '1g':'Dla rodziny: filmy 4K na kilku ekranach naraz, gry online',
+  '2g':'Dla wymagających: duże pliki, wiele urządzeń, streaming na żywo',
+  '8g':'Dla domu pełnego sprzętu: najszybszy dostępny światłowód'};
 function renderTiles(){
   $('tiles').innerHTML = SPEEDS.map(sp => {
     const [i, f] = fmt(lpPrice(sp)).replace(' zł','').split(',');
     return `<article class="dish"><div class="c">
-      <span class="g">${DISH[sp.id].g}</span>
-      <div class="el"><span class="k">Światłowód</span><h3>${sp.name}</h3></div>
-      <span class="stk">${DISH[sp.id].c}${sp.tag}</span>
+      <div class="top">
+        <span class="g">${DISH[sp.id].g}</span>
+        <div class="el"><span class="k">Światłowód</span><h3>${sp.name}</h3></div>
+        <p class="ds">${LP_DESC[sp.id]}</p>
+        ${lp.tv ? `<div class="tv"><span class="pls"><img src="assets/lp/av-plus-tiny.svg" alt="plus"></span><div class="t"><span>Telewizja i Amazon Prime</span><b>230 kanałów</b><img src="assets/lp/av-amazon-prime.svg" alt="Amazon Prime"></div></div>` : ''}
+      </div>
       <div class="pr"><div class="hrow"><span class="od">od</span><span class="v">${i},${f}</span><span class="cur">zł/mies.</span></div>
         <span class="fine">${lp.period === 'bez' ? 'umowa bez okresu zobowiązania' : 'z rabatami, umowa na 24 mies.'}</span></div>
       <button class="cta" type="button" data-check="${sp.id}">Sprawdź dostępność</button>
