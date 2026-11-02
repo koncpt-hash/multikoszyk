@@ -322,6 +322,75 @@ button{font:inherit;color:inherit;cursor:pointer}
 .av-faq .faql details p{white-space:pre-line;font-size:14px;line-height:20px;max-width:none}
 @media (max-width:1100px){.av-cards{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:50px}}
 @media (max-width:640px){.av-cards{grid-template-columns:1fr}.av-hero h1{font-size:28px;line-height:32px}.av-addr{flex-direction:column;align-items:stretch;gap:16px}}
+/* ================= TV packages ================= */
+.tvp{background:#fff;padding-bottom:74px}
+.tvp .av-hero h1{margin:0;color:#fff;font-weight:700;font-size:40px;line-height:44px}
+.tvp-info{background:#fff;border-radius:8px;padding:16px;display:flex;gap:8px;align-items:flex-start;font-weight:500}
+.tvp-info img{width:20px;height:20px;flex:none}
+.tvs{position:relative;overflow:hidden;padding:32px 0 16px;display:flex;flex-direction:column;align-items:center}
+.tvs .hd{position:relative;max-width:1232px;width:100%;text-align:center;display:flex;flex-direction:column;gap:2px}
+.tvs .hd h2{margin:0;font-weight:700;font-size:24px;line-height:28px}
+.tvs .hd p{max-width:600px;margin:0 auto;font-weight:500;color:var(--c-text-light)}
+.tvs .glow{position:absolute;left:calc(50% - 24px);top:105px;width:589px;height:493px;transform:translateX(-50%);border-radius:999px;object-fit:cover;opacity:.5;filter:blur(42px);pointer-events:none}
+.tvs .sp{height:96px}
+.car{position:relative;max-width:1232px;width:100%}
+.car .track{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding-top:34px;margin-top:-34px}
+.car .track::-webkit-scrollbar{display:none}
+.car.center .track{justify-content:center}
+.car .nav{position:absolute;top:50%;transform:translateY(-50%);background:var(--c-ghost);border:0;border-radius:4px;padding:6px;display:flex;z-index:2}
+.car .nav img{width:18px;height:18px;display:block;margin:8px}
+.car .nav.l{left:-18px}.car .nav.r{right:-18px}
+.car .ind{display:flex;gap:8px;margin-top:12px;padding:8px}
+.car .ind i{flex:1;height:4px;border-radius:8px;background:#ccc}
+.car .ind i.on{background:#232323}
+.vas{position:relative;flex:none;width:336px;scroll-snap-align:start;display:flex;flex-direction:column}
+.vas .hl{position:absolute;left:0;right:0;top:-32px;background:#b8ebd6;border-radius:8px 8px 0 0;padding:6px 16px 20px;text-align:center;font-weight:700}
+.vas .card2{position:relative;flex:1;background:#fff;border:2px solid #ccc;border-radius:8px;padding:2px;display:flex;flex-direction:column;overflow:hidden}
+.vas .im{position:relative;height:200px;border-radius:4px 4px 0 0;overflow:hidden;flex:none}
+.vas .im > img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.vas .lg{position:absolute;left:8px;top:8px;width:64px;height:64px;background:#fff;border-radius:4px;display:grid;place-items:center}
+.vas .lg img{width:45px;height:45px;display:block}
+.vas .tg{position:absolute;right:0;bottom:0;background:#fff;border-radius:4px 4px 0 0;padding:4px}
+.vas .tg span{display:block;background:#333;color:#fff;border-radius:4px;padding:4px 8px;font-weight:700;font-size:12px;line-height:18px;white-space:nowrap}
+.vas .ct{flex:1;display:flex;flex-direction:column;gap:12px;padding:0 12px 12px}
+.vas .ct .h{display:flex;gap:8px;align-items:flex-start;padding-top:12px}
+.vas .ct h3{flex:1;margin:0;font-weight:700;font-size:18px;line-height:24px}
+.vas .ct .ar{background:var(--c-ghost);border-radius:4px;padding:6px;display:flex;flex:none}
+.vas .ct .ar img{width:18px;height:18px;margin:1px}
+.vas .ct .ds{font-weight:500;color:var(--c-text-light);min-height:40px}
+.vas .ct hr{border:0;height:2px;background:var(--c-divider);margin:0;width:100%}
+.vas .plans{flex:1;display:flex;flex-direction:column;gap:12px}
+.vas .pl{display:flex;gap:8px;align-items:flex-start;cursor:pointer}
+.vas .pl input{position:absolute;opacity:0;width:1px;height:1px}
+.vas .pl .rb{width:24px;height:24px;border-radius:12px;border:2px solid #ccc;flex:none;display:grid;place-items:center}
+.vas .pl input:checked + .rb{background:#32c832;border-color:#32c832}
+.vas .pl input:checked + .rb::after{content:"";width:12px;height:12px;background:url(assets/tv/tick.svg) center/contain no-repeat}
+.vas .pl input:focus-visible + .rb{outline:3px solid var(--c-active);outline-offset:2px}
+.vas .pl .tx,.vas .one{flex:1;display:flex;flex-direction:column;gap:4px;padding:2px 0}
+.vas .pl .tx > b,.vas .one > b{font-weight:700}
+.vas .ln{display:flex;gap:8px;font-weight:500;color:var(--c-text-light)}
+.vas .ln span{flex:1}
+.vas .ln b{font-weight:700;white-space:nowrap}
+.vas .add{position:relative;margin-top:8px;height:32px;width:100%;background:#fff;border:2px solid #232323;border-radius:4px;font-weight:700;font-size:14px;line-height:20px;color:#232323}
+.vas .add img{position:absolute;right:10px;top:50%;width:18px;height:18px;transform:translateY(-50%)}
+.vas .add[aria-pressed="true"]{background:#232323;color:#fff}
+.vas .add[aria-pressed="true"] img{filter:invert(1)}
+.vas.on .card2{border-color:#32c832}
+.tvp-promo{padding:16px 0;display:flex;justify-content:center}
+.promo{position:relative;max-width:1232px;width:100%;min-height:512px;border:2px solid #ccc;border-radius:16px;overflow:hidden;display:flex;gap:16px;padding:40px 24px 24px}
+.promo .art{position:absolute;left:0;bottom:0;width:640px;height:512px;pointer-events:none}
+.promo .art .sh{position:absolute;left:30px;top:150px;width:520px;transform:rotate(30deg)}
+.promo .art .girl{position:absolute;left:-70px;top:-9px;height:519px;transform:scaleX(-1)}
+.promo .left{position:relative;flex:1;display:flex;flex-direction:column;gap:8px}
+.promo .left h2{margin:0;font-weight:700;font-size:40px;line-height:44px}
+.promo .left p{font-weight:500;font-size:16px;line-height:22px;color:var(--c-text-light)}
+.promo .car{width:608px;flex:none;padding-top:32px}
+.promo .vas{width:296px}
+.tvp-bar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #eee;padding-block:12px;display:flex;justify-content:flex-end;z-index:20}
+.tvp-bar .btn-p{background:#ff7900;color:#000}
+@media (max-width:1000px){.promo{flex-direction:column}.promo .art{opacity:.15}.promo .car{width:100%}}
+@media (max-width:640px){.vas{width:min(300px,85vw)}.promo .vas{width:min(296px,85vw)}.promo .left h2{font-size:28px;line-height:32px}.car .nav{display:none}}
+
 /* ================= loading ================= */
 .loading{min-height:100vh;display:grid;place-items:center;text-align:center;padding-block:40px}
 .loading .logo-ph{width:74px;height:74px;border:2px dashed var(--orange);color:var(--orange);display:grid;place-items:center;font-size:10px;font-weight:700;margin:0 auto 32px;animation:pulse 1.2s ease-in-out infinite}
@@ -769,6 +838,19 @@ Paczka L (55 zł/mies. netto) to:
   </div>
 </div>
 
+<!-- ================= TV packages (Figma VVB 2162:109021) ================= -->
+<div id="view-tvp" class="lp tvp" hidden>
+  <section class="av-hero gutter" aria-labelledby="tvp-h">
+    <img class="gs" src="assets/lp/av-gauss.svg" alt="">
+    <div class="in">
+      <h1 id="tvp-h">Pakiety TV</h1>
+      <p class="tvp-info"><img src="assets/tv/alert-info.svg" alt="">Usługi dodatkowe, które wybierasz, uruchamiasz dobrowolnie i zgadzasz się na ich opłacanie.</p>
+    </div>
+  </section>
+  <div id="tvp-body"></div>
+  <div class="tvp-bar gutter"><button class="btn-p" type="button" id="tvp-back">Wróć do koszyka</button></div>
+</div>
+
 <div class="scrim" id="scrim" hidden></div>
 <div class="panel" id="panel" role="dialog" aria-modal="true" aria-labelledby="p-title" hidden>
   <div class="p-head">
@@ -790,6 +872,10 @@ Paczka L (55 zł/mies. netto) to:
 <script>
 const $ = id => document.getElementById(id);
 const fmt = n => new Intl.NumberFormat('pl-PL',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n) + ' zł';
+/* TV packages can be on a 24-month or an open-ended contract */
+const plansOf = o => [o.price != null && '24', o.priceBez != null && 'bez'].filter(Boolean);
+const tvPlan = o => (state.tvPlan || {})[o.id] || plansOf(o)[0];
+const optPrice = o => o.priceBez != null && (o.price == null || tvPlan(o) === 'bez') ? o.priceBez : o.price;
 const perLabel = o => o.per === 'm' ? '/mies.' : ' jednorazowo';
 const wait = ms => new Promise(r => setTimeout(r, ms));
 
@@ -826,10 +912,25 @@ const ICONS = {
 const SERVICES = [
   {id:'tv', icon:'tv', tint:'--t-tv', title:'Pakiety TV i streamingi', desc:'Telewizja z Amazon Prime, CANAL+, HBO Max, Netflix', mode:'multi',
    lead:'Wybierz jeden lub kilka pakietów', options:[
-    {id:'tvap', name:'Telewizja z Amazon Prime', meta:'209 kanałów i Amazon Prime', price:35, per:'m'},
-    {id:'c-sport', name:'Pakiet CANAL+ Super Sport', meta:'Kanały sportowe CANAL+', price:45, per:'m'},
-    {id:'c-film', name:'Pakiet CANAL+ Seriale i Filmy', meta:'Filmy i seriale CANAL+', price:30, per:'m'},
-    {id:'hbo', name:'HBO z HBO Max', meta:'Kanały HBO i aplikacja HBO Max', price:29.99, per:'m'},
+    /* price = umowa na 24 mies., priceBez = umowa bezterminowa; group = można mieć tylko 1 pakiet z grupy */
+    {id:'tvap', name:'Extra TV i Prime Video z Amazon Prime', meta:'209 kanałów i Amazon Prime', price:35, per:'m', group:'base',
+     img:'extra-prime.jpg', logo:'logo-prime.svg', ds:'Lorem ipsum dolor sit amet'},
+    {id:'extra', name:'Extra TV', meta:'Nawet 219 kanałów TV, w tym Eleven Sports', priceBez:25, per:'m', group:'base',
+     img:'extra-tv.jpg', logo:'logo-tv.svg', ds:'Nawet 219 kanałów TV, w tym Eleven Sports!'},
+    {id:'hbo', name:'HBO z HBO Max', meta:'Kanały HBO i aplikacja HBO Max', price:29.99, priceBez:39.99, per:'m', group:'hbo',
+     img:'hbo.jpg', logo:'logo-hbo.svg', tag:'Filmy, seriale, sport', ds:'Najlepsze globalne produkcje HBO i Warner Bros z doskonałą lokalną rozrywką!'},
+    {id:'hbo-std', name:'HBO Max Plan Standardowy', meta:'Aplikacja HBO Max', price:24.99, priceBez:34.99, per:'m', group:'hbo',
+     img:'hbo-std.jpg', logo:'logo-hbo.svg', tag:'Filmy, seriale', ds:'Lorem ipsum dolor sit amet'},
+    {id:'c-pak', name:'Pakiet CANAL+', meta:'Kanały CANAL+ i aplikacja', price:50, priceBez:60, per:'m', group:'canal',
+     img:'canal.jpg', logo:'logo-canal.svg', tag:'Filmy, seriale, sport', ds:'Lorem ipsum dolor sit amet'},
+    {id:'c-sport', name:'Pakiet CANAL+ Super Sport', meta:'Kanały sportowe CANAL+', price:45, priceBez:55, per:'m', group:'canal',
+     img:'canal-sport.jpg', logo:'logo-canal.svg', tag:'Filmy, seriale, sport', ds:'Lorem ipsum dolor sit amet'},
+    {id:'c-film', name:'Pakiet CANAL+ Seriale i Filmy', meta:'Filmy i seriale CANAL+', price:30, priceBez:40, per:'m', group:'canal',
+     img:'canal-film.jpg', logo:'logo-canal.svg', tag:'Filmy, seriale', ds:'Lorem ipsum dolor sit amet'},
+    {id:'c-serwis', name:'Serwis CANAL+ Seriale i Filmy', meta:'Aplikacja CANAL+', price:25, priceBez:35, per:'m', group:'canal',
+     img:'canal-serwis.jpg', logo:'logo-canal.svg', tag:'Filmy, seriale', ds:'Lorem ipsum dolor sit amet'},
+    {id:'polsat', name:'Pakiet Polsat Sport Premium', meta:'Kanały Polsat Sport Premium', price:25, priceBez:35, per:'m',
+     img:'polsat.jpg', logo:'logo-polsat.png', tag:'Sport', ds:'Najlepsze globalne produkcje HBO i Warner Bros z doskonałą lokalną rozrywką!'},
     {id:'nfx', name:'Netflix', meta:'W promocji 0 zł przez 12 mies., potem 43,00 zł/mies.', price:0, per:'m'}]},
   {id:'mob', icon:'mob', tint:'--t-mob', title:'Abonament komórkowy', desc:'Rozmowy, SMS-y i internet 5G w telefonie', mode:'single', qty:true, badge:'Rabat za łączenie: −20,00 zł/mies.',
    lead:'Wybierz plan – rozmowy i SMS-y bez limitu w każdym', options:[
@@ -856,7 +957,7 @@ const svcById = id => SERVICES.find(s => s.id === id);
 /* ---------- views ---------- */
 let loadTimer = null;
 function show(view){
-  for (const v of ['lp','loading','av','cart']) $('view-' + v).hidden = v !== view;
+  for (const v of ['lp','loading','av','cart','tvp']) $('view-' + v).hidden = v !== view;
   $('demo').hidden = $('reset').hidden = view !== 'cart';
   if (panelSvc) closePanel();
   window.scrollTo(0, 0);
@@ -987,8 +1088,97 @@ $('av-back').addEventListener('click', () => show('lp'));
 $('av-change').addEventListener('click', () => { show('lp'); $('addr').scrollIntoView({block:'center'}); });
 $('av-tv').checked = lp.tv; $('av-nfx').checked = lp.nfx;
 
+/* ---------- TV packages screen ---------- */
+const TV_SECTIONS = [
+  {title:'Telewizja', sub:'Lorem ipsum', glow:true, ids:['tvap','extra']},
+  {promo:true, ids:['hbo','c-pak'], hl:{hbo:'Lorem ipsum'}},
+  {title:'Pakiety i serwisy CANAL+', sub:'Możesz dodać 1 pakiet lub serwis z tej kategorii. Dla pakietu CANAL+ zmień w koszyku aplikację Orange TV na dekoder 4K Multi.', ids:['c-pak','c-sport','c-film','c-serwis']},
+  {title:'Pakiety HBO Max', sub:'Możesz dodać 1 pakiet lub serwis z tej kategorii', ids:['hbo','hbo-std']},
+  {title:'Inne pakiety TV', ids:['polsat']}
+];
+const tvOpt = id => svcById('tv').options.find(o => o.id === id);
+let vasN = 0;
+function vasCard(o, hl){
+  const uid = ++vasN;
+  const added = (state.added.tv || []).includes(o.id);
+  const plans = plansOf(o);
+  const lines = p => p === '24'
+    ? `<div class="ln"><span>Od 1. do 24. mies.</span><b>${fmt(o.price)}</b></div>`
+    : `<div class="ln"><span>Od 1. mies.</span><b>${fmt(o.priceBez)}</b></div>`;
+  const label = p => p === '24' ? 'Umowa na 24 miesiące' : 'Umowa bezterminowa';
+  const planHtml = plans.length > 1
+    ? plans.map(p => `<label class="pl"><input type="radio" name="plan-${o.id}-${uid}" value="${p}" data-plan="${o.id}" ${tvPlan(o) === p ? 'checked' : ''}><span class="rb" aria-hidden="true"></span><span class="tx"><b>${label(p)}</b>${lines(p)}</span></label>`).join('')
+    : `<div class="one"><b>${label(plans[0])}</b>${lines(plans[0])}</div>`;
+  return `<article class="vas ${added ? 'on' : ''}" aria-label="${o.name}">
+    ${hl ? `<div class="hl">${hl}</div>` : ''}
+    <div class="card2">
+      <div class="im"><img src="assets/tv/${o.img}" alt=""><span class="lg"><img src="assets/tv/${o.logo}" alt=""></span>${o.tag ? `<span class="tg"><span>${o.tag}</span></span>` : ''}</div>
+      <div class="ct">
+        <div class="h"><h3>${o.name}</h3><span class="ar" aria-hidden="true"><img src="assets/tv/arrow-right.svg" alt=""></span></div>
+        <p class="ds">${o.ds}</p><hr>
+        <div class="plans">${planHtml}</div>
+        <button class="add" type="button" data-tv="${o.id}" aria-pressed="${added}">${added ? 'Dodano – usuń' : 'Dodaj'}<img src="assets/tv/plus.svg" alt=""></button>
+      </div>
+    </div>
+  </article>`;
+}
+const carousel = (ids, hl = {}) => `<div class="car"><button class="nav l" type="button" aria-label="Poprzednie" hidden><img src="assets/tv/arrow-left.svg" alt=""></button>
+  <div class="track">${ids.map(id => vasCard(tvOpt(id), hl[id])).join('')}</div>
+  <button class="nav r" type="button" aria-label="Następne" hidden><img src="assets/tv/arrow-right.svg" alt=""></button><div class="ind" hidden></div></div>`;
+function renderTvp(){
+  const keep = [...document.querySelectorAll('#tvp-body .track')].map(t => t.scrollLeft);
+  $('tvp-body').innerHTML = TV_SECTIONS.map(sec => sec.promo
+    ? `<section class="tvp-promo gutter"><div class="promo">
+        <div class="art" aria-hidden="true"><img class="sh" src="assets/tv/promo-shape.svg" alt=""><img class="girl" src="assets/tv/promo-girl.png" alt=""></div>
+        <div class="left"><h2>Moc rozrywki dla Ciebie!</h2><p>Te pakiety podkręcą Twoje wieczory!</p></div>
+        ${carousel(sec.ids, sec.hl)}</div></section>`
+    : `<section class="tvs gutter">${sec.glow ? '<img class="glow" src="assets/tv/glow.jpg" alt="">' : ''}
+        <div class="hd"><h2>${sec.title}</h2>${sec.sub ? `<p>${sec.sub}</p>` : ''}</div>${sec.glow ? '<div class="sp"></div>' : ''}
+        ${carousel(sec.ids)}</section>`).join('');
+  document.querySelectorAll('#tvp-body .track').forEach((t, i) => { t.scrollLeft = keep[i] || 0; syncCar(t.parentElement); });
+}
+function syncCar(car){
+  const t = car.querySelector('.track'), over = t.scrollWidth > t.clientWidth + 4;
+  car.classList.toggle('center', !over);
+  car.querySelector('.l').hidden = !over || t.scrollLeft < 4;
+  car.querySelector('.r').hidden = !over || t.scrollLeft > t.scrollWidth - t.clientWidth - 4;
+  const ind = car.querySelector('.ind'); ind.hidden = !over;
+  if (over){
+    const pages = Math.ceil(t.scrollWidth / t.clientWidth), cur = Math.round(t.scrollLeft / (t.scrollWidth - t.clientWidth) * (pages - 1));
+    ind.innerHTML = Array.from({length:pages}, (_, i) => `<i class="${i === cur ? 'on' : ''}"></i>`).join('');
+  }
+}
+function openTvp(){ renderTvp(); show('tvp'); requestAnimationFrame(() => document.querySelectorAll('#tvp-body .car').forEach(syncCar)); }
+function toggleTv(id){
+  const o = tvOpt(id), cur = state.added.tv || [];
+  undoState = JSON.parse(JSON.stringify(state));
+  if (cur.includes(id)){
+    state.added.tv = cur.filter(x => x !== id); fresh = new Set();
+    toast(`Usunięto z pakietu: ${o.name}`);
+  } else {
+    const out = cur.filter(x => o.group && tvOpt(x).group === o.group);
+    state.added.tv = [...cur.filter(x => !out.includes(x)), id];
+    fresh = new Set([`tv:${id}`]);
+    toast(out.length ? `Zamieniono ${out.map(x => tvOpt(x).name).join(', ')} na ${o.name}` : `Dodano do pakietu: ${o.name}`);
+  }
+  if (!state.added.tv.length) delete state.added.tv;
+  renderTvp(); renderAll();
+}
+$('tvp-body').addEventListener('click', e => {
+  const a = e.target.closest('[data-tv]'); if (a) return toggleTv(a.dataset.tv);
+  const n = e.target.closest('.nav'); if (n){ const t = n.parentElement.querySelector('.track'); t.scrollBy({left:(n.classList.contains('l') ? -1 : 1) * t.clientWidth * .8, behavior:'smooth'}); }
+});
+$('tvp-body').addEventListener('change', e => {
+  const r = e.target.closest('[data-plan]'); if (!r) return;
+  state.tvPlan = {...(state.tvPlan || {}), [r.dataset.plan]: r.value};
+  renderTvp(); renderAll();
+});
+$('tvp-body').addEventListener('scroll', e => { if (e.target.classList?.contains('track')) syncCar(e.target.parentElement); }, true);
+window.addEventListener('resize', () => { if (!$('view-tvp').hidden) document.querySelectorAll('#tvp-body .car').forEach(syncCar); });
+$('tvp-back').addEventListener('click', () => { show('cart'); renderAll(); $('svc-tv').scrollIntoView({block:'center'}); });
+
 /* ---------- cart ---------- */
-const emptyState = () => ({speed:lp.speed, period:lp.period, added:{}, qty:{}});
+const emptyState = () => ({speed:lp.speed, period:lp.period, added:{}, qty:{}, tvPlan:{}});
 let state = emptyState();
 let fresh = new Set();
 let undoState = null;
@@ -1037,13 +1227,13 @@ function renderSpeeds(){
 function renderServices(){
   $('services').innerHTML = SERVICES.map(s => {
     const sel = state.added[s.id];
-    const minP = Math.min(...s.options.map(o => o.price));
+    const minP = Math.min(...s.options.map(o => optPrice(o)));
     if (sel && sel.length){
       const items = sel.map(id => s.options.find(o => o.id === id));
       const n = s.qty ? (state.qty[s.id] || 1) : 1;
       const list = s.qty
         ? items.map(o => `<li><span>${o.name} × ${n}<small>${o.meta} w każdym abonamencie${n > 1 ? ` · kolejne taniej o ${fmt(NEXT_LINE_DISCOUNT)}/mies.` : ''}</small></span><span class="num">${fmt(mobTotal(o.price, n))}/mies.</span></li>`).join('')
-        : items.map(o => `<li><span>${o.name}<small>${o.meta}</small></span><span class="num">${fmt(o.price)}${perLabel(o)}</span></li>`).join('');
+        : items.map(o => `<li><span>${o.name}<small>${o.meta}${s.id === 'tv' && tvPlan(o) === 'bez' ? ' · umowa bezterminowa' : ''}</small></span><span class="num">${fmt(optPrice(o))}${perLabel(o)}</span></li>`).join('');
       return `<section class="card" id="svc-${s.id}" style="--tint:var(${s.tint})" aria-label="${s.title}">
         <div class="card-h"><h2>${s.title}</h2><button class="btn-s" type="button" data-remove="${s.id}">Usuń</button></div>
         <div class="card-b">
@@ -1058,7 +1248,7 @@ function renderServices(){
       <button class="btn-s" type="button" data-open="${s.id}">${['tv','mob'].includes(s.id) ? 'Wybierz' : '+ Dodaj'}</button>
     </article>`;
   }).join('');
-  $('services').querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => openPanel(b.dataset.open, b)));
+  $('services').querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => b.dataset.open === 'tv' ? openTvp() : openPanel(b.dataset.open, b)));
   $('services').querySelectorAll('[data-remove]').forEach(b => b.addEventListener('click', () => removeSvc(b.dataset.remove)));
 }
 
@@ -1079,8 +1269,8 @@ function renderSummary(){
         if (n > 1) m.push({key:`${s.id}:next:${n}`, label:`Rabat za kolejne abonamenty (${n - 1} × ${fmt(NEXT_LINE_DISCOUNT)})`, value:'−' + fmt((n - 1) * NEXT_LINE_DISCOUNT), n:-(n - 1) * NEXT_LINE_DISCOUNT, minus:true});
         continue;
       }
-      const label = op.id === 'nfx' ? 'Netflix (0 zł przez 12 mies.)' : op.name;
-      (op.per === 'm' ? m : o).push({key:`${s.id}:${id}`, label, value:fmt(op.price), n:op.price});
+      const label = op.id === 'nfx' ? 'Netflix (0 zł przez 12 mies.)' : op.name + (s.id === 'tv' && tvPlan(op) === 'bez' ? ' (bezterminowo)' : '');
+      (op.per === 'm' ? m : o).push({key:`${s.id}:${id}`, label, value:fmt(optPrice(op)), n:optPrice(op)});
     }
   }
   if ((state.added.mob || []).length) m.push({key:'disc', label:'Rabat za łączenie usług', value:'−' + fmt(BUNDLE_DISCOUNT), n:-BUNDLE_DISCOUNT, minus:true});
@@ -1238,9 +1428,10 @@ async function demo(){
     () => point(document.querySelector('.row.fresh') || $('summary')),
     () => wait(1600),
     () => tap(document.querySelector('#svc-tv [data-open]')),
-    () => wait(400),
-    () => tap($('opt-c-sport').closest('label')),
-    () => tap($('p-add')),
+    () => wait(600),
+    () => tap(document.querySelector('#tvp-body [data-tv="c-sport"]')),
+    () => wait(900),
+    () => tap($('tvp-back')),
     () => wait(500),
     () => point(document.querySelector('.row.fresh') || $('summary')),
     () => wait(1400)
