@@ -361,8 +361,6 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .tile .d{font-size:12px;margin-top:2px}
 .tile .p{font-weight:700;font-size:14px;text-align:right}
 .tile .p small{display:block;font-weight:400;font-size:12px;color:var(--muted)}
-.speeds-tile{grid-template-columns:24px minmax(0,1fr)}
-.speeds-tile .p{text-align:left;margin-top:14px}
 
 .sec-head h2{font-size:20px;margin:8px 0 2px;font-weight:700}
 .sec-head p{margin:0;font-size:14px;color:var(--muted)}
@@ -379,6 +377,32 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .picked li{display:flex;justify-content:space-between;gap:12px;font-size:14px}
 .picked li span:first-child{font-weight:700}
 .picked li small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+/* internet card (Figma 6603:19519) */
+.net-b{background:var(--tint);display:flex;flex-direction:column}
+.net-box{background:#fff;border:2px solid var(--tint);border-radius:8px;padding:18px;display:flex;flex-direction:column}
+.net-box .hd{display:flex;gap:24px;align-items:flex-start;padding-bottom:16px}
+.net-box .hd h3{flex:1;margin:0;font-weight:700;font-size:20px;line-height:26px;color:#232323}
+.net-box .hd .g svg{width:32px;height:32px;display:block}
+.btn-t{align-self:flex-start;background:#f5f5f5;border:0;border-radius:4px;padding:6px 16px;font-weight:700;font-size:14px;line-height:20px;color:#232323}
+.btn-t:hover{background:#ebebeb}
+.btn-t.full{align-self:stretch}
+.net-box .dv{height:2px;background:#eee;margin-top:12px}
+.net-box .feat{display:flex;flex-direction:column;gap:12px;padding-top:12px}
+.net-box .bl{display:flex;gap:8px;align-items:flex-start;font-weight:700;font-size:14px;line-height:20px;color:#232323}
+.net-box .bl::before{content:"";width:8px;height:8px;border-radius:4px;background:var(--tint);flex:none;margin-top:6px}
+.net-box .stk{align-self:flex-start;background:var(--tint);border-radius:4px;padding:4px 8px;font-weight:700;font-size:12px;line-height:18px;color:#232323}
+.net-box .dev{display:flex;gap:8px;align-items:flex-start;padding-bottom:8px}
+.net-box .dev div{flex:1;display:flex;flex-direction:column;gap:4px}
+.net-box .dev b{font-weight:700;font-size:20px;line-height:26px;color:#232323}
+.net-box .dev small{font-weight:500;font-size:12px;line-height:18px;color:#444}
+.net-box .dev img{width:80px;height:80px;object-fit:cover;border-radius:4px}
+.net-box .fees{padding-top:12px;display:flex;flex-direction:column;gap:12px}
+.net-box .fees h4{margin:0;font-weight:700;font-size:16px;line-height:22px;color:#232323}
+.net-box .fees .bl{gap:16px}
+.net-box .fees .bl span{flex:1}
+.net-box .fees .bl b{font-weight:700;white-space:nowrap}
+.net-box.note{flex-direction:row;align-items:center;gap:16px;padding:16px;font-weight:500;font-size:14px;line-height:20px;color:#232323}
+.net-box.note img{width:48px;height:48px;flex:none}
 .card-b .foot-b{display:flex;justify-content:flex-start}
 
 .side{display:flex;flex-direction:column;gap:16px;position:sticky;top:16px}
@@ -707,8 +731,8 @@ Paczka L (55 zł/mies. netto) to:
       <div class="grid">
         <div class="col">
           <section class="card" style="--tint:var(--t-net)" aria-labelledby="net-h">
-            <div class="card-h"><h2 id="net-h">Internet światłowodowy</h2><button class="btn-s" type="button">Usuń</button></div>
-            <div class="card-b" id="speeds"></div>
+            <div class="card-h"><h2 id="net-h">Internet</h2><button class="btn-s" type="button">Usuń</button></div>
+            <div class="net-b" id="speeds"></div>
           </section>
 
           <div class="sec-head">
@@ -989,11 +1013,28 @@ function announceCart(){
 const netPrice = sp => sp.price + (state.period === 'bez' ? NO_COMMIT_EXTRA : 0);
 
 function renderSpeeds(){
-  $('speeds').innerHTML = '<div class="lead">Wybierz prędkość – dopasowaną do tego, jak korzystasz z internetu</div>' + SPEEDS.map(s => `
-    <label class="tile speeds-tile"><input type="radio" name="speed" id="speed-${s.id}" value="${s.id}" ${state.speed===s.id?'checked':''}>
-      <span class="ind" aria-hidden="true"></span>
-      <span><span class="t">${s.name}</span><span class="d" style="display:block">${s.desc}</span><span class="p num" style="display:block">${fmt(netPrice(s))}/mies.</span></span></label>`).join('');
-  $('speeds').querySelectorAll('input').forEach(i => i.addEventListener('change', () => { state.speed = i.value; fresh = new Set(['net']); renderSummary(); }));
+  const sp = SPEEDS.find(s => s.id === state.speed);
+  const modem = MODEM[sp.id].replace('Funbox', 'FunBox');
+  $('speeds').innerHTML = `
+    <div class="net-box">
+      <div class="hd"><h3>Światłowód ${sp.name}</h3><span class="g" aria-hidden="true">${DISH[sp.id].g}</span></div>
+      <button class="btn-t" type="button" id="net-change">Zmień prędkość</button>
+      <div class="dv"></div>
+      <div class="feat">
+        <div class="bl">${state.period === 'bez' ? 'Umowa bez okresu zobowiązania' : 'Umowa na 24 miesiące'}</div>
+        ${state.period === 'bez' ? '' : '<span class="stk">Światłowód przez 6 mies. z abonamentem za 0 zł</span>'}
+      </div>
+      <div class="dv"></div>
+    </div>
+    <div class="net-box">
+      <div class="dev"><div><b>${modem}</b><small>Modem wypożyczony</small></div><img src="assets/lp/cart-funbox.png" alt=""></div>
+      <button class="btn-t full" type="button" id="modem-change">Zmień modem</button>
+      <div class="dv"></div>
+      <div class="fees"><h4>Opłaty</h4><div class="bl"><span>Od 1. miesiąca</span><b class="num">${fmt(netPrice(sp))}</b></div></div>
+    </div>
+    <div class="net-box note"><img src="assets/lp/cart-tvnet.svg" alt=""><span>Technik zainstaluje przyłącza w lokalu lub w budynku. Modem i dekoder podłączysz samodzielnie - łatwo, krok po kroku.</span></div>`;
+  $('net-change').addEventListener('click', e => openPanel('net', e.currentTarget));
+  $('modem-change').addEventListener('click', () => toast('Zmiana modemu nie jest częścią tego prototypu', false));
 }
 
 function renderServices(){
@@ -1056,9 +1097,12 @@ function renderSummary(){
 function renderAll(){ renderServices(); renderSummary(); }
 
 /* panel */
+const netSvc = () => ({id:'net', tint:'--t-net', title:'Zmień prędkość', mode:'single', net:true,
+  lead:'Wybierz prędkość – dopasowaną do tego, jak korzystasz z internetu',
+  options: SPEEDS.map(s => ({id:s.id, name:`Światłowód ${s.name}`, meta:s.desc, price:netPrice(s), per:'m'}))});
 function openPanel(id, opener){
-  panelSvc = svcById(id); lastFocus = opener || document.activeElement;
-  const current = state.added[id] || [];
+  panelSvc = id === 'net' ? netSvc() : svcById(id); lastFocus = opener || document.activeElement;
+  const current = id === 'net' ? [state.speed] : (state.added[id] || []);
   const editing = current.length > 0;
   $('panel').style.setProperty('--tint', `var(${panelSvc.tint})`);
   $('p-title').textContent = panelSvc.title;
@@ -1084,7 +1128,7 @@ function openPanel(id, opener){
     $('qty-plus').addEventListener('click', () => { panelQty = Math.min(MAX_LINES, panelQty + 1); updatePanelFoot(); });
   }
   $('p-add').dataset.editing = editing ? '1' : '';
-  $('p-remove').hidden = !editing;
+  $('p-remove').hidden = !editing || !!panelSvc.net;
   updatePanelFoot();
   $('scrim').hidden = false; $('panel').hidden = false;
   requestAnimationFrame(() => { $('scrim').classList.add('on'); $('panel').classList.add('on'); });
@@ -1103,6 +1147,7 @@ function updatePanelFoot(){
     : sel.filter(o => o.per==='m').reduce((a,o) => a + o.price, 0);
   const o = sel.filter(o => o.per==='o').reduce((a,x) => a + x.price, 0);
   const editing = !!$('p-add').dataset.editing;
+  if (panelSvc.net){ $('p-sum-l').textContent = 'Internet po zmianie'; $('p-sum-v').textContent = sel.length ? `${fmt(m)}/mies.` : ''; $('p-add').disabled = !sel.length; $('p-add').textContent = 'Zapisz zmiany'; return; }
   $('p-sum-l').textContent = sel.length ? (editing ? 'Po zmianie do pakietu' : 'Dodajesz do pakietu') : 'Wybierz opcję';
   $('p-sum-v').textContent = sel.length ? [`+${fmt(m)}/mies.`, o ? `+${fmt(o)} jednorazowo` : ''].filter((x, i) => x && (i === 1 || m || !o)).join(' · ') : '';
   $('p-add').disabled = !sel.length;
@@ -1112,11 +1157,19 @@ function closePanel(){
   $('scrim').classList.remove('on'); $('panel').classList.remove('on');
   setTimeout(() => { $('scrim').hidden = true; $('panel').hidden = true; }, 300);
   const id = panelSvc && panelSvc.id; panelSvc = null;
-  const target = id && document.querySelector(`#svc-${id} [data-open]`);
+  const target = id && document.querySelector(id === 'net' ? '#net-change' : `#svc-${id} [data-open]`);
   (target || lastFocus)?.focus({preventScroll:true});
 }
 function commit(){
   const sel = selectedInPanel(); const s = panelSvc;
+  if (s.net){
+    undoState = JSON.parse(JSON.stringify(state));
+    const changed = sel[0] !== state.speed;
+    state.speed = sel[0]; fresh = new Set(changed ? ['net'] : []);
+    renderSpeeds(); renderAll(); closePanel();
+    if (changed) toast(`Zmieniono prędkość: ${s.options.find(o => o.id === sel[0]).name}`);
+    return;
+  }
   undoState = JSON.parse(JSON.stringify(state));
   const before = new Set(state.added[s.id] || []);
   state.added[s.id] = sel;
