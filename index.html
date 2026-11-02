@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<title>Konfigurator pakietu z panelem</title>
+<title>Multikoszyk – prototyp</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* Layout: clickable flow LP → loading screen (3 s) → cart. Styling follows the Figma Multikoszyk screens. Single light look on purpose, like the Figma file. */
@@ -43,113 +43,221 @@ button{font:inherit;color:inherit;cursor:pointer}
 .btn-p:disabled{opacity:.35;cursor:not-allowed}
 .link{background:none;border:0;padding:0;text-decoration:underline;font-weight:700;font-size:14px}
 
-/* ================= LP ================= */
-.hero{background:var(--bar);color:#fff;padding-block:40px 120px;position:relative;overflow:hidden}
-.hero-img{position:absolute;inset:0 0 0 38%;background:radial-gradient(60% 70% at 70% 45%, #6b3a1a 0%, #2b1709 45%, #000 80%)}
-.hero-img::after{content:"zdjęcie: para ogląda film na laptopie";position:absolute;right:24px;bottom:96px;font-size:11px;color:#ffffff88;border:1px dashed #ffffff55;padding:2px 6px}
-.hero .wide{position:relative}
-.hero h1{font-size:clamp(30px,4.4vw,44px);line-height:1.12;margin:0 0 20px;font-weight:700;max-width:14ch;text-wrap:balance}
-.cd-l{font-size:12px;font-weight:700;margin-bottom:8px}
-.cd{display:flex;gap:10px}
-.cd div{background:var(--dark-3);border-radius:4px;width:56px;padding:8px 0 6px;text-align:center}
-.cd b{display:block;font-size:24px;font-variant-numeric:tabular-nums}
-.cd span{font-size:10px;color:#ccc}
+/* ================= LP (Figma node 6576:13806) ================= */
+.lp{--c-text:#232323; --c-text-light:#444; --c-disabled:#666; --c-active:#f15e00; --c-ghost:#f5f5f5; --c-input:#ccc; --c-divider:#eee; --c-bold-80:#333; --c-bold-90:#232323; font-size:14px; line-height:20px; color:var(--c-text)}
+.lp .in{max-width:1232px;margin:0 auto}
+.lp p{margin:0}
 
-.addr{background:#fff;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:20px 24px;margin-top:-88px;position:relative;z-index:2}
-.addr h2{margin:0 0 14px;font-size:22px;font-weight:700}
-.addr-row{display:grid;grid-template-columns:2fr 2fr 1fr 1fr auto;gap:10px}
-@media (max-width:820px){.addr-row{grid-template-columns:1fr 1fr}.addr-row .btn-p{grid-column:1 / -1}}
-.field{border:2px solid var(--line);border-radius:4px;padding:10px 12px;font:inherit;font-size:13px;background:#fff;color:var(--ink);width:100%;min-width:0}
-.addr-opt{display:flex;flex-direction:column;gap:8px;margin-top:12px;font-size:12px}
-.addr-opt label{display:flex;gap:8px;align-items:center}
-.addr-opt a{color:var(--info);font-weight:700}
+/* header – black */
+.lp-head{background:#000;color:#fff}
+.lp-head .hrow{max-width:1280px;margin:0 auto;display:flex;align-items:center;gap:12px;height:80px}
+.lp-head .left{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
+.lp-head .logo{display:flex;align-items:center;gap:20px;padding-left:24px}
+.lp-head .logo img{width:40px;height:40px;display:block}
+.lp-head .market{display:flex;align-items:center;gap:4px;height:80px;padding-right:16px;font-weight:700;font-size:16px;line-height:22px;white-space:nowrap}
+.lp-head .market img{width:24px;height:24px}
+.lp-head nav{display:flex;min-width:0;overflow:hidden}
+.lp-head nav span{padding:16px 20px 15px;font-weight:700;font-size:16px;line-height:22px;white-space:nowrap}
+.lp-head nav .on{color:#ff7900}
+.lp-head .right{display:flex;align-items:center;height:80px;padding:0 24px;border-left:1px solid #232323}
+.lp-head .tool{display:flex;flex-direction:column;align-items:center;gap:8px;padding:10px 12px;font-weight:700;font-size:10px;line-height:16px}
+.lp-head .tool img{width:24px;height:24px}
+@media (max-width:980px){.lp-head nav{display:none}}
+@media (max-width:560px){.lp-head .market{display:none}.lp-head .right{padding:0 8px}}
 
-.offers{padding-block:40px 56px;text-align:center}
-.offers h2{font-size:26px;margin:0 0 4px;font-weight:700}
-.offers .sub{font-size:13px;margin:0 0 20px}
-.offers .sub a{color:var(--ink);font-weight:700}
-.toggles{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:660px;margin:0 auto 18px}
-@media (max-width:600px){.toggles{grid-template-columns:1fr}}
-.tgl{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--grey-2);border-radius:6px;padding:10px 14px;text-align:left;cursor:pointer}
-.tgl b{display:block;font-size:13px}
-.tgl span{font-size:12px}
+/* banner */
+.lp-banner{background:#000;position:relative;overflow:hidden;padding-bottom:24px}
+.lp-banner .bg{position:absolute;left:50%;top:0;width:1920px;height:862px;transform:translateX(-50%);overflow:hidden;background:#000}
+.lp-banner .bg i{position:absolute;width:2314px;height:744px;left:calc(50% + 341px);top:-48px;transform:translateX(-50%) scaleX(-1);background:url("assets/lp/hero.jpg") center/cover no-repeat}
+.lp-banner .bg i::after{content:"";position:absolute;inset:0;background-image:url("data:image/svg+xml;utf8,<svg viewBox='0 0 2314 744' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect x='0' y='0' height='100%' width='100%' fill='url(%23grad)' opacity='1'/><defs><radialGradient id='grad' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(124.2 4.65 -1.4951 39.933 1052.5 325.5)'><stop stop-color='rgba(0,0,0,0)' offset='0'/><stop stop-color='rgba(0,0,0,0)' offset='0.4456'/><stop stop-color='rgba(0,0,0,0.8)' offset='0.85613'/><stop stop-color='rgba(0,0,0,1)' offset='1'/></radialGradient></defs></svg>"), linear-gradient(90deg, rgba(0,0,0,.2), rgba(0,0,0,.2));background-size:100% 100%}
+.lp-crumb{position:relative;background:#000;border-top:2px solid #232323;padding-block:12px;backdrop-filter:blur(12px)}
+.lp-crumb p{font-weight:700;font-size:16px;line-height:22px;color:#ddd}
+.lp-hero{position:relative;display:flex;gap:40px;align-items:center;min-height:250px;padding-block:20px}
+.lp-hero .txt{flex:1;min-width:0;padding-block:24px}
+.lp-hero h1{margin:0;color:#fff;font-weight:700;font-size:50px;line-height:54px}
+.lp-hero .sp{height:24px}
+.lp-hero .imgh{width:498px;height:438px;flex:none}
+@media (max-width:980px){.lp-hero .imgh{display:none}.lp-hero{min-height:360px}}
+@media (max-width:560px){.lp-hero h1{font-size:34px;line-height:38px}}
+.cnt-l{font-weight:700;color:#fff;margin-bottom:6px}
+.cnt{display:flex;gap:12px;text-align:center}
+.cnt div{background:var(--c-bold-80);border-radius:8px;padding:8px 16px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:68px}
+.cnt b{font-size:34px;line-height:38px;color:#fff;font-variant-numeric:tabular-nums}
+.cnt span{font-weight:500;color:#ddd}
+
+.wwt{position:relative;background:#fff;border-radius:8px;filter:drop-shadow(0 4px 2px rgba(0,0,0,.25));padding:24px 32px;display:flex;flex-direction:column;gap:24px}
+.wwt h2{margin:0;font-weight:700;font-size:30px;line-height:34px;color:var(--c-text)}
+.wwt .rowi{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.fld{position:relative;display:flex;align-items:center;gap:12px;border:2px solid var(--c-input);border-radius:8px;padding:18px;background:#fff;min-width:0;cursor:pointer}
+.fld.grow{flex:1 1 200px}
+.fld.w160{flex:0 0 160px}
+.fld.dis{background:var(--c-divider);cursor:not-allowed}
+.fld .lab{font-weight:500;color:var(--c-disabled);white-space:nowrap;pointer-events:none}
+.fld .lab i{font-style:normal;color:var(--c-active);margin-left:2px}
+.fld .val{font-weight:500;color:var(--c-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fld select{position:absolute;inset:0;opacity:0;cursor:inherit;width:100%}
+.fld input{position:absolute;inset:0;border:0;background:transparent;padding:0 18px;font:inherit;font-weight:500;color:var(--c-text);border-radius:8px;outline:none;width:100%}
+.fld input:not(:placeholder-shown) + .lab{visibility:hidden}
+.fld:focus-within{border-color:var(--c-active)}
+.fld .arr{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:var(--c-ghost);border-radius:4px;padding:6px;display:flex;pointer-events:none}
+.fld.dis .arr{background:var(--c-divider)}
+.fld .arr img{width:18px;height:18px;display:block}
+.btn-brand{background:var(--c-active);color:#fff;border:0;border-radius:8px;padding:12px 24px;font-weight:700;font-size:16px;line-height:22px;white-space:nowrap}
+.chk{display:flex;gap:8px;align-items:flex-start;cursor:pointer;font-weight:500}
+.chk input{position:absolute;opacity:0;width:1px;height:1px}
+.chk .box{width:24px;height:24px;border:2px solid var(--c-input);border-radius:4px;flex:none;display:grid;place-items:center}
+.chk input:checked + .box{background:var(--c-active);border-color:var(--c-active)}
+.chk input:checked + .box::after{content:"";width:10px;height:6px;border:solid #fff;border-width:0 0 2.5px 2.5px;transform:translateY(-1px) rotate(-45deg)}
+.chk span:last-child{padding-top:2px}
+.chk:has(input:focus-visible) .box{outline:3px solid var(--c-active);outline-offset:2px}
+.note{display:flex;gap:8px;align-items:flex-start;font-weight:500}
+.note img{width:20px;height:20px;flex:none}
+.note a{color:var(--c-text);font-weight:700}
+
+/* offers */
+.lp-offers{background:#fff;padding-block:24px}
+.lp-offers .top{display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center}
+.lp-offers h2{margin:0;font-weight:700;font-size:30px;line-height:34px}
+.lp-offers .sub{font-weight:500;margin-top:8px}
+.lp-offers .sub a{color:inherit;font-weight:500}
+.tgls{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;width:100%}
+.tgl{background:var(--c-ghost);border-radius:4px;padding:12px 16px;display:flex;gap:16px;align-items:center;width:400px;max-width:100%;text-align:left;cursor:pointer}
+.tgl .t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.tgl .t b{font-weight:700}
+.tgl .t span{color:var(--c-text-light);font-weight:500}
+.tgl .t span u{font-weight:700;text-decoration:underline}
 .tgl input{position:absolute;opacity:0;width:1px;height:1px}
-.sw{width:40px;height:22px;border-radius:11px;background:#bbb;position:relative;flex:none;transition:background .2s}
-.sw::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .2s}
-.tgl input:checked + .sw{background:var(--check)}
-.tgl input:checked + .sw::after{transform:translateX(18px)}
-.tgl:has(input:focus-visible){outline:3px solid var(--orange);outline-offset:2px}
-.period-l{font-size:13px;font-weight:700;margin-bottom:8px}
-.seg{display:inline-grid;grid-template-columns:1fr 1fr;gap:12px;width:min(500px,100%);margin-bottom:24px}
-.seg button{background:#fff;border:2px solid var(--line);border-radius:4px;padding:8px;font-weight:700;font-size:13px}
-.seg button[aria-pressed="true"]{border-color:var(--orange)}
-.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;text-align:center}
-@media (max-width:900px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:480px){.tiles{grid-template-columns:minmax(0,1fr)}}
-.ot{border:2px solid var(--line);border-radius:8px;padding:24px 16px 16px;display:flex;flex-direction:column;align-items:center;gap:6px;transition:border-color .15s, box-shadow .15s}
-.ot:hover{border-color:var(--orange);box-shadow:0 4px 16px rgba(0,0,0,.08)}
-.ot .g{display:block;width:60px;height:60px}
-.ot .g svg{width:60px;height:60px;display:block}
-.chip svg{width:18px;height:18px;flex:none}
-.ot .k{font-size:13px;margin-top:8px}
-.ot h3{font-size:24px;margin:0;font-weight:700}
-.chip{display:inline-flex;gap:6px;align-items:center;background:var(--grey);font-size:11px;font-weight:700;padding:3px 8px;border-radius:2px}
-.ot .price{margin-top:14px;font-size:13px}
-.ot .price b{font-size:26px;color:var(--orange);font-variant-numeric:tabular-nums}
-.ot .fine{font-size:10px;color:var(--muted);min-height:2.6em}
-.ot .extra{font-size:11px;font-weight:700;color:var(--plus);min-height:1.4em}
-.ot .btn-p{width:100%;margin-top:6px;font-size:14px;padding:10px}
+.tgl .sw{width:48px;padding:2px;border-radius:24px;background:var(--c-input);display:flex;justify-content:flex-start;flex:none;transition:background .2s}
+.tgl .sw i{width:24px;height:24px;border-radius:40px;background:#fff;display:grid;place-items:center;transition:transform .2s}
+.tgl .sw i::after{content:"";width:9px;height:5px;border:solid #32c832;border-width:0 0 2px 2px;transform:translateY(-1px) rotate(-45deg);opacity:0}
+.tgl input:checked + .sw{background:#32c832}
+.tgl input:checked + .sw i{transform:translateX(20px)}
+.tgl input:checked + .sw i::after{opacity:1}
+.tgl:has(input:focus-visible){outline:3px solid var(--c-active);outline-offset:2px}
+.czas{display:flex;flex-direction:column;align-items:center;gap:8px;width:100%}
+.czas > p{font-weight:700;font-size:16px;line-height:22px}
+.czas .opts{display:flex;gap:16px;justify-content:center;width:100%;flex-wrap:wrap}
+.czas button{width:296px;max-width:100%;background:#fff;border:2px solid var(--c-input);border-radius:8px;padding:16px;font-weight:700;font-size:14px;line-height:20px;color:var(--c-text)}
+.czas button[aria-pressed="true"]{border-color:var(--c-active)}
+.dishes{display:grid;grid-template-columns:repeat(4,minmax(0,294px));gap:16px;justify-content:center;margin-top:16px;padding-bottom:24px}
+@media (max-width:1260px){.dishes{grid-template-columns:repeat(2,minmax(0,294px))}}
+@media (max-width:640px){.dishes{grid-template-columns:minmax(0,294px)}}
+.dish{border:2px solid var(--c-input);border-radius:8px;overflow:hidden;background:#fff}
+.dish .c{display:flex;flex-direction:column;align-items:center;gap:16px;padding:32px 20px 24px}
+.dish .g{width:60px;height:60px;display:block}
+.dish .g svg{width:60px;height:60px;display:block}
+.dish .el{display:flex;flex-direction:column;align-items:center;gap:0;width:100%;text-align:center}
+.dish .el .k{font-weight:500;color:var(--c-text-light)}
+.dish .el h3{margin:0;font-weight:700;font-size:30px;line-height:34px;color:var(--c-text);white-space:nowrap}
+.dish .stk{display:inline-flex;align-items:center;gap:8px;background:var(--c-divider);border-radius:4px;padding:4px 8px;font-weight:700;font-size:12px;line-height:18px}
+.dish .stk svg{width:18px;height:18px;flex:none}
+.dish .pr{display:flex;flex-direction:column;align-items:center;padding-block:6px;font-weight:700;text-align:center;width:100%}
+.dish .pr .hrow{display:flex;flex-wrap:wrap;gap:4px;align-items:baseline;justify-content:center;white-space:nowrap}
+.dish .pr .od, .dish .pr .cur{font-size:18px;line-height:24px;color:var(--c-text-light)}
+.dish .pr .v{font-size:34px;line-height:38px;color:var(--c-active);font-variant-numeric:tabular-nums}
+.dish .pr .fine{font-size:12px;line-height:18px;color:var(--c-text-light)}
+.dish .cta{width:100%;background:#ff7900;color:#000;border:0;border-radius:8px;height:46px;font-weight:700;font-size:16px;line-height:22px}
+.dish .cta:hover{background:#f16e00}
 
-.why{background:var(--bar);color:#fff;padding-block:40px 32px}
-.why h2{font-size:26px;margin:0 0 20px;font-weight:700}
-.why-big{border-radius:8px;min-height:300px;padding:32px;display:flex;flex-direction:column;justify-content:center;gap:12px;background:radial-gradient(50% 80% at 78% 50%, #3a3a3a 0%, #111 60%);position:relative}
-.why-big h3{font-size:28px;margin:0;font-weight:700}
-.why-big ul{margin:0;padding-left:18px;font-size:13px;font-weight:700;display:flex;flex-direction:column;gap:6px}
-.why-big li::marker{color:var(--orange)}
-.why-big .btn-s{align-self:flex-start}
-.ph{position:absolute;right:16px;bottom:12px;font-size:11px;color:#ffffff88;border:1px dashed #ffffff55;padding:2px 6px}
-.why-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}
-@media (max-width:760px){.why-row{grid-template-columns:minmax(0,1fr)}}
-.why-c{border-radius:8px;min-height:190px;padding:20px;display:flex;flex-direction:column;justify-content:space-between;gap:12px;background:linear-gradient(135deg,#2c2c2c,#121212);position:relative}
-.why-c h3{font-size:17px;margin:0;font-weight:700;max-width:18ch}
-.why-c h3 em{color:var(--orange);font-style:normal}
-.why-c .btn-s{align-self:flex-start;background:#fff;color:#000;border-color:#fff}
-.why-bar{display:flex;justify-content:space-between;align-items:center;gap:12px;background:var(--dark-3);border-radius:6px;padding:10px 14px;margin-top:12px;font-size:12px;font-weight:700}
-.why-bar .btn-s{background:#fff;color:#000;border-color:#fff;min-width:160px}
+/* why orange */
+.lp-why{background:#000;padding:40px 0 20px}
+.lp-why .in{display:flex;flex-direction:column;gap:32px}
+.lp-why h2{margin:0;color:#fff;font-weight:700;font-size:30px;line-height:34px}
+.lp-why .cards{display:flex;flex-direction:column;gap:16px}
+.wo{position:relative;border:2px solid var(--c-bold-90);border-radius:8px;overflow:hidden;display:flex;align-items:center}
+.wo .bgl{position:absolute;right:-2px;bottom:-2px;overflow:hidden;background:var(--c-bold-90)}
+.wo-big{height:390px}
+.wo-big .bgl{width:1232px;height:390px}
+.wo-big .bgl i{position:absolute;right:0;bottom:-78px;width:1232px;height:551px;border-radius:15px;background:url("assets/lp/why-funbox.jpg") center/cover no-repeat}
+.wo-big .bgl i::after{content:"";position:absolute;inset:0;border-radius:15px;background-image:url("data:image/svg+xml;utf8,<svg viewBox='0 0 1232 551' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect x='0' y='0' height='100%' width='100%' fill='url(%23grad)' opacity='0.5'/><defs><radialGradient id='grad' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(-43.15 0.85 -1.9005 -96.481 838.5 267.5)'><stop stop-color='rgba(0,0,0,0)' offset='0'/><stop stop-color='rgba(0,0,0,0)' offset='0.49239'/><stop stop-color='rgba(0,0,0,1)' offset='1'/></radialGradient></defs></svg>");background-size:100% 100%}
+.wo-big .ih{position:relative;flex:1;min-width:0;display:flex;flex-direction:column;gap:24px;justify-content:center;padding:40px 0 40px 32px;height:100%}
+.wo-big h3{margin:0;color:#fff;font-weight:700;font-size:34px;line-height:38px}
+.wo-big ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.wo-big li{display:flex;gap:8px;color:#fff;font-weight:700}
+.wo-big li::before{content:"";width:8px;height:8px;border-radius:4px;background:var(--c-active);flex:none;margin-top:6px}
+.wo-big .sph{width:608px;flex:none}
+.btn-ter{align-self:flex-start;background:var(--c-ghost);color:var(--c-text);border:0;border-radius:8px;padding:12px 24px;font-weight:700;font-size:16px;line-height:22px}
+.wo-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:900px){.wo-row{grid-template-columns:minmax(0,1fr)}.wo-big .sph{width:30%}}
+.wo-sm{height:256px;min-height:256px}
+.wo-sm .bgl{width:615px;height:256px}
+.wo-sm .ih{position:relative;flex:1;min-width:0;display:flex;flex-direction:column;gap:16px;padding:40px 0 40px 16px;height:100%}
+.wo-sm .ih p{flex:1;color:#fff;font-weight:700;font-size:20px;line-height:26px}
+.wo-sm .ih p em{font-style:normal;color:var(--c-active)}
+.wo-sm .sph{width:140px;flex:none}
+.wo-1 .bgl{background:linear-gradient(270deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.6) 50%), linear-gradient(90deg, rgba(0,0,0,.2), rgba(0,0,0,.2)), #232323}
+.wo-1 .bgl i{position:absolute;bottom:0;left:calc(50% + 107.5px);transform:translateX(-50%);width:506px;height:256px;background:url("assets/lp/why-gamer.jpg") center/cover no-repeat}
+.wo-1 .bgl i::after{content:"";position:absolute;inset:0;background:linear-gradient(-90deg, rgba(0,0,0,0) 14.723%, rgba(0,0,0,0) 37.359%, rgba(0,0,0,.57) 56.522%), linear-gradient(90deg, rgba(0,0,0,.2), rgba(0,0,0,.2))}
+.wo-2 .bgl i{position:absolute;bottom:0;left:calc(50% + 82.5px);transform:translateX(-50%);width:508px;height:256px;background:url("assets/lp/why-remote.jpg") center/cover no-repeat}
+.wo-2 .bgl i::after{content:"";position:absolute;inset:0;background-image:url("data:image/svg+xml;utf8,<svg viewBox='0 0 508 256' xmlns='http://www.w3.org/2000/svg' preserveAspectRatio='none'><rect x='0' y='0' height='100%' width='100%' fill='url(%23grad)' opacity='0.6000000238418579'/><defs><radialGradient id='grad' gradientUnits='userSpaceOnUse' cx='0' cy='0' r='10' gradientTransform='matrix(-22.3 -0.35 0.37002 -23.575 404 141)'><stop stop-color='rgba(0,0,0,0)' offset='0'/><stop stop-color='rgba(0,0,0,0)' offset='0.50512'/><stop stop-color='rgba(0,0,0,1)' offset='0.90497'/></radialGradient></defs></svg>"), linear-gradient(90deg, rgba(0,0,0,.3), rgba(0,0,0,.3));background-size:100% 100%}
+.wo-2 .bgl b{position:absolute;left:0;top:0;width:240.121px;height:256px;background:linear-gradient(90deg, #261810 78.815%, rgba(38,24,16,0))}
+.wo-3 .bgl b{position:absolute;left:215px;top:-8px;width:403px;height:271px;background:#101010}
+.wo-3 .bgl img{position:absolute;bottom:60px;left:calc(50% + 205px);transform:translateX(-50%);width:241px;height:136px;object-fit:cover}
+.inbar{background:var(--c-bold-80);border-radius:8px;padding:16px 20px;display:flex;gap:16px;align-items:center}
+.inbar p{flex:1;min-width:0;color:#fff;font-weight:700}
+.inbar button{background:var(--c-ghost);border:0;border-radius:4px;padding:6px 16px;width:256px;max-width:45%;font-weight:700;font-size:14px;line-height:20px;color:var(--c-text)}
 
-.power{padding-block:40px 24px}
-.power h2{text-align:center;font-size:24px;margin:0 0 20px;font-weight:700}
-.arts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;max-width:820px;margin:0 auto}
-@media (max-width:700px){.arts{grid-template-columns:minmax(0,1fr)}}
-.art{border:1px solid var(--line-soft);border-radius:4px;overflow:hidden;display:flex;flex-direction:column}
-.art .in{padding:12px;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
-.art .tag{background:#000;color:#fff;font-size:10px;font-weight:700;padding:2px 6px}
-.art h3{font-size:15px;margin:0;font-weight:700}
-.art p{font-size:12px;color:var(--muted);margin:0}
-.art .img{aspect-ratio:1/1;max-width:100%;background:linear-gradient(160deg,#cfcfcf,#8a8a8a);display:grid;place-items:end start;padding:8px;font-size:10px;color:#fff}
+/* articles */
+.lp-arts{background:#fff;padding-top:16px}
+.lp-arts h2{margin:0;padding:0 20px 16px;text-align:center;font-weight:700;font-size:24px;line-height:28px}
+.lp-arts .grid3{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;padding:0 8px}
+.bc{width:261px;min-height:450px;border:2px solid var(--c-divider);border-radius:8px;padding:2px;display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;background:#fff}
+.bc .h{display:flex;flex-direction:column;gap:8px;align-items:flex-start;padding:16px;min-height:189px}
+.bc .stk{background:var(--c-bold-80);color:#fff;border-radius:4px;padding:4px 8px;font-weight:700;font-size:12px;line-height:18px}
+.bc h3{margin:0;font-weight:700;font-size:20px;line-height:26px;color:var(--c-text)}
+.bc .tx{display:flex;flex-direction:column;gap:8px;min-height:83px;width:100%}
+.bc .tx p{font-weight:500;color:var(--c-text-light)}
+.btn-sec{background:#fff;border:2px solid var(--c-bold-90);border-radius:4px;padding:6px 16px;font-weight:700;font-size:14px;line-height:20px;color:var(--c-text)}
+.bc .img{position:relative;width:257px;height:254px;border-radius:6px;overflow:hidden;flex:none}
+.bc .img img{position:absolute;top:0;height:254px;object-fit:cover}
+.bc .img .base{inset:0;width:100%;height:100%}
 
-.faq{padding-block:24px 48px}
-.faq-in{max-width:820px;margin:0 auto}
-.tabs{display:grid;grid-template-columns:1fr 1fr;border:2px solid #000;border-radius:4px;overflow:hidden;margin-bottom:12px}
-.tabs button{border:0;background:#fff;padding:8px;font-weight:700;font-size:13px}
-.tabs button[aria-selected="true"]{background:#000;color:#fff}
-.faq details{border-bottom:1px solid var(--line-soft)}
-.faq summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 4px;font-weight:700;font-size:14px;cursor:pointer}
-.faq summary::-webkit-details-marker{display:none}
-.faq summary::after{content:"+";width:28px;height:28px;display:grid;place-items:center;background:var(--grey);border-radius:4px;font-size:18px;flex:none}
-.faq details[open] summary::after{content:"–"}
-.faq details p{margin:0 4px 16px;font-size:14px;color:var(--muted);max-width:65ch}
-.faq .more{display:block;margin:20px auto 0;background:var(--grey);border:0;border-radius:4px;padding:10px 36px;font-weight:700}
-.more-l{max-width:1200px;margin:0 auto;padding-block:8px 32px}
-.more-l h2{font-size:20px;margin:0 0 8px}
-.more-l p{font-size:12px;color:var(--muted);margin:0;max-width:110ch}
+/* faq */
+.lp-faq{background:#fff;padding-block:32px;display:flex;flex-direction:column;align-items:center;gap:16px}
+.lp-faq .w{max-width:1024px;width:100%;display:flex;flex-direction:column;gap:24px}
+.seg2{display:flex}
+.seg2 button{flex:1;border:2px solid var(--c-input);background:#fff;padding:8px 18px;font-weight:700;font-size:14px;line-height:20px;color:var(--c-text)}
+.seg2 button:first-child{border-radius:8px 0 0 8px;margin-right:-2px}
+.seg2 button:last-child{border-radius:0 8px 8px 0}
+.seg2 button[aria-selected="true"]{background:var(--c-bold-90);border-color:var(--c-bold-90);color:#fff;position:relative;z-index:1}
+.faql{display:flex;flex-direction:column;gap:20px}
+.faql hr{border:0;height:2px;background:var(--c-divider);margin:0}
+.faql details summary{list-style:none;display:flex;gap:16px;align-items:center;cursor:pointer;font-weight:700;font-size:16px;line-height:22px}
+.faql details summary::-webkit-details-marker{display:none}
+.faql details summary span{flex:1}
+.faql .pl{background:var(--c-ghost);border-radius:4px;padding:6px;display:flex;flex:none}
+.faql .pl img{width:18px;height:18px;display:block;transition:transform .2s}
+.faql details[open] .pl img{transform:rotate(45deg)}
+.faql details p{margin-top:12px;font-weight:500;color:var(--c-text-light);max-width:70ch}
+.lp-faq .more{background:var(--c-ghost);border:0;border-radius:8px;padding:12px 24px;width:277px;font-weight:700;font-size:16px;line-height:22px;color:var(--c-text)}
 
-.foot{background:var(--bar);color:#fff;padding-block:28px 20px;font-size:11px}
-.foot-cols{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
-@media (max-width:640px){.foot-cols{grid-template-columns:1fr 1fr}}
-.foot b{display:block;font-size:12px;margin-bottom:8px}
-.foot span{display:block;color:#ccc;margin-bottom:4px}
-.foot .copy{margin-top:20px;color:#999}
+/* seo */
+.lp-seo{background:#fff;padding-block:20px;display:flex;flex-direction:column;gap:8px}
+.lp-seo h2{margin:0;font-weight:700;font-size:24px;line-height:28px}
+.lp-seo p{font-weight:500;color:var(--c-text-light)}
+.lp-seo p a{color:inherit;font-weight:700}
+
+/* footer */
+.lp-foot{background:#000;color:#fff;display:flex;flex-direction:column;gap:16px}
+.lp-foot .sec{padding:0 20px;max-width:1280px}
+.lp-foot .cols{display:flex;padding-top:20px;flex-wrap:wrap}
+.lp-foot .col{display:flex;flex-direction:column;gap:8px;padding:10px 20px 10px 0;flex:1 1 160px;white-space:nowrap}
+.lp-foot .col:first-child{flex:0 0 214px}
+.lp-foot .col b{font-size:14px;line-height:20px}
+.lp-foot .col span{font-weight:500;font-size:12px;line-height:18px;color:#ccc}
+.lp-foot .dv{height:2px;background:#232323;max-width:1240px}
+.lp-foot .mid{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-block:16px}
+.lp-foot .lk{display:flex;gap:40px;flex:1;flex-wrap:wrap;min-width:0}
+.lp-foot .lk span{display:flex;gap:15px;align-items:center;font-weight:700;font-size:16px;line-height:22px;white-space:nowrap}
+.lp-foot .lk img{width:24px;height:24px}
+.lp-foot .soc{display:flex;gap:16px}
+.lp-foot .soc span{width:40px;height:40px;border:2px solid #fff;border-radius:90px;display:grid;place-items:center}
+.lp-foot .soc img{width:24px;height:24px}
+.lp-foot .small{display:flex;flex-direction:column;gap:6px;padding-bottom:0}
+.lp-foot .small div{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.lp-foot .small span{font-weight:500;font-size:12px;line-height:18px;color:#ccc;white-space:nowrap}
+.lp-foot .small i{width:1px;height:15px;background:#232323}
+.lp-foot .copy{font-weight:500;font-size:12px;line-height:18px;color:#ccc;padding:26px 20px 20px}
 
 /* ================= loading ================= */
 .loading{min-height:100vh;display:grid;place-items:center;text-align:center;padding-block:40px}
@@ -280,115 +388,178 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 </div>
 
 <!-- ================= LP ================= -->
-<div id="view-lp">
-  <section class="hero gutter">
-    <div class="hero-img" aria-hidden="true"></div>
-    <div class="wide">
-      <h1>Światłowód nawet 12×0 i Netflix na 3 mies. w prezencie</h1>
-      <div class="cd-l">Do końca promocji pozostało</div>
-      <div class="cd" aria-label="Czas do końca promocji">
-        <div><b id="cd-d">00</b><span>dni</span></div>
-        <div><b id="cd-h">00</b><span>godz.</span></div>
-        <div><b id="cd-m">00</b><span>min.</span></div>
-        <div><b id="cd-s">00</b><span>sek.</span></div>
+<div id="view-lp" class="lp">
+  <header class="lp-head">
+    <div class="hrow">
+      <div class="left">
+        <div class="logo"><img src="assets/lp/h-logo.svg" alt="Orange"><span class="market">Klient indywidualny <img src="assets/lp/h-arrow.svg" alt=""></span></div>
+        <nav aria-label="Menu serwisu"><span>Oferta</span><span>Sklep</span><span>Пропозиція / Offer</span><span class="on">Pomoc</span><span>Kontakt</span></nav>
+      </div>
+      <div class="right">
+        <span class="tool"><img src="assets/lp/h-search.svg" alt="">Szukaj</span>
+        <span class="tool"><img src="assets/lp/h-avatar.svg" alt="">Zaloguj</span>
+      </div>
+    </div>
+  </header>
+
+  <section class="lp-banner">
+    <div class="bg" aria-hidden="true"><i></i></div>
+    <div class="lp-crumb gutter"><div class="in"><p>Lorem ipsum dolor sit amet</p></div></div>
+    <div class="gutter">
+      <div class="in">
+        <div class="lp-hero">
+          <div class="txt">
+            <h1>Światłowód nawet 12×0<br>i Netflix na 3 mies.<br>w prezencie</h1>
+            <div class="sp"></div>
+            <p class="cnt-l">Do końca promocji pozostało</p>
+            <div class="cnt" aria-label="Czas do końca promocji">
+              <div><b id="cd-d">00</b><span>dni</span></div>
+              <div><b id="cd-h">00</b><span>godz.</span></div>
+              <div><b id="cd-m">00</b><span>min.</span></div>
+              <div><b id="cd-s">00</b><span>sek.</span></div>
+            </div>
+          </div>
+          <div class="imgh" aria-hidden="true"></div>
+        </div>
+        <form class="wwt" id="addr" onsubmit="return false" aria-labelledby="addr-h">
+          <h2 id="addr-h">Sprawdź, czy jesteś w zasięgu</h2>
+          <div class="rowi">
+            <label class="fld grow" id="f-city">
+              <span class="lab">Miejscowość<i>*</i></span>
+              <select id="a-city" aria-label="Miejscowość"><option value=""></option><option>Warszawa</option><option>Kraków</option><option>Gdańsk</option><option>Wrocław</option></select>
+              <span class="arr"><img src="assets/lp/select-arrow.svg" alt=""></span>
+            </label>
+            <label class="fld grow dis" id="f-street">
+              <span class="lab">Ulica<i>*</i></span>
+              <select id="a-street" aria-label="Ulica" disabled><option value=""></option><option>Marszałkowska</option><option>Długa</option><option>Polna</option></select>
+              <span class="arr"><img src="assets/lp/select-arrow-disabled.svg" alt=""></span>
+            </label>
+            <label class="fld w160 dis" id="f-no"><input id="a-no" placeholder=" " aria-label="Numer domu" disabled><span class="lab">Nr domu<i>*</i></span></label>
+            <label class="fld w160 dis" id="f-flat"><input id="a-flat" placeholder=" " aria-label="Numer lokalu" disabled><span class="lab">Nr lokalu</span></label>
+            <button class="btn-brand" type="button" id="show-offers">Pokaż oferty</button>
+          </div>
+          <label class="chk"><input type="checkbox" id="a-nostreet"><span class="box" aria-hidden="true"></span><span>W mojej miejscowości nie ma ulicy</span></label>
+          <p class="note"><img src="assets/lp/protection.svg" alt=""><span><a href="#addr">Przetwarzanie danych osobowych</a>, w tym adresu, służy jedynie do dopasowania oferty.</span></p>
+        </form>
       </div>
     </div>
   </section>
 
-  <div class="gutter">
-    <div class="wide">
-      <form class="addr" id="addr" onsubmit="return false" aria-labelledby="addr-h">
-        <h2 id="addr-h">Sprawdź, czy jesteś w zasięgu</h2>
-        <div class="addr-row">
-          <select class="field" id="a-city" aria-label="Miejscowość"><option>Miejscowość *</option><option>Warszawa</option><option>Kraków</option><option>Gdańsk</option></select>
-          <select class="field" id="a-street" aria-label="Ulica"><option>Ulica *</option><option>Marszałkowska</option><option>Długa</option></select>
-          <input class="field" id="a-no" placeholder="Nr domu *" aria-label="Numer domu">
-          <input class="field" id="a-flat" placeholder="Nr lokalu" aria-label="Numer lokalu">
-          <button class="btn-p sm" type="button" id="show-offers">Pokaż oferty</button>
+  <section class="lp-offers gutter" id="offers" aria-labelledby="off-h">
+    <div class="in">
+      <div class="top">
+        <div>
+          <h2 id="off-h">Przykładowe oferty ze światłowodem</h2>
+          <p class="sub">Przedłużasz umowę? <a href="#offers">Zaloguj się</a>, by poznać oferty</p>
         </div>
-        <div class="addr-opt">
-          <label><input type="checkbox" id="a-nostreet"> W mojej miejscowości nie ma ulicy</label>
-          <span><a href="#addr">Przetwarzanie danych osobowych</a>, w tym adresu, służy jedynie do dopasowania oferty.</span>
+        <div class="tgls">
+          <label class="tgl"><span class="t"><b>Telewizja i Amazon Prime</b><span>209 kanałów <u>Szczegóły</u></span></span><input type="checkbox" id="lp-tv" checked><span class="sw" aria-hidden="true"><i></i></span></label>
+          <label class="tgl"><span class="t"><b>Netflix</b><span>nawet 12 mies. za 0 zł</span></span><input type="checkbox" id="lp-nfx"><span class="sw" aria-hidden="true"><i></i></span></label>
         </div>
-      </form>
-    </div>
-  </div>
-
-  <section class="offers gutter" id="offers" aria-labelledby="off-h">
-    <div class="wide">
-      <h2 id="off-h">Przykładowe oferty ze światłowodem</h2>
-      <p class="sub">Przedłużasz umowę? <a href="#offers">Zaloguj się</a>, by poznać oferty</p>
-      <div class="toggles">
-        <label class="tgl"><span><b>Telewizja z Amazon Prime</b><span>209 kanałów <u>Szczegóły</u></span></span><input type="checkbox" id="lp-tv"><span class="sw" aria-hidden="true"></span></label>
-        <label class="tgl"><span><b>Netflix</b><span>nawet 12 mies. za 0 zł</span></span><input type="checkbox" id="lp-nfx"><span class="sw" aria-hidden="true"></span></label>
+        <div class="czas">
+          <p id="period-l">Czas trwania umowy</p>
+          <div class="opts" role="group" aria-labelledby="period-l">
+            <button type="button" data-period="24" aria-pressed="true">24 miesiące</button>
+            <button type="button" data-period="bez" aria-pressed="false">Bezterminowo</button>
+          </div>
+        </div>
       </div>
-      <div class="period-l" id="period-l">Czas trwania umowy</div>
-      <div class="seg" role="group" aria-labelledby="period-l">
-        <button type="button" data-period="24" aria-pressed="true">24 miesiące</button>
-        <button type="button" data-period="bez" aria-pressed="false">Bezterminowo</button>
-      </div>
-      <div class="tiles" id="tiles"></div>
+      <div class="dishes" id="tiles"></div>
     </div>
   </section>
 
-  <section class="why gutter" aria-labelledby="why-h">
-    <div class="wide">
+  <section class="lp-why gutter" aria-labelledby="why-h">
+    <div class="in">
       <h2 id="why-h">Dlaczego warto wybrać światłowód Orange?</h2>
-      <div class="why-big">
-        <h3>Najlepsze Wi‑Fi w Twoim domu</h3>
-        <ul><li>Wi‑Fi 7 – szybko, stabilnie, od laptopa i konsoli, po kamery i smart głośniki</li><li>Niski ping, zero zacięć – do grania i streamingu</li><li>Masz wsparcie przez czat, infolinię lub apkę</li></ul>
-        <button class="btn-s" type="button">Szczegóły</button>
-        <span class="ph">zdjęcie: router Wi‑Fi 7</span>
+      <div class="cards">
+        <div class="wo wo-big">
+          <div class="bgl" aria-hidden="true"><i></i></div>
+          <div class="ih">
+            <h3>Najlepsze Wi‑Fi w Twoim domu</h3>
+            <ul><li>Wi‑Fi 7 – szybko, stabilnie, od laptopa i konsoli, po kamery i smart głośniki</li><li>Niski ping, zero zacięć – do grania i streamingu</li><li>Masz wsparcie przez czat, infolinię lub apkę</li></ul>
+            <button class="btn-ter" type="button">Szczegóły</button>
+          </div>
+          <div class="sph"></div>
+        </div>
+        <div class="wo-row">
+          <div class="wo wo-sm wo-1"><div class="bgl" aria-hidden="true"><i></i></div><div class="ih"><p>Najszybszy internet wg SpeedTest - idealny nie tylko dla graczy</p><button class="btn-ter" type="button">Szczegóły</button></div><div class="sph"></div></div>
+          <div class="wo wo-sm wo-2"><div class="bgl" aria-hidden="true"><i></i><b></b></div><div class="ih"><p>Poznaj telewizję od Orange - <em>nawet 209 kanałów TV</em> i wiele więcej</p><button class="btn-ter" type="button">Szczegóły</button></div><div class="sph"></div></div>
+          <div class="wo wo-sm wo-3"><div class="bgl" aria-hidden="true"><b></b><img src="assets/lp/why-netflix.jpg" alt=""></div><div class="ih"><p>Twój internet,<br>Twoje show nawet<br>na 6 mies. za 0 zł</p><button class="btn-ter" type="button">Szczegóły</button></div><div class="sph"></div></div>
+        </div>
       </div>
-      <div class="why-row">
-        <div class="why-c"><h3>Najszybszy internet wg SpeedTest – idealny nie tylko dla graczy</h3><button class="btn-s" type="button">Szczegóły</button><span class="ph">zdjęcie: gracz</span></div>
-        <div class="why-c"><h3>Poznaj telewizję od Orange – <em>nawet 209 kanałów TV</em> i wiele więcej</h3><button class="btn-s" type="button">Szczegóły</button><span class="ph">zdjęcie: pilot TV</span></div>
-        <div class="why-c"><h3>Twój internet, Twoje show nawet na 6 mies. za 0 zł</h3><button class="btn-s" type="button">Szczegóły</button><span class="ph">logo Netflix</span></div>
-      </div>
-      <div class="why-bar"><span>Dobrze? To sprawdź, czy jesteś w zasięgu.</span><button class="btn-s" type="button" id="why-check">Sprawdź</button></div>
+      <div class="inbar"><p>Dobre? To sprawdź, czy jesteś w zasięgu.</p><button type="button" id="why-check">Sprawdź</button></div>
     </div>
   </section>
 
-  <section class="power gutter" aria-labelledby="pw-h">
-    <div class="wide">
-      <h2 id="pw-h">Twój internet, Twoja moc</h2>
-      <div class="arts">
-        <article class="art"><div class="in"><span class="tag">Baza wiedzy</span><h3>Co to jest światłowód – co warto wiedzieć?</h3><p>Czyli wszystko, co musisz wiedzieć o tej technologii</p><button class="btn-s" type="button">Sprawdź</button></div><div class="img">zdjęcie</div></article>
-        <article class="art"><div class="in"><span class="tag">Wi‑Fi</span><h3>Standard Wi‑Fi 7 w Twoim domu</h3><p>Poznaj możliwości, jakie daje najnowszy standard Wi‑Fi</p><button class="btn-s" type="button">Sprawdź</button></div><div class="img">zdjęcie</div></article>
-        <article class="art"><div class="in"><span class="tag">Mocniejszy sygnał</span><h3>Internet do gier – jaki wybrać?</h3><p>Zobacz, jaki ping wystarczy do rozgrywki online</p><button class="btn-s" type="button">Sprawdź</button></div><div class="img">zdjęcie</div></article>
-      </div>
+  <section class="lp-arts gutter" aria-labelledby="pw-h">
+    <h2 id="pw-h">Twój internet, Twoja moc</h2>
+    <div class="grid3">
+      <article class="bc"><div class="h"><span class="stk">Baza wiedzy</span><div class="tx"><h3>Co to jest światłowód -<br>co warto wiedzieć?</h3><p>Czyli wszystko, co musisz wiedzieć o tej technologii</p></div><button class="btn-sec" type="button">Sprawdź</button></div><div class="img"><img class="base" src="assets/lp/card1-base.jpg" alt=""><img src="assets/lp/card1.jpg" alt="" style="left:0;width:380px"></div></article>
+      <article class="bc"><div class="h"><span class="stk">Wi-Fi</span><div class="tx"><h3>Standard Wi-Fi 7<br>w Twoim domu</h3><p>Poznaj możliwości, jakie daje najnowszy standard Wi-Fi</p></div><button class="btn-sec" type="button">Sprawdź</button></div><div class="img"><img class="base" src="assets/lp/card2-base.jpg" alt=""><img src="assets/lp/card2.jpg" alt="" style="left:-49px;width:381px"></div></article>
+      <article class="bc"><div class="h"><span class="stk">Wzmocnij sygnał</span><div class="tx"><h3>Internet do gier – jaki wybrać?</h3><p>Zobacz, jaki ping wystarczy do rozgrywki online</p></div><button class="btn-sec" type="button">Sprawdź</button></div><div class="img"><img class="base" src="assets/lp/card3-base.jpg" alt=""><img src="assets/lp/card3.jpg" alt="" style="left:-69px;width:381px"></div></article>
     </div>
   </section>
 
-  <section class="faq gutter" aria-label="Pytania i dokumenty">
-    <div class="faq-in">
-      <div class="tabs" role="tablist">
+  <section class="lp-faq gutter" aria-label="Pytania i dokumenty">
+    <div class="w">
+      <div class="seg2" role="tablist">
         <button type="button" role="tab" aria-selected="true" id="tab-faq">Najczęstsze pytania</button>
         <button type="button" role="tab" aria-selected="false" id="tab-doc">Dokumenty</button>
       </div>
-      <div id="faq-list">
-        <details><summary>Czym jest światłowód i jakie daje korzyści?</summary><p>To internet przesyłany wiązką światła. Daje wysokie i stabilne prędkości, także gdy w domu korzysta z sieci kilka osób naraz.</p></details>
-        <details><summary>Mam już światłowód – czy mogę zmienić prędkość?</summary><p>Tak, prędkość możesz zmienić w trakcie umowy. Szczegóły zależą od Twojego adresu i oferty.</p></details>
-        <details><summary>Czy mogę przenieść swój numer telefonu do Orange razem z internetem?</summary><p>Tak, numer przeniesiesz przy zamówieniu abonamentu komórkowego w tym samym koszyku.</p></details>
-        <details><summary>Co się stanie, jeśli się przeprowadzę?</summary><p>Sprawdzimy dostępność pod nowym adresem i przeniesiemy usługę, jeśli będzie to możliwe.</p></details>
-        <button class="more" type="button">Pokaż więcej</button>
+      <div class="faql" id="faq-list">
+        <details><summary><span>Czym jest światłowód i jakie daje korzyści?</span><span class="pl"><img src="assets/lp/plus.svg" alt=""></span></summary><p>To internet przesyłany wiązką światła. Daje wysokie i stabilne prędkości, także gdy w domu korzysta z sieci kilka osób naraz.</p></details>
+        <hr>
+        <details><summary><span>Mam już światłowód - czy mogę zmienić prędkość?</span><span class="pl"><img src="assets/lp/plus.svg" alt=""></span></summary><p>Tak, prędkość możesz zmienić w trakcie umowy. Szczegóły zależą od Twojego adresu i oferty.</p></details>
+        <hr>
+        <details><summary><span>Czy mogę przenieść swój numer telefonu do Orange razem z internetem?</span><span class="pl"><img src="assets/lp/plus.svg" alt=""></span></summary><p>Tak, numer przeniesiesz przy zamówieniu abonamentu komórkowego w tym samym koszyku.</p></details>
+        <hr>
+        <details><summary><span>Co się stanie, jeśli się przeprowadzę?</span><span class="pl"><img src="assets/lp/plus.svg" alt=""></span></summary><p>Sprawdzimy dostępność pod nowym adresem i przeniesiemy usługę, jeśli będzie to możliwe.</p></details>
       </div>
-      <div id="doc-list" hidden><details><summary>Regulamin promocji</summary><p>Dokument PDF – w prototypie bez pliku.</p></details><details><summary>Cennik usług</summary><p>Dokument PDF – w prototypie bez pliku.</p></details></div>
+      <div class="faql" id="doc-list" hidden>
+        <details><summary><span>Regulamin promocji</span><span class="pl"><img src="assets/lp/plus.svg" alt=""></span></summary><p>Dokument PDF – w prototypie bez pliku.</p></details>
+        <hr>
+        <details><summary><span>Cennik usług</span><span class="pl"><img src="assets/lp/plus.svg" alt=""></span></summary><p>Dokument PDF – w prototypie bez pliku.</p></details>
+      </div>
     </div>
+    <button class="more" type="button">Pokaż więcej</button>
   </section>
 
-  <div class="gutter"><div class="more-l"><h2>W Orange dostajesz więcej!</h2><p>Sieć wyróżnia się na rynku dzięki wysokiej jakości usług i szerokiemu zasięgowi, co zapewnia stabilne połączenia w różnych lokalizacjach. Oferuje nowoczesne technologie, takie jak 5G i światłowód, oraz różnorodność usług dodatkowych.</p></div></div>
+  <section class="lp-seo gutter"><div class="in"><h2>W Orange dostajesz więcej!</h2><p>Sieć Orange wyróżnia się na rynku dzięki wysokiej jakości usług i szerokiemu zasięgowi, co zapewnia stabilne połączenia w różnych lokalizacjach. Oferuje nowoczesne technologie, takie jak 5G, co przekłada się na szybki transfer danych. Ponadto, Orange często wprowadza innowacyjne pakiety i promocje, dostosowane do potrzeb klientów. Wysoka jakość obsługi klienta oraz różnorodność usług dodatkowych, takich jak streaming czy usługi finansowe, czynią ją atrakcyjnym wyborem dla wielu użytkowników... <a href="#offers">Więcej</a></p></div></section>
 
-  <footer class="foot gutter">
-    <div class="wide">
-      <div class="foot-cols">
-        <div><b>Oferta</b><span>Przedłuż umowę</span><span>Przenieś numer</span><span>Internet</span><span>Telewizja</span></div>
-        <div><b>Na skróty</b><span>Regulaminy i cenniki</span><span>Roaming</span><span>Status urządzenia</span></div>
-        <div><b>Serwisy</b><span>Dla inwestorów</span><span>Dla mediów</span><span>Dla dostawców</span></div>
-        <div><b>O firmie</b><span>O nas</span><span>Kariera</span><span>Znajdź salon</span></div>
+  <footer class="lp-foot">
+    <div class="sec">
+      <div class="cols">
+        <div class="col"><b>Oferta</b><span>Przedłuż umowę</span><span>Przenieś numer</span><span>Internet</span><span>Orange Flex</span><span>Offers for foreigners</span></div>
+        <div class="col"><b>Na skróty</b><span>Regulaminy i cenniki</span><span>Roaming i połączenia międzynarodowe</span><span>Poradnik Orange</span><span>Status urządzenia na raty</span></div>
+        <div class="col"><b>Serwisy</b><span>Dla inwestorów</span><span>Dla operatorów</span><span>Dla dostawców</span><span>Dla mediów</span><span>Dla seniora</span></div>
+        <div class="col"><b>O firmie</b><span>O nas</span><span>Kariera</span><span>Znajdź salon</span></div>
+        <div class="col"></div>
       </div>
-      <div class="copy">Prototyp UX · treści i ceny przykładowe</div>
     </div>
+    <div class="sec">
+      <div class="dv"></div>
+      <div class="mid">
+        <div class="lk">
+          <span><img src="assets/lp/f-dialler.svg" alt="">Chcę kupić - oddzwońcie</span>
+          <span><img src="assets/lp/f-wifi.svg" alt="">Sprawdź mapę zasięgu</span>
+          <span><img src="assets/lp/f-contact.svg" alt="">Kontakt</span>
+          <span><img src="assets/lp/f-ethics.svg" alt="">Etyka i Compilance</span>
+        </div>
+        <div class="soc">
+          <span><img src="assets/lp/s-facebook.svg" alt="Facebook"></span>
+          <span><img src="assets/lp/s-instagram.svg" alt="Instagram"></span>
+          <span><img src="assets/lp/s-linkedin.svg" alt="LinkedIn"></span>
+          <span><img src="assets/lp/s-youtube.svg" alt="YouTube"></span>
+          <span><img src="assets/lp/s-twitter.svg" alt="X"></span>
+        </div>
+      </div>
+      <div class="dv"></div>
+    </div>
+    <div class="sec small">
+      <div><span>Ważne komunikaty</span><i></i><span>Regulamin serwisu</span><i></i><span>Warunki zakupów</span><i></i><span>Ochrona danych osobowych</span><i></i><span>Polityka prywatności</span><i></i><span>Zgłoś niebezpieczne treści</span><i></i><span>Sieć#1</span><i></i><span>Inwestycje dofinansowane z UE</span><i></i><span>Nieruchomości Orange</span></div>
+      <div><span>Multibox</span><i></i><span>Odpowiedzialny biznes</span><i></i><span>Fundacja Orange</span><i></i><span>Telefon domowy</span><i></i><span>Dbam o bliskich</span><i></i><span>Razem dla planety</span><i></i><span>Razem w sieci</span><i></i><span>Program Re</span><i></i><span>Tłumacz języka migowego</span><i></i><span>Confort+</span></div>
+    </div>
+    <p class="copy">© 2022 Orange Polska S.A. Wszystkie prawa zastrzeżone.</p>
   </footer>
 </div>
 
@@ -549,7 +720,7 @@ function show(view){
 }
 
 /* ---------- LP ---------- */
-const lp = {tv:false, nfx:false, period:'24', speed:'1g'};
+const lp = {tv:true, nfx:false, period:'24', speed:'1g'};
 const promoEnd = Date.now() + ((2*24 + 13)*3600 + 47*60 + 12) * 1000;
 function tick(){
   let s = Math.max(0, Math.floor((promoEnd - Date.now()) / 1000));
@@ -560,22 +731,35 @@ setInterval(tick, 1000); tick();
 
 function lpPrice(sp){ return sp.price + (lp.period === 'bez' ? NO_COMMIT_EXTRA : 0) + (lp.tv ? svcById('tv').options[0].price : 0); }
 function renderTiles(){
-  const extras = [lp.tv ? '+ Telewizja z Amazon Prime' : '', lp.nfx ? '+ Netflix 0 zł' : ''].filter(Boolean).join(' · ');
   $('tiles').innerHTML = SPEEDS.map(sp => {
     const [i, f] = fmt(lpPrice(sp)).replace(' zł','').split(',');
-    return `<article class="ot">
+    return `<article class="dish"><div class="c">
       <span class="g">${DISH[sp.id].g}</span>
-      <div class="k">Światłowód</div>
-      <h3>${sp.name}</h3>
-      <span class="chip">${DISH[sp.id].c}${sp.tag}</span>
-      <div class="price">od <b>${i},${f}</b> zł/mies.</div>
-      <div class="fine">${lp.period === 'bez' ? 'umowa bez okresu zobowiązania' : 'z rabatami, umowa na 24 mies.'}</div>
-      <div class="extra">${extras}</div>
-      <button class="btn-p" type="button" data-check="${sp.id}">Sprawdź dostępność</button>
-    </article>`;
+      <div class="el"><span class="k">Światłowód</span><h3>${sp.name}</h3></div>
+      <span class="stk">${DISH[sp.id].c}${sp.tag}</span>
+      <div class="pr"><div class="hrow"><span class="od">od</span><span class="v">${i},${f}</span><span class="cur">zł/mies.</span></div>
+        <span class="fine">${lp.period === 'bez' ? 'umowa bez okresu zobowiązania' : 'z rabatami, umowa na 24 mies.'}</span></div>
+      <button class="cta" type="button" data-check="${sp.id}">Sprawdź dostępność</button>
+    </div></article>`;
   }).join('');
   $('tiles').querySelectorAll('[data-check]').forEach(b => b.addEventListener('click', () => checkAvailability(b.dataset.check)));
 }
+/* address form: street and numbers unlock after the city is chosen, like in the Figma states */
+function syncSelect(sel){
+  const f = sel.closest('.fld'); const lab = f.querySelector('.lab');
+  let val = f.querySelector('.val');
+  if (!val){ val = document.createElement('span'); val.className = 'val'; lab.after(val); }
+  val.textContent = sel.value; lab.hidden = !!sel.value; val.hidden = !sel.value;
+}
+$('a-city').addEventListener('change', e => {
+  syncSelect(e.target);
+  const on = !!e.target.value;
+  for (const [fid, cid] of [['f-street','a-street'],['f-no','a-no'],['f-flat','a-flat']]){
+    $(fid).classList.toggle('dis', !on); $(cid).disabled = !on;
+  }
+  $('f-street').querySelector('.arr img').src = on ? 'assets/lp/select-arrow.svg' : 'assets/lp/select-arrow-disabled.svg';
+});
+$('a-street').addEventListener('change', e => syncSelect(e.target));
 $('lp-tv').addEventListener('change', e => { lp.tv = e.target.checked; renderTiles(); });
 $('lp-nfx').addEventListener('change', e => { lp.nfx = e.target.checked; renderTiles(); });
 document.querySelectorAll('[data-period]').forEach(b => b.addEventListener('click', () => {
