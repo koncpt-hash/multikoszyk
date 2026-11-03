@@ -391,6 +391,56 @@ button{font:inherit;color:inherit;cursor:pointer}
 @media (max-width:1000px){.promo{flex-direction:column}.promo .art{opacity:.15}.promo .car{width:100%}}
 @media (max-width:640px){.vas{width:min(300px,85vw)}.promo .vas{width:min(296px,85vw)}.promo .left h2{font-size:28px;line-height:32px}.car .nav{display:none}}
 
+/* ================= client modal + login (Soller 2.0) ================= */
+.cm-scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:60;display:grid;place-items:center;padding:16px}
+.cm{width:min(608px,100%);background:#fff;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;color:#232323}
+.cm-h{display:flex;gap:8px;align-items:flex-start;padding:16px 20px}
+.cm-h h2{flex:1;margin:0;font-weight:700;font-size:20px;line-height:26px}
+.icon-btn{width:32px;height:32px;flex:none;background:#f5f5f5;border:2px solid #f5f5f5;border-radius:4px;display:grid;place-items:center;padding:0}
+.icon-btn svg,.icon-btn img{width:20px;height:20px;display:block}
+.cm-b{padding:0 20px 20px;display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.rbx{position:relative;display:flex;gap:8px;align-items:flex-start;background:#fff;border:2px solid #ccc;border-radius:8px;padding:16px;cursor:pointer}
+.rbx:hover{border-color:#f15e00}
+.rbx input{position:absolute;opacity:0;width:1px;height:1px}
+.rbx .rb{width:24px;height:24px;flex:none;border:2px solid #8f8f8f;border-radius:999px;display:grid;place-items:center}
+.rbx .tx{flex:1;display:flex;flex-direction:column;gap:2px;padding:2px 0}
+.rbx .tx b{font-weight:700;font-size:14px;line-height:20px}
+.rbx .tx span{font-weight:500;font-size:14px;line-height:20px;color:#444}
+.rbx:has(input:checked){border-color:#f15e00;box-shadow:0 0 0 3px rgba(241,94,0,.3)}
+.rbx input:checked + .rb{background:#17a02f;border-color:#17a02f}
+.rbx input:checked + .rb::after{content:"";width:12px;height:12px;background:url(assets/tv/tick.svg) center/contain no-repeat}
+.rbx:has(input:focus-visible){outline:3px solid #ff7900;outline-offset:2px}
+.cm-f{display:flex;gap:8px;justify-content:flex-end;padding:12px 20px 16px;box-shadow:0 0 16px rgba(0,0,0,.08)}
+.sb-btn{height:46px;padding:0 16px;border-radius:8px;font-weight:700;font-size:16px;line-height:22px;border:2px solid #232323;background:#fff;color:#232323}
+.sb-btn.pri{background:#ff7900;border-color:#ff7900;color:#000}
+.sb-btn.ghost{background:#f5f5f5;border-color:#f5f5f5}
+.sb-btn:disabled{background:#ccc;border-color:#ccc;color:#666;cursor:not-allowed}
+.sb-btn.full{width:100%}
+@media (max-width:640px){.cm-scrim{place-items:end center;padding:0}.cm{border-radius:16px 16px 0 0}.cm-b{grid-template-columns:1fr}.cm-f .sb-btn{flex:1}}
+.login{min-height:100vh;background:#f5f5f5;display:grid;place-items:center;padding:40px 16px}
+.lg-card{width:min(400px,100%);background:#fff;border:2px solid #ccc;border-radius:4px;padding:20px;display:flex;flex-direction:column;gap:24px;color:#232323}
+.lg-card h2{margin:0;font-weight:700;font-size:18px;line-height:24px}
+.lg-card .f{display:flex;flex-direction:column;gap:12px}
+.tf{display:flex;align-items:center;gap:12px;height:56px;padding:0 16px;border:2px solid #8f8f8f;border-radius:8px;background:#fff}
+.tf:focus-within{border-color:#232323}
+.tf input{flex:1;min-width:0;border:0;outline:0;font:inherit;font-weight:500;font-size:14px;line-height:20px;color:#232323;background:transparent}
+.tf input::placeholder{color:#444}
+.lg-card .lnk{align-self:flex-start;background:none;border:0;padding:0;font-weight:700;font-size:14px;line-height:20px;color:#232323;text-decoration:underline}
+.lg-card .lnk.c{align-self:center;font-size:16px;line-height:22px}
+.lg-card .btns{display:flex;flex-direction:column;gap:8px}
+.lg-card .or{display:flex;align-items:center;gap:24px;font-weight:500;color:#444}
+.lg-card .or::before,.lg-card .or::after{content:"";flex:1;height:2px;background:#eee}
+/* personalised offer for logged-in clients */
+.pbadge{display:inline-flex;align-items:center;gap:6px;background:#527edb;color:#fff;border-radius:4px;padding:4px 8px;font-weight:700;font-size:12px;line-height:18px}
+.pbadge::before{content:"★";font-size:11px}
+.pbadges{display:flex;flex-wrap:wrap;gap:8px}
+.svc .pbadges{margin:6px 0 2px}
+.card-b > .pbadges{margin-bottom:-4px}
+.net-box .pbadges{margin-top:4px}
+.cli-note{display:flex;gap:8px;align-items:flex-start;border:2px solid #527edb;background:#fff;border-radius:8px;padding:12px 16px;margin:12px 0 0;font-weight:500;font-size:14px;line-height:20px}
+.cli-note img{width:20px;height:20px;flex:none}
+.cli-note b{font-weight:700}
+
 /* ================= loading ================= */
 .loading{min-height:100vh;display:grid;place-items:center;text-align:center;padding-block:40px}
 .loading .logo-ph{width:74px;height:74px;border:2px dashed var(--orange);color:var(--orange);display:grid;place-items:center;font-size:10px;font-weight:700;margin:0 auto 32px;animation:pulse 1.2s ease-in-out infinite}
@@ -792,6 +842,7 @@ Paczka L (55 zł/mies. netto) to:
         <div>
           <h1 class="ph1">Konfiguruj swój pakiet</h1>
           <div class="steps">Krok 1 z 3: Konfiguracja &nbsp;→&nbsp; Twoje dane &nbsp;→&nbsp; Podsumowanie i zamówienie</div>
+          <p class="cli-note" id="cli-note" hidden><img src="assets/tv/alert-info.svg" alt=""><span><b>Jesteś zalogowany jako klient Orange.</b> Oznaczyliśmy na niebiesko rabaty i dodatki przygotowane dla Ciebie.</span></p>
         </div>
         <button class="btn-s" type="button">Wyczyść koszyk</button>
       </div>
@@ -849,6 +900,44 @@ Paczka L (55 zł/mies. netto) to:
   </section>
   <div id="tvp-body"></div>
   <div class="tvp-bar gutter"><button class="btn-p" type="button" id="tvp-back">Wróć do koszyka</button></div>
+</div>
+
+<!-- ================= client question (modal) ================= -->
+<div class="cm-scrim" id="cm" hidden>
+  <div class="cm" role="dialog" aria-modal="true" aria-labelledby="cm-h">
+    <div class="cm-h"><h2 id="cm-h">Zanim zaczniemy: czy jesteś klientem Orange?</h2>
+      <button class="icon-btn" type="button" id="cm-x" aria-label="Zamknij"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4.5 4.5l11 11M15.5 4.5l-11 11" stroke="#232323" stroke-width="2.2" stroke-linecap="round"/></svg></button></div>
+    <div class="cm-b" role="radiogroup" aria-labelledby="cm-h">
+      <label class="rbx"><input type="radio" name="cli" value="yes"><span class="rb" aria-hidden="true"></span><span class="tx"><b>Jestem klientem Orange</b><span>Zaloguj się, a pokażemy ofertę przygotowaną dla Ciebie.</span></span></label>
+      <label class="rbx"><input type="radio" name="cli" value="no"><span class="rb" aria-hidden="true"></span><span class="tx"><b>Nie jestem klientem Orange</b><span>Przejdziesz od razu do konfiguracji pakietu.</span></span></label>
+    </div>
+    <div class="cm-f"><button class="sb-btn" type="button" id="cm-cancel">Anuluj</button><button class="sb-btn pri" type="button" id="cm-ok" disabled>Dalej</button></div>
+  </div>
+</div>
+
+<!-- ================= login (Figma UX Logowanie 608:102999) ================= -->
+<div id="view-login" class="login" hidden>
+  <form class="lg-card" id="lg-form" onsubmit="return false" aria-labelledby="lg-h">
+    <div class="f">
+      <h2 id="lg-h">Masz konto? Zaloguj się</h2>
+    </div>
+    <div class="f">
+      <label class="tf"><input id="lg-mail" type="email" placeholder="Adres e-mail" aria-label="Adres e-mail" autocomplete="off"></label>
+      <label class="tf"><input id="lg-pass" type="password" placeholder="Hasło" aria-label="Hasło" autocomplete="off"><button class="icon-btn" type="button" id="lg-eye" aria-label="Pokaż hasło"><img src="assets/lp/eye.svg" alt=""></button></label>
+      <button class="lnk" type="button" data-soon>Nie pamiętasz hasła?</button>
+    </div>
+    <div class="btns">
+      <button class="sb-btn pri full" type="submit" id="lg-go">Zaloguj się</button>
+      <button class="sb-btn ghost full" type="button" id="lg-number">Zaloguj się numerem Orange</button>
+    </div>
+    <div class="or">lub</div>
+    <h2>Nie masz konta?</h2>
+    <div class="btns">
+      <button class="sb-btn full" type="button" data-soon>Załóż konto</button>
+      <button class="lnk c" type="button" id="lg-guest">Kup bez zakładania konta</button>
+    </div>
+    <button class="sb-btn ghost full" type="button" id="lg-back">Wróć</button>
+  </form>
 </div>
 
 <div class="scrim" id="scrim" hidden></div>
@@ -957,7 +1046,7 @@ const svcById = id => SERVICES.find(s => s.id === id);
 /* ---------- views ---------- */
 let loadTimer = null;
 function show(view){
-  for (const v of ['lp','loading','av','cart','tvp']) $('view-' + v).hidden = v !== view;
+  for (const v of ['lp','loading','av','cart','tvp','login']) $('view-' + v).hidden = v !== view;
   $('demo').hidden = $('reset').hidden = view !== 'cart';
   if (panelSvc) closePanel();
   window.scrollTo(0, 0);
@@ -1082,7 +1171,7 @@ $('av-cards').addEventListener('click', e => {
   const r = e.target.closest('.rab');
   if (r){ const on = r.getAttribute('aria-expanded') !== 'true'; r.setAttribute('aria-expanded', on); r.nextElementSibling.hidden = !on; return; }
   const c = e.target.closest('[data-cfg]');
-  if (c){ lp.speed = c.dataset.cfg; startCart(); show('cart'); announceCart(); }
+  if (c){ lp.speed = c.dataset.cfg; openClientModal(c); }
 });
 $('av-back').addEventListener('click', () => show('lp'));
 $('av-change').addEventListener('click', () => { show('lp'); $('addr').scrollIntoView({block:'center'}); });
@@ -1177,6 +1266,51 @@ $('tvp-body').addEventListener('scroll', e => { if (e.target.classList?.contains
 window.addEventListener('resize', () => { if (!$('view-tvp').hidden) document.querySelectorAll('#tvp-body .car').forEach(syncCar); });
 $('tvp-back').addEventListener('click', () => { show('cart'); renderAll(); $('svc-tv').scrollIntoView({block:'center'}); });
 
+/* ---------- client question + login ---------- */
+let isClient = false, cmOpener = null;
+/* personalised extras for logged-in clients – copy to be refined */
+const CLIENT_NET_DISCOUNT = 10;
+const PERSONAL = {
+  net: ['Dla Ciebie: −10 zł/mies. jako klient Orange', 'Aktywacja za 0 zł'],
+  mob: ['Dla Ciebie: +10 GB w każdym abonamencie', 'Przeniesiesz numer bez przerwy w działaniu'],
+  tv:  ['Dla Ciebie: aktywacja pakietów TV za 0 zł', 'Twoje kanały z obecnej umowy zostają']
+};
+const pBadges = key => isClient ? `<div class="pbadges">${PERSONAL[key].map(t => `<span class="pbadge">${t}</span>`).join('')}</div>` : '';
+function openClientModal(opener){
+  cmOpener = opener;
+  document.querySelectorAll('input[name="cli"]').forEach(i => i.checked = false);
+  $('cm-ok').disabled = true; $('cm').hidden = false;
+  setTimeout(() => document.querySelector('input[name="cli"]').focus(), 30);
+}
+function closeClientModal(){ $('cm').hidden = true; cmOpener?.focus({preventScroll:true}); }
+function goCart(client){
+  isClient = client; startCart(); show('cart'); announceCart();
+}
+document.querySelectorAll('input[name="cli"]').forEach(i => i.addEventListener('change', () => $('cm-ok').disabled = false));
+$('cm-ok').addEventListener('click', () => {
+  const v = document.querySelector('input[name="cli"]:checked')?.value;
+  $('cm').hidden = true;
+  if (v === 'no') return goCart(false);
+  $('lg-form').reset(); show('login'); setTimeout(() => $('lg-mail').focus(), 30);
+});
+$('cm-x').addEventListener('click', closeClientModal);
+$('cm-cancel').addEventListener('click', closeClientModal);
+$('cm').addEventListener('click', e => { if (e.target === $('cm')) closeClientModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('cm').hidden) closeClientModal(); });
+$('lg-eye').addEventListener('click', () => {
+  const p = $('lg-pass'), show_ = p.type === 'password';
+  p.type = show_ ? 'text' : 'password'; $('lg-eye').setAttribute('aria-label', show_ ? 'Ukryj hasło' : 'Pokaż hasło');
+});
+function fakeLogin(btn){
+  const label = btn.textContent; btn.disabled = true; btn.textContent = 'Logujemy…';
+  setTimeout(() => { btn.disabled = false; btn.textContent = label; goCart(true); }, 1200);
+}
+$('lg-go').addEventListener('click', () => fakeLogin($('lg-go')));
+$('lg-number').addEventListener('click', () => fakeLogin($('lg-number')));
+$('lg-guest').addEventListener('click', () => goCart(false));
+$('lg-back').addEventListener('click', () => show('av'));
+document.querySelectorAll('#view-login [data-soon]').forEach(b => b.addEventListener('click', () => toast('Ta ścieżka nie jest częścią prototypu', false)));
+
 /* ---------- cart ---------- */
 const emptyState = () => ({speed:lp.speed, period:lp.period, added:{}, qty:{}, tvPlan:{}});
 let state = emptyState();
@@ -1211,6 +1345,7 @@ function renderSpeeds(){
       <div class="dv"></div>
       <div class="feat">
         <div class="bl">${state.period === 'bez' ? 'Umowa bez okresu zobowiązania' : 'Umowa na 24 miesiące'}</div>
+        ${pBadges('net')}
       </div>
     </div>
     <div class="net-box">
@@ -1237,6 +1372,7 @@ function renderServices(){
       return `<section class="card" id="svc-${s.id}" style="--tint:var(${s.tint})" aria-label="${s.title}">
         <div class="card-h"><h2>${s.title}</h2><button class="btn-s" type="button" data-remove="${s.id}">Usuń</button></div>
         <div class="card-b">
+          ${PERSONAL[s.id] ? pBadges(s.id) : ''}
           <ul class="picked">${list}</ul>
           <div class="foot-b"><button class="btn-s" type="button" data-open="${s.id}">Zmień</button></div>
         </div>
@@ -1244,7 +1380,7 @@ function renderServices(){
     }
     return `<article class="svc" id="svc-${s.id}">
       <div class="ico">${ICONS[s.icon]}</div>
-      <div>${s.badge ? `<span class="badge">${s.badge}</span>` : ''}<h3>${s.title}</h3><div class="d">${s.desc}</div><div class="from num">od +${fmt(minP)}/mies.</div></div>
+      <div>${s.badge ? `<span class="badge">${s.badge}</span>` : ''}<h3>${s.title}</h3>${PERSONAL[s.id] ? pBadges(s.id) : ''}<div class="d">${s.desc}</div><div class="from num">od +${fmt(minP)}/mies.</div></div>
       <button class="btn-s" type="button" data-open="${s.id}">${['tv','mob'].includes(s.id) ? 'Wybierz' : '+ Dodaj'}</button>
     </article>`;
   }).join('');
@@ -1259,7 +1395,8 @@ function renderSummary(){
   const sp = SPEEDS.find(s => s.id === state.speed);
   const m = [{key:'net', label:`Abonament za Orange Światłowód ${sp.name}`, value:fmt(netPrice(sp)), n:netPrice(sp)},
              {key:'router', label:'Modem FunBox 7', value:'w cenie', n:0}];
-  const o = [{key:'akt', label:'Opłata aktywacyjna za Światłowód', value:fmt(99), n:99}];
+  const o = [isClient ? {key:'akt', label:'Opłata aktywacyjna za Światłowód (dla klienta Orange)', value:fmt(0), n:0}
+                      : {key:'akt', label:'Opłata aktywacyjna za Światłowód', value:fmt(99), n:99}];
   for (const s of SERVICES){
     for (const id of (state.added[s.id] || [])){
       const op = s.options.find(x => x.id === id);
@@ -1273,6 +1410,7 @@ function renderSummary(){
       (op.per === 'm' ? m : o).push({key:`${s.id}:${id}`, label, value:fmt(optPrice(op)), n:optPrice(op)});
     }
   }
+  if (isClient) m.push({key:'cli', label:'Rabat dla klienta Orange', value:'−' + fmt(CLIENT_NET_DISCOUNT), n:-CLIENT_NET_DISCOUNT, minus:true});
   if ((state.added.mob || []).length) m.push({key:'disc', label:'Rabat za łączenie usług', value:'−' + fmt(BUNDLE_DISCOUNT), n:-BUNDLE_DISCOUNT, minus:true});
   $('monthly').innerHTML = rowsHtml(m);
   $('once').innerHTML = rowsHtml(o);
@@ -1281,7 +1419,7 @@ function renderSummary(){
   $('sum-fine').textContent = 'Ceny przykładowe, brutto. ' + (state.period === 'bez' ? 'Umowa bez okresu zobowiązania.' : 'Umowa na 24 miesiące.');
   if (fresh.size){ const keep = fresh; setTimeout(() => { if (fresh === keep){ document.querySelectorAll('.row.fresh').forEach(r => r.classList.remove('fresh')); fresh = new Set(); } }, 1800); }
 }
-function renderAll(){ renderServices(); renderSummary(); }
+function renderAll(){ $('cli-note').hidden = !isClient; renderServices(); renderSummary(); }
 
 /* panel */
 const netSvc = () => ({id:'net', tint:'--t-net', title:'Zmień prędkość', mode:'single', net:true,
@@ -1401,7 +1539,7 @@ document.addEventListener('keydown', e => {
   }
 });
 $('back-lp').addEventListener('click', () => { clearTimeout(loadTimer); renderAv(); show('av'); });
-$('go-lp').addEventListener('click', () => { demoRun++; $('cursor').classList.remove('on'); clearTimeout(loadTimer); show('lp'); });
+$('go-lp').addEventListener('click', () => { isClient = false; demoRun++; $('cursor').classList.remove('on'); clearTimeout(loadTimer); show('lp'); });
 
 /* demo (cart) */
 let demoRun = 0;
