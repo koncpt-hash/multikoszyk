@@ -110,6 +110,13 @@ button{font:inherit;color:inherit;cursor:pointer}
 .chk input:checked + .box::after{content:"";width:10px;height:6px;border:solid #fff;border-width:0 0 2.5px 2.5px;transform:translateY(-1px) rotate(-45deg)}
 .chk span:last-child{padding-top:2px}
 .chk:has(input:focus-visible) .box{outline:3px solid var(--c-active);outline-offset:2px}
+.wwt-login{display:flex;gap:12px;align-items:center;border:2px solid #527edb;border-radius:8px;padding:12px 16px;font-weight:500}
+.wwt-login img{width:20px;height:20px;flex:none}
+.wwt-login .t{flex:1;min-width:0}
+.wwt-login .t b{font-weight:700}
+.wwt-login.on{border-color:#b5e8f7;background:#b5e8f7}
+.sb-btn.sm{height:32px;padding:0 16px;border-radius:4px;font-size:14px;line-height:20px;white-space:nowrap}
+@media (max-width:640px){.wwt-login{flex-wrap:wrap}.wwt-login .sb-btn{margin-left:32px}}
 .note{display:flex;gap:8px;align-items:flex-start;font-weight:500}
 .note img{width:20px;height:20px;flex:none}
 .note a{color:var(--c-text);font-weight:700}
@@ -644,6 +651,11 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
             <button class="btn-brand" type="button" id="show-offers">Pokaż oferty</button>
           </div>
           <label class="chk"><input type="checkbox" id="a-nostreet"><span class="box" aria-hidden="true"></span><span>W mojej miejscowości nie ma ulicy</span></label>
+          <div class="wwt-login" id="wwt-login">
+            <img src="assets/tv/alert-info.svg" alt="">
+            <span class="t" id="wwt-login-t"><b>Jesteś klientem Orange?</b> Zaloguj się i sprawdź super oferty dla siebie.</span>
+            <button class="sb-btn sm" type="button" id="wwt-login-btn">Zaloguj się</button>
+          </div>
           <p class="note"><img src="assets/lp/protection.svg" alt=""><span><a href="#addr">Przetwarzanie danych osobowych</a>, w tym adresu, służy jedynie do dopasowania oferty.</span></p>
         </form>
       </div>
@@ -1171,7 +1183,7 @@ $('av-cards').addEventListener('click', e => {
   const r = e.target.closest('.rab');
   if (r){ const on = r.getAttribute('aria-expanded') !== 'true'; r.setAttribute('aria-expanded', on); r.nextElementSibling.hidden = !on; return; }
   const c = e.target.closest('[data-cfg]');
-  if (c){ lp.speed = c.dataset.cfg; openClientModal(c); }
+  if (c){ lp.speed = c.dataset.cfg; isClient ? goCart(true) : openClientModal(c); }
 });
 $('av-back').addEventListener('click', () => show('lp'));
 $('av-change').addEventListener('click', () => { show('lp'); $('addr').scrollIntoView({block:'center'}); });
@@ -1267,7 +1279,7 @@ window.addEventListener('resize', () => { if (!$('view-tvp').hidden) document.qu
 $('tvp-back').addEventListener('click', () => { show('cart'); renderAll(); $('svc-tv').scrollIntoView({block:'center'}); });
 
 /* ---------- client question + login ---------- */
-let isClient = false, cmOpener = null;
+let isClient = false, cmOpener = null, loginFrom = 'av';
 /* personalised extras for logged-in clients – copy to be refined */
 const CLIENT_MOB_DISCOUNT = 10;
 const PERSONAL = {
@@ -1291,7 +1303,7 @@ $('cm-ok').addEventListener('click', () => {
   const v = document.querySelector('input[name="cli"]:checked')?.value;
   $('cm').hidden = true;
   if (v === 'no') return goCart(false);
-  $('lg-form').reset(); show('login'); setTimeout(() => $('lg-mail').focus(), 30);
+  loginFrom = 'av'; $('lg-form').reset(); show('login'); setTimeout(() => $('lg-mail').focus(), 30);
 });
 $('cm-x').addEventListener('click', closeClientModal);
 $('cm-cancel').addEventListener('click', closeClientModal);
@@ -1303,12 +1315,22 @@ $('lg-eye').addEventListener('click', () => {
 });
 function fakeLogin(btn){
   const label = btn.textContent; btn.disabled = true; btn.textContent = 'Logujemy…';
-  setTimeout(() => { btn.disabled = false; btn.textContent = label; goCart(true); }, 1200);
+  setTimeout(() => {
+    btn.disabled = false; btn.textContent = label;
+    if (loginFrom === 'lp'){ isClient = true; syncLoginBanner(); show('lp'); $('addr').scrollIntoView({block:'center'}); toast('Zalogowano. Po sprawdzeniu adresu zobaczysz oferty dla siebie.', false); }
+    else goCart(true);
+  }, 1200);
 }
 $('lg-go').addEventListener('click', () => fakeLogin($('lg-go')));
 $('lg-number').addEventListener('click', () => fakeLogin($('lg-number')));
-$('lg-guest').addEventListener('click', () => goCart(false));
-$('lg-back').addEventListener('click', () => show('av'));
+$('lg-guest').addEventListener('click', () => loginFrom === 'lp' ? show('lp') : goCart(false));
+$('lg-back').addEventListener('click', () => { show(loginFrom); if (loginFrom === 'lp') $('addr').scrollIntoView({block:'center'}); });
+function syncLoginBanner(){
+  $('wwt-login').classList.toggle('on', isClient);
+  $('wwt-login-t').innerHTML = isClient ? '<b>Jesteś zalogowany.</b> Po sprawdzeniu adresu pokażemy oferty przygotowane dla Ciebie.' : '<b>Jesteś klientem Orange?</b> Zaloguj się i sprawdź super oferty dla siebie.';
+  $('wwt-login-btn').hidden = isClient;
+}
+$('wwt-login-btn').addEventListener('click', () => { loginFrom = 'lp'; $('lg-form').reset(); show('login'); setTimeout(() => $('lg-mail').focus(), 30); });
 document.querySelectorAll('#view-login [data-soon]').forEach(b => b.addEventListener('click', () => toast('Ta ścieżka nie jest częścią prototypu', false)));
 
 /* ---------- cart ---------- */
@@ -1538,7 +1560,7 @@ document.addEventListener('keydown', e => {
   }
 });
 $('back-lp').addEventListener('click', () => { clearTimeout(loadTimer); renderAv(); show('av'); });
-$('go-lp').addEventListener('click', () => { isClient = false; demoRun++; $('cursor').classList.remove('on'); clearTimeout(loadTimer); show('lp'); });
+$('go-lp').addEventListener('click', () => { isClient = false; syncLoginBanner(); demoRun++; $('cursor').classList.remove('on'); clearTimeout(loadTimer); show('lp'); });
 
 /* demo (cart) */
 let demoRun = 0;
