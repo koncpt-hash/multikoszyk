@@ -1150,13 +1150,14 @@ function checkAvailability(speedId){
 
 /* ---------- availability (between loading and cart) ---------- */
 const MODEM = {'600':'Funbox 6', '1g':'Funbox 7', '2g':'Funbox 10', '8g':'Funbox 10'};
-/* modem in the cart: the one matching the speed is included, a better one costs 5 zł/mies. per tier */
+/* modem rental: 4,99 zł/mies. for the one matching the speed, a better one costs 5 zł/mies. more per tier */
 const MODEMS = [
   {id:'fb6', name:'FunBox 6', meta:'Wi‑Fi 6 · dla prędkości do 1 Gb/s', tier:1},
   {id:'fb7', name:'FunBox 7', meta:'Wi‑Fi 6E · zasięg w większym mieszkaniu', tier:2},
   {id:'fb10', name:'FunBox 10', meta:'Wi‑Fi 7 · dla prędkości do 8 Gb/s', tier:3}];
 const defaultModem = speed => ({'600':'fb6', '1g':'fb7', '2g':'fb10', '8g':'fb10'})[speed];
-const modemPrice = (m, speed) => Math.max(0, m.tier - MODEMS.find(x => x.id === defaultModem(speed)).tier) * 5;
+const MODEM_FEE = 4.99;
+const modemPrice = (m, speed) => MODEM_FEE + Math.max(0, m.tier - MODEMS.find(x => x.id === defaultModem(speed)).tier) * 5;
 const curModem = () => MODEMS.find(m => m.id === (state.modem || defaultModem(state.speed)));
 document.querySelectorAll('[data-clone]').forEach(h => h.replaceWith(document.querySelector('#view-lp .' + h.dataset.clone).cloneNode(true)));
 function avAddress(){
@@ -1340,7 +1341,7 @@ function fakeLogin(btn){
   const label = btn.textContent; btn.disabled = true; btn.textContent = 'Logujemy…';
   setTimeout(() => {
     btn.disabled = false; btn.textContent = label;
-    if (loginFrom === 'lp'){ isClient = true; syncLoginBanner(); show('lp'); $('addr').scrollIntoView({block:'center'}); toast('Zalogowano. Po sprawdzeniu adresu zobaczysz oferty dla siebie.', false); }
+    if (loginFrom === 'lp'){ isClient = true; syncLoginBanner(); renderAv(); show('av'); toast('Zalogowano. Wybierz prędkość, a w koszyku zobaczysz oferty dla siebie.', false); }
     else goCart(true);
   }, 1200);
 }
@@ -1395,7 +1396,7 @@ function renderSpeeds(){
   $('modem-card').innerHTML = `
     <article class="mdm" aria-label="Modem">
       <img src="assets/lp/cart-modem.png" alt="">
-      <div class="t"><b>Modem</b><span>${md.name}</span><span class="pr num">${mp ? `+${fmt(mp)}/mies.` : 'w cenie abonamentu'}</span></div>
+      <div class="t"><b>Modem</b><span>${md.name}</span><span class="pr num">+${fmt(mp)}/mies.</span></div>
       <button class="btn-s2" type="button" id="modem-change">Zmień</button>
     </article>`;
   $('net-change').addEventListener('click', e => openPanel('net', e.currentTarget));
@@ -1437,7 +1438,7 @@ function rowsHtml(rows){
 function renderSummary(){
   const sp = SPEEDS.find(s => s.id === state.speed);
   const m = [{key:'net', label:`Abonament za Orange Światłowód ${sp.name}`, value:fmt(netPrice(sp)), n:netPrice(sp)},
-             {key:'router', label:`Modem ${curModem().name}`, value:modemPrice(curModem(), state.speed) ? fmt(modemPrice(curModem(), state.speed)) : 'w cenie', n:modemPrice(curModem(), state.speed)}];
+             {key:'router', label:`Modem ${curModem().name}`, value:fmt(modemPrice(curModem(), state.speed)), n:modemPrice(curModem(), state.speed)}];
   const o = [{key:'akt', label:'Opłata aktywacyjna za Światłowód', value:fmt(99), n:99}];
   for (const s of SERVICES){
     for (const id of (state.added[s.id] || [])){
@@ -1468,7 +1469,7 @@ const netSvc = () => ({id:'net', tint:'--t-net', title:'Zmień prędkość', mod
   lead:'Wybierz prędkość – dopasowaną do tego, jak korzystasz z internetu',
   options: SPEEDS.map(s => ({id:s.id, name:`Światłowód ${s.name}`, meta:s.desc, price:netPrice(s), per:'m'}))});
 const modemSvc = () => ({id:'modem', tint:'--t-net', title:'Zmień modem', mode:'single', modem:true,
-  lead:'Wybierz modem – ten dopasowany do prędkości jest w cenie',
+  lead:'Wybierz modem – dopasowany do prędkości kosztuje 4,99 zł/mies.',
   options: MODEMS.map(m => ({id:m.id, name:m.name, meta:m.meta, price:modemPrice(m, state.speed), per:'m'}))});
 function openPanel(id, opener){
   panelSvc = id === 'net' ? netSvc() : id === 'modem' ? modemSvc() : svcById(id); lastFocus = opener || document.activeElement;
@@ -1483,7 +1484,7 @@ function openPanel(id, opener){
     <label class="tile ${type==='checkbox'?'cb':''}"><input type="${type}" name="opt" id="opt-${o.id}" value="${o.id}" ${pre.includes(o.id)?'checked':''}>
       <span class="ind" aria-hidden="true"></span>
       <span><span class="t">${o.name}</span><span class="d" style="display:block">${o.meta}</span></span>
-      <span class="p num">${panelSvc.modem && !o.price ? 'w cenie' : (panelSvc.modem ? '+' : '') + fmt(o.price)}<small>${panelSvc.modem && !o.price ? '' : o.per==='m'?'/mies.':'jednorazowo'}</small></span></label>`).join('')
+      <span class="p num">${panelSvc.modem ? '+' : ''}${fmt(o.price)}<small>${o.per==='m'?'/mies.':'jednorazowo'}</small></span></label>`).join('')
     + (panelSvc.qty ? `
     <div class="qty"><span><b id="qty-label">Liczba abonamentów</b><span class="d">Każdy kolejny abonament w pakiecie: −${fmt(NEXT_LINE_DISCOUNT)}/mies. Maksymalnie ${MAX_LINES}.</span></span>
       <div class="stepper" role="group" aria-labelledby="qty-label">
@@ -1517,7 +1518,7 @@ function updatePanelFoot(){
     : sel.filter(o => o.per==='m').reduce((a,o) => a + o.price, 0);
   const o = sel.filter(o => o.per==='o').reduce((a,x) => a + x.price, 0);
   const editing = !!$('p-add').dataset.editing;
-  if (panelSvc.net || panelSvc.modem){ $('p-sum-l').textContent = panelSvc.net ? 'Internet po zmianie' : 'Modem po zmianie'; $('p-sum-v').textContent = sel.length ? (panelSvc.modem && !m ? 'w cenie' : `${panelSvc.modem ? '+' : ''}${fmt(m)}/mies.`) : ''; $('p-add').disabled = !sel.length; $('p-add').textContent = 'Zapisz zmiany'; return; }
+  if (panelSvc.net || panelSvc.modem){ $('p-sum-l').textContent = panelSvc.net ? 'Internet po zmianie' : 'Modem po zmianie'; $('p-sum-v').textContent = sel.length ? `${panelSvc.modem ? '+' : ''}${fmt(m)}/mies.` : ''; $('p-add').disabled = !sel.length; $('p-add').textContent = 'Zapisz zmiany'; return; }
   $('p-sum-l').textContent = sel.length ? (editing ? 'Po zmianie do pakietu' : 'Dodajesz do pakietu') : 'Wybierz opcję';
   $('p-sum-v').textContent = sel.length ? [`+${fmt(m)}/mies.`, o ? `+${fmt(o)} jednorazowo` : ''].filter((x, i) => x && (i === 1 || m || !o)).join(' · ') : '';
   $('p-add').disabled = !sel.length;
