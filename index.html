@@ -1786,6 +1786,7 @@ function renderMobPanel(focusSel){
         ${radio('mp-sim', 'esim', mdraft.sim === 'esim', '<span class="nm sm">Karta eSIM</span><span class="sub">Wyślemy aktywacyjny kod QR na adres e-mail</span>')}
         ${radio('mp-sim', 'sim', mdraft.sim === 'sim', '<span class="nm sm">Fizyczna karta SIM</span><span class="sub">Dostarczymy ją razem z zamówieniem</span>')}
       </div>
+      <button class="ai-chip ai-stroke" type="button" data-ai="Czym różni się karta eSIM od fizycznej karty SIM?"><img src="assets/ai/sparkles.svg" alt="">Czym różni się karta eSIM od fizycznej karty SIM?</button>
     </section>`;
   $('p-body').scrollTop = top;
   if (focusSel) $('p-body').querySelector(focusSel)?.focus({preventScroll:true});
@@ -1961,6 +1962,8 @@ function aiAsk(text){
 /* canned answers that read the live cart */
 function aiAnswer(t){
   const q = t.toLowerCase(), sp = speedDef(state.speed, state.period);
+  if (/esim|karta sim|karty sim|fizyczn/.test(q))
+    return {text:'Obie działają tak samo: ten sam numer, zasięg i internet. Różnią się tylko formą.\n• Karta eSIM jest wbudowana w telefon. Aktywujesz ją kodem QR, który wyślemy e-mailem – nie czekasz na kuriera i nie zgubisz karty.\n• Fizyczna karta SIM to mała karta, którą wkładasz do telefonu. Dostarczymy ją razem z zamówieniem.\nKartę eSIM wybierz, jeśli Twój telefon ją obsługuje – sprawdzisz to w ustawieniach telefonu.'};
   if (/prędko|gb\/s|mb\/s|światłow/.test(q)){
     const ids = Object.keys(OFFER[state.period]), next = ids[Math.min(ids.indexOf(state.speed) + 1, ids.length - 1)];
     const to = speedDef(next === state.speed ? state.speed : next, state.period);
