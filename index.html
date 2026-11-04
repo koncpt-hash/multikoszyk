@@ -505,6 +505,12 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .sp-t .stp > span{display:flex;justify-content:space-between;gap:12px;font-size:14px;line-height:20px;color:#444}
 .sp-t .stp b{font-weight:700;color:#232323;white-space:nowrap}
 .mnum{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.mlab{margin:0;font-size:13px;color:#666;font-weight:500}
+.mlab + .mnum,.mlab + h3{margin-top:-6px}
+.lnk2{align-self:flex-start;background:none;border:0;padding:0;font-weight:700;font-size:14px;color:#232323;text-decoration:underline}
+.sp-t.nr{grid-template-columns:24px 1fr;align-items:center;padding:12px 16px}
+.mpick{display:flex;flex-direction:column;align-items:center;gap:12px;padding-top:12px;border-top:2px solid #eee}
+.mpick .lnk2{align-self:center}
 .mnum b{font-size:24px;line-height:30px;font-weight:700}
 .sp-t .nm.sm{font-size:16px;line-height:22px}
 .sp-t .sub{font-size:13px;color:#444}
@@ -1691,15 +1697,19 @@ function renderMobPanel(focusSel){
   $('p-body').innerHTML = `
     <section class="ps"><h3>Numer telefonu</h3>
       <div class="seg2b" role="radiogroup" aria-label="Numer telefonu">${Object.entries(MOB_PROC).map(([v, l]) => `<label><input type="radio" name="mp-proc" value="${v}" ${mdraft.proc === v ? 'checked' : ''}><span>${l}</span></label>`).join('')}</div>
-      ${mdraft.proc === 'new'
-        ? `<div class="mnum"><b>+48 ${mdraft.number}</b><button class="btn-s" type="button" id="mp-reroll">Wylosuj inny</button></div>`
-        : '<p class="ps-n"><img src="assets/tv/alert-info.svg" alt="">Numer przeniesiemy bez przerwy w działaniu. Dane do przeniesienia podasz w kolejnym kroku.</p>'}
+      ${mdraft.proc === 'port' ? '<p class="ps-n"><img src="assets/tv/alert-info.svg" alt="">Numer przeniesiemy bez przerwy w działaniu. Dane do przeniesienia podasz w kolejnym kroku.</p>' : ''}
     </section>
     <section class="ps"><h3>Plan</h3>
       <div class="spd">${svcById('mob').options.map(o => radio('mp-plan', o.id, mdraft.plan === o.id,
         `<span class="nm">${o.name} <span class="gb">${o.meta}</span></span>
          <span class="stp">${o.steps.map(([f, t, v]) => `<span><span>${periodLabel(f, t)}</span><b>${fmt(v)}/mies.</b></span>`).join('')}</span>`)).join('')}</div>
     </section>
+    ${mdraft.proc === 'new' ? `<section class="ps">${mdraft.pick
+      ? `<p class="mlab">Obecnie w koszyku: +48 ${mdraft.number}</p><h3>Wybierz nowy numer</h3>
+         <button class="lnk2" type="button" id="mp-more">Losuj inne numery</button>
+         <div class="spd" role="radiogroup" aria-label="Nowy numer">${mdraft.pick.options.map(n => `<label class="sp-t nr"><input type="radio" name="mp-num" value="${n}" ${mdraft.pick.sel === n ? 'checked' : ''}><span class="rb" aria-hidden="true"></span><span class="nm sm">+48 ${n}</span></label>`).join('')}</div>
+         <div class="mpick"><button class="sb-btn full" type="button" id="mp-ok">Potwierdź</button><button class="lnk2" type="button" id="mp-cancel">Anuluj</button></div>`
+      : `<p class="mlab">Nowy numer</p><div class="mnum"><b>+48 ${mdraft.number}</b><button class="lnk2" type="button" id="mp-change">Zmień</button></div>`}</section>` : ''}
     <section class="ps"><h3>Rodzaj karty</h3>
       ${mdraft.proc === 'new' ? '<p class="ps-n"><img src="assets/tv/alert-info.svg" alt="">Nowy numer możesz aktywować na karcie eSIM. Nie musisz używać tradycyjnej karty SIM.</p>' : ''}
       <div class="spd">
@@ -1721,13 +1731,22 @@ function updateMobFoot(){
   $('p-add').textContent = $('p-add').dataset.editing ? 'Zapisz' : 'Dodaj do koszyka';
   $('p-remove').textContent = 'Usuń numer';
 }
+/* number picker like Play: four proposals, reroll, confirm or cancel */
+const numberSet = keep => [keep, newNumber(), newNumber(), newNumber()];
 $('p-body').addEventListener('click', e => {
-  if (!panelSvc?.mob || !e.target.closest('#mp-reroll')) return;
-  mdraft.number = newNumber(); renderMobPanel('#mp-reroll');
+  if (!panelSvc?.mob) return;
+  const b = e.target.closest('#mp-change, #mp-more, #mp-ok, #mp-cancel'); if (!b) return;
+  if (b.id === 'mp-change') mdraft.pick = {options:numberSet(mdraft.number), sel:mdraft.number};
+  if (b.id === 'mp-more') mdraft.pick = {options:numberSet(newNumber()), sel:null};
+  if (b.id === 'mp-ok'){ if (mdraft.pick.sel) mdraft.number = mdraft.pick.sel; mdraft.pick = null; }
+  if (b.id === 'mp-cancel') mdraft.pick = null;
+  renderMobPanel(mdraft.pick ? (mdraft.pick.sel ? '[name="mp-num"]:checked' : '[name="mp-num"]') : '#mp-change');
 });
 $('p-body').addEventListener('change', e => {
   if (!panelSvc?.mob) return;
-  const t = e.target, key = {'mp-proc':'proc', 'mp-plan':'plan', 'mp-sim':'sim'}[t.name]; if (!key) return;
+  const t = e.target;
+  if (t.name === 'mp-num'){ mdraft.pick.sel = t.value; return; }
+  const key = {'mp-proc':'proc', 'mp-plan':'plan', 'mp-sim':'sim'}[t.name]; if (!key) return;
   mdraft[key] = t.value; renderMobPanel(`[name="${t.name}"][value="${t.value}"]`);
 });
 function removeLine(id){
@@ -1784,6 +1803,7 @@ function commit(){
   const sel = selectedInPanel(); const s = panelSvc;
   if (s.mob){
     undoState = JSON.parse(JSON.stringify(state));
+    delete mdraft.pick;
     const i = state.lines.findIndex(l => l.id === mdraft.id), plan = svcById('mob').options.find(o => o.id === mdraft.plan);
     if (i < 0) state.lines.push({...mdraft}); else state.lines[i] = {...mdraft};
     syncMob();
