@@ -662,6 +662,7 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
     <span>Prototyp · LP ze światłowodem → koszyk z panelem bocznym · ceny przykładowe</span>
     <div class="proto-actions">
       <button class="btn-s" id="go-lp" type="button">Od początku (LP)</button>
+      <button class="btn-s" id="go-cart" type="button">Koszyk</button>
       <button class="btn-s" id="demo" type="button" hidden>▶ Odtwórz demo</button>
       <button class="btn-s" id="reset" type="button" hidden>Wyczyść koszyk</button>
     </div>
@@ -1162,6 +1163,7 @@ let loadTimer = null;
 function show(view){
   for (const v of ['lp','loading','av','cart','tvp','login']) $('view-' + v).hidden = v !== view;
   $('demo').hidden = $('reset').hidden = view !== 'cart';
+  $('go-cart').hidden = view === 'cart';
   if (panelSvc) closePanel();
   window.scrollTo(0, 0);
 }
@@ -1462,6 +1464,7 @@ let undoState = null;
 let panelSvc = null, lastFocus = null, panelQty = 1;
 
 function startCart(){
+  cartStarted = true;
   state = emptyState();
   const tv = [];
   if (lpTV()) tv.push('tvap');
@@ -1771,6 +1774,9 @@ document.addEventListener('keydown', e => {
   }
 });
 $('back-lp').addEventListener('click', () => { clearTimeout(loadTimer); renderAv(); show('av'); });
+/* shortcut: jump straight to the cart, keeping it if it was already filled */
+let cartStarted = false;
+$('go-cart').addEventListener('click', () => { clearTimeout(loadTimer); if (!cartStarted) startCart(); show('cart'); });
 $('go-lp').addEventListener('click', () => { isClient = false; syncLoginBanner(); demoRun++; $('cursor').classList.remove('on'); clearTimeout(loadTimer); show('lp'); });
 
 /* demo (cart) */
