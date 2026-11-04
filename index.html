@@ -444,14 +444,12 @@ button{font:inherit;color:inherit;cursor:pointer}
 .cli-note b{font-weight:700}
 
 /* ================= loading ================= */
-.loading{min-height:100vh;display:grid;place-items:center;text-align:center;padding-block:40px}
-.loading .logo-ph{width:74px;height:74px;border:2px dashed var(--orange);color:var(--orange);display:grid;place-items:center;font-size:10px;font-weight:700;margin:0 auto 32px;animation:pulse 1.2s ease-in-out infinite}
-.loading p{font-size:clamp(20px,2.4vw,30px);font-weight:700;margin:0;max-width:24ch;text-wrap:balance}
-.loading .bar{width:220px;height:4px;background:var(--grey);border-radius:2px;margin:28px auto 0;overflow:hidden}
-.loading .bar i{display:block;height:100%;width:0;background:var(--orange)}
-.loading.run .bar i{animation:fill 3s linear forwards}
-@keyframes pulse{50%{opacity:.45}}
-@keyframes fill{to{width:100%}}
+/* offer loader inside the speeds screen (Figma 6640:17870) */
+.av-load{background:#fff;min-height:464px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:16px;text-align:center}
+.av-load .ld{position:relative;width:40px;height:4px;background:rgba(0,0,0,.3);overflow:hidden}
+.av-load .ld i{position:absolute;top:0;bottom:0;left:0;width:12.5%;background:#000;animation:ld 1.5s linear forwards}
+.av-load p{margin:0;font-weight:700;font-size:18px;line-height:24px;color:#232323}
+@keyframes ld{to{left:0;width:100%}}
 
 /* ================= cart ================= */
 #view-cart{padding-bottom:84px}
@@ -652,7 +650,7 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .cursor.on{opacity:1}
 .cursor.tap{transform:scale(.7)}
 
-@media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important;animation:none!important}.loading .bar i{width:100%}}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important;animation:none!important}.av-load .ld i{width:100%}}
 </style>
 </head>
 <body>
@@ -854,7 +852,8 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
       <div class="av-addr"><p>Adres:<br><span id="av-addr"></span></p><button class="btn-ter" type="button" id="av-change">Zmień adres</button></div>
     </div>
   </section>
-  <section class="av-offers gutter" aria-label="Oferty pod Twoim adresem">
+  <section class="av-load gutter" id="av-load" hidden role="status" aria-live="polite"><div class="ld" aria-hidden="true"><i></i></div><p>Przygotowujemy ofertę - jeszcze chwilka</p></section>
+  <section class="av-offers gutter" id="av-offers" aria-label="Oferty pod Twoim adresem">
     <div class="top">
       <div class="tgls">
         <label class="tgl"><span class="t"><b>Telewizja i Amazon Prime</b><span>230 kanałów z Extra TV <u>Szczegóły</u></span></span><input type="checkbox" id="av-tv"><span class="sw" aria-hidden="true"><i></i></span></label>
@@ -899,15 +898,6 @@ Paczka L (55 zł/mies. netto) to:
     <button class="more" type="button">Pokaż więcej</button>
   </section>
   <div data-clone="lp-foot"></div>
-</div>
-
-<!-- ================= loading ================= -->
-<div id="view-loading" class="loading gutter" hidden role="status" aria-live="polite">
-  <div>
-    <div class="logo-ph" aria-hidden="true">LOGO</div>
-    <p>Daj nam chwilę - właśnie przygotowujemy oferty tylko dla Ciebie!</p>
-    <div class="bar" aria-hidden="true"><i></i></div>
-  </div>
 </div>
 
 <!-- ================= cart ================= -->
@@ -1158,7 +1148,7 @@ const INSTALL = [
 /* ---------- views ---------- */
 let loadTimer = null;
 function show(view){
-  for (const v of ['lp','loading','av','cart','tvp','login']) $('view-' + v).hidden = v !== view;
+  for (const v of ['lp','av','cart','tvp','login']) $('view-' + v).hidden = v !== view;
   $('demo').hidden = $('reset').hidden = view !== 'cart';
   $('go-cart').hidden = view === 'cart';
   if (panelSvc) closePanel();
@@ -1237,10 +1227,13 @@ $('tab-doc').addEventListener('click', () => { $('tab-doc').setAttribute('aria-s
 function checkAvailability(speedId){
   lp.speed = speedId;
   clearTimeout(loadTimer);
-  show('loading');
-  const l = $('view-loading'); l.classList.remove('run'); void l.offsetWidth; l.classList.add('run');
-  loadTimer = setTimeout(() => { renderAv(); show('av'); }, 3000);
+  renderAv(); show('av');
+  /* the address header shows right away; offers replace the loader after 1.5 s */
+  const ld = $('av-load').querySelector('i'); ld.style.animation = 'none'; void ld.offsetWidth; ld.style.animation = '';
+  $('av-load').hidden = false; $('av-offers').hidden = $('view-av').querySelector('.av-faq').hidden = true;
+  loadTimer = setTimeout(avReady, 1500);
 }
+function avReady(){ clearTimeout(loadTimer); $('av-load').hidden = true; $('av-offers').hidden = $('view-av').querySelector('.av-faq').hidden = false; }
 
 /* ---------- availability (between loading and cart) ---------- */
 const MODEM = {'300':'Funbox 6', '600':'Funbox 6', '1g':'Funbox 7', '2g':'Funbox 10', '8g':'Funbox 10'};
@@ -1806,11 +1799,11 @@ document.addEventListener('keydown', e => {
     else if (!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
   }
 });
-$('back-lp').addEventListener('click', () => { clearTimeout(loadTimer); renderAv(); show('av'); });
+$('back-lp').addEventListener('click', () => { avReady(); renderAv(); show('av'); });
 /* shortcut: jump straight to the cart, keeping it if it was already filled */
 let cartStarted = false;
-$('go-cart').addEventListener('click', () => { clearTimeout(loadTimer); if (!cartStarted) startCart(); show('cart'); });
-$('go-lp').addEventListener('click', () => { isClient = false; demoRun++; $('cursor').classList.remove('on'); clearTimeout(loadTimer); show('lp'); });
+$('go-cart').addEventListener('click', () => { avReady(); if (!cartStarted) startCart(); show('cart'); });
+$('go-lp').addEventListener('click', () => { isClient = false; demoRun++; $('cursor').classList.remove('on'); avReady(); show('lp'); });
 
 /* demo (cart) */
 let demoRun = 0;
