@@ -666,6 +666,56 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
   .panel.on{transform:none}
 }
 
+/* AI assistant */
+.ai-stroke{border:2px solid transparent;border-radius:16px;background:linear-gradient(#fff, #fff) padding-box, conic-gradient(from 200deg, #4ab4e6 0 10%, #f15e00 10% 50%, #ffb4e6 50% 70%, #a885d8 70% 90%, #4ab4e6 90%) border-box}
+.ai-fab{position:fixed;right:16px;bottom:calc(90px + env(safe-area-inset-bottom, 0px));z-index:45;display:flex;gap:4px;align-items:center;padding:12px;font-weight:500;font-size:14px;line-height:20px;color:#232323;box-shadow:0 2px 3px rgba(0,0,0,.05), 0 3px 8px rgba(0,0,0,.15);background:linear-gradient(rgba(255,255,255,.9), rgba(255,255,255,.9)) padding-box, conic-gradient(from 200deg, #4ab4e6 0 10%, #f15e00 10% 50%, #ffb4e6 50% 70%, #a885d8 70% 90%, #4ab4e6 90%) border-box;backdrop-filter:blur(5px)}
+.ai-fab img{width:24px;height:24px}
+.side-open .ai-fab{display:none}
+.ai-win{position:fixed;right:16px;bottom:16px;width:360px;height:min(734px, calc(100vh - 32px));z-index:65;background:#fff;border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,.25);display:flex;flex-direction:column;overflow:hidden;transition:right .3s ease}
+.side-open .ai-win:not(.max){right:calc(min(480px, 100%) + 16px)}
+.ai-win.max{left:24px;right:24px;top:24px;bottom:24px;width:auto;height:auto}
+.ai-win .mn{display:none}
+.ai-win.max .mn{display:inline}
+.ai-win.max .mx{display:none}
+.ai-top{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 12px;background:linear-gradient(to top, rgba(255,255,255,0), rgba(255,255,255,.9) 50%)}
+.ai-t{font-weight:500;font-size:14px;line-height:20px;color:#666}
+.ai-ic{display:flex;gap:4px}
+.ai-ic button{background:none;border:0;padding:6px;display:flex;border-radius:4px}
+.ai-ic button:hover{background:#f5f5f5}
+.ai-ic img,.ai-ic svg{width:24px;height:24px;display:block}
+.ai-body{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:16px;background:radial-gradient(60% 30% at 50% 100%, rgba(168,133,216,.12), rgba(255,255,255,0))}
+.ai-win.max .ai-body > *{width:100%;max-width:760px;margin-inline:auto}
+.ai-hi img{width:48px;height:48px;display:block;margin-bottom:4px}
+.ai-hi h2{margin:0;font-weight:700;font-size:24px;line-height:28px;letter-spacing:-.12px;color:#232323}
+.ai-hi p{margin:0;font-weight:500;font-size:14px;line-height:20px;color:#444}
+.ai-chips{display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.ai-chip{display:inline-flex;gap:4px;align-items:center;min-height:40px;padding:8px 14px;font-weight:500;font-size:14px;line-height:20px;color:#232323;text-align:left}
+.ai-chip img{width:24px;height:24px}
+.ai-msg{max-width:85%;font-size:14px;line-height:20px;color:#232323;font-weight:500}
+.ai-msg.me{align-self:flex-end;background:#f5f5f5;border-radius:16px 16px 4px 16px;padding:10px 14px}
+.ai-msg.bot{align-self:flex-start;display:flex;flex-direction:column;gap:10px}
+.ai-msg.bot > p{margin:0;white-space:pre-line}
+.ai-dots{display:flex;gap:4px;padding:8px 0}
+.ai-dots i{width:6px;height:6px;border-radius:3px;background:#a885d8;animation:aidot 1s infinite ease-in-out}
+.ai-dots i:nth-child(2){animation-delay:.15s}.ai-dots i:nth-child(3){animation-delay:.3s}
+@keyframes aidot{50%{opacity:.25;transform:translateY(-2px)}}
+.ai-act{border:2px solid #eee;border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:8px;background:#fff}
+.ai-act b{font-weight:700}
+.ai-act small{display:block;font-size:12px;color:#444;font-weight:500}
+.ai-act .row2{display:flex;gap:8px}
+.ai-act .done{color:#17a02f;font-weight:700}
+.ai-in{display:flex;gap:8px;align-items:center;margin:0 16px 16px;min-height:56px;border:1px solid #ccc;border-radius:8px;padding:8px 8px 8px 12px;background:#fff}
+.ai-win.max .ai-in{width:calc(100% - 32px);max-width:760px;margin-inline:auto}
+.ai-in input{flex:1;min-width:0;border:0;outline:0;font:inherit;font-weight:500;font-size:14px;color:#232323}
+.ai-in input::placeholder{color:#666}
+.ai-in button{width:40px;height:40px;border:0;background:none;border-radius:20px;display:grid;place-items:center}
+.ai-in button img{width:24px;height:24px}
+.ai-sug{background:#fff;border:1px solid #ccc;border-radius:8px;padding:16px;display:flex;flex-direction:column;gap:12px;margin-top:16px}
+.ai-sug .ttl{display:flex;gap:4px;align-items:center;font-weight:500;font-size:14px;color:#666}
+.ai-sug .ttl img{width:24px;height:24px}
+.ai-sug p{margin:0;font-weight:500;font-size:14px;line-height:20px;color:#666}
+.ps .ai-chip{align-self:flex-start}
+@media (max-width:640px){.ai-win,.side-open .ai-win:not(.max),.ai-win.max{left:0;right:0;bottom:0;top:auto;width:auto;height:88vh;border-radius:8px 8px 0 0}#ai-max{display:none}}
 .toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom, 0px));transform:translate(-50%,20px);background:var(--bar);color:var(--bar-ink);padding:12px 16px;border-radius:8px;display:flex;gap:16px;align-items:center;z-index:60;opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;max-width:calc(100% - 32px);font-size:14px}
 .toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}
 .toast .link{color:inherit}
@@ -953,6 +1003,9 @@ Paczka L (55 zł/mies. netto) to:
             <div class="disc-box" id="disc-box"></div>
             <div class="pay" id="pay"></div>
             <p class="fine" id="sum-fine"></p>
+            <div class="ai-sug"><span class="ttl"><img src="assets/ai/sparkles.svg" alt="">Zapytaj Asystenta AI</span>
+              <p>Masz pytania dotyczące opłat? Skorzystaj z pomocy naszego Asystenta AI</p>
+              <div class="ai-chips"><button class="ai-chip ai-stroke" type="button" data-ai="Wyjaśnij moje opłaty">Wyjaśnij moje opłaty</button><button class="ai-chip ai-stroke" type="button" data-ai="Kiedy zapłacę najwięcej?">Kiedy zapłacę najwięcej?</button></div></div>
             <div class="voucher"><span>Masz kod rabatowy?</span><span aria-hidden="true">+</span></div>
           </aside>
         </div>
@@ -1032,6 +1085,20 @@ Paczka L (55 zł/mies. netto) to:
     <button class="btn-p" id="p-add" type="button" disabled>Dodaj do pakietu</button>
     <button class="link" id="p-remove" type="button" hidden>Usuń z pakietu</button>
   </div>
+</div>
+
+<!-- ================= AI assistant (Figma ✨ UX-UI Asystent AI, faza 3) ================= -->
+<button class="ai-fab ai-stroke" id="ai-fab" type="button" hidden><img src="assets/ai/sparkles.svg" alt="">Zapytaj Asystenta AI</button>
+<div class="ai-win" id="ai-win" role="dialog" aria-label="Asystent AI" hidden>
+  <div class="ai-top"><span class="ai-t">Asystent AI</span>
+    <span class="ai-ic">
+      <button type="button" id="ai-new" aria-label="Nowa rozmowa"><img src="assets/ai/new-conversation.svg" alt=""></button>
+      <button type="button" id="ai-hist" aria-label="Historia rozmów"><img src="assets/ai/history.svg" alt=""></button>
+      <button type="button" id="ai-max" aria-label="Powiększ okno"><svg viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="mx" d="M14 4h6v6M10 20H4v-6M20 4l-7 7M4 20l7-7"/><path class="mn" d="M20 10h-6V4M4 14h6v6M14 10l7-7M10 14l-7 7"/></svg></button>
+      <button type="button" id="ai-x" aria-label="Zamknij asystenta"><img src="assets/ai/close.svg" alt=""></button>
+    </span></div>
+  <div class="ai-body" id="ai-body" aria-live="polite"></div>
+  <form class="ai-in" id="ai-form" onsubmit="return false"><input id="ai-q" placeholder="Powiedz czego potrzebujesz..." aria-label="Wiadomość do asystenta" autocomplete="off"><button type="submit" aria-label="Wyślij"><img src="assets/ai/send.svg" alt=""></button></form>
 </div>
 
 <div class="toast" id="toast" role="status"><span id="toast-t"></span><button class="link" id="toast-undo" type="button">Cofnij</button></div>
@@ -1167,6 +1234,7 @@ let loadTimer = null;
 function show(view){
   for (const v of ['lp','av','cart','tvp','login']) $('view-' + v).hidden = v !== view;
   $('demo').hidden = $('reset').hidden = view !== 'cart';
+  $('ai-fab').hidden = !['cart', 'tvp'].includes(view) || !$('ai-win').hidden;
   $('go-cart').hidden = view === 'cart';
   if (panelSvc) closePanel();
   window.scrollTo(0, 0);
@@ -1621,7 +1689,7 @@ function openNetPanel(opener){
   $('p-lead').textContent = '';
   $('p-remove').hidden = true;
   renderNetPanel();
-  $('scrim').hidden = false; $('panel').hidden = false;
+  $('scrim').hidden = false; $('panel').hidden = false; document.body.classList.add('side-open');
   requestAnimationFrame(() => { $('scrim').classList.add('on'); $('panel').classList.add('on'); });
   setTimeout(() => $('p-body').querySelector('input:checked')?.focus({preventScroll:true}), 50);
 }
@@ -1634,6 +1702,7 @@ function renderNetPanel(focusSel){
       ${draft.period === '24' ? '<p class="ps-n">Na 24 mies. płacisz mniej i możesz dodać telewizję z Amazon Prime oraz Netflix.</p>' : ''}
       ${draft.note ? `<p class="ps-w" role="status">${draft.note}</p>` : ''}</section>` : ''}
     <section class="ps"><h3>Prędkość</h3>
+      <button class="ai-chip ai-stroke" type="button" data-ai="Którą prędkość światłowodu wybrać?"><img src="assets/ai/sparkles.svg" alt="">Nie wiesz, którą wybrać? Zapytaj Asystenta AI</button>
       <div class="spd">${speedsFor(draft.period).map(x => `<label class="sp-t"><input type="radio" name="np-speed" value="${x.id}" ${draft.speed === x.id ? 'checked' : ''}><span class="rb" aria-hidden="true"></span>
         <span class="nm">Światłowód ${x.name}</span>
         <span class="stp">${x.steps.map(([f, t, v]) => `<span><span>${periodLabel(f, t, draft.period)}</span><b>${fmt(v)}/mies.</b></span>`).join('')}</span>
@@ -1687,7 +1756,7 @@ function openMobPanel(opener, lineId){
   $('p-add').dataset.editing = cur ? '1' : '';
   $('p-remove').hidden = !cur;
   renderMobPanel();
-  $('scrim').hidden = false; $('panel').hidden = false;
+  $('scrim').hidden = false; $('panel').hidden = false; document.body.classList.add('side-open');
   requestAnimationFrame(() => { $('scrim').classList.add('on'); $('panel').classList.add('on'); });
   setTimeout(() => $('p-body').querySelector('input:checked')?.focus({preventScroll:true}), 50);
 }
@@ -1700,6 +1769,7 @@ function renderMobPanel(focusSel){
       ${mdraft.proc === 'port' ? '<p class="ps-n"><img src="assets/tv/alert-info.svg" alt="">Numer przeniesiemy bez przerwy w działaniu. Dane do przeniesienia podasz w kolejnym kroku.</p>' : ''}
     </section>
     <section class="ps"><h3>Plan</h3>
+      <button class="ai-chip ai-stroke" type="button" data-ai="Ile GB potrzebuję?"><img src="assets/ai/sparkles.svg" alt="">Ile GB potrzebujesz? Zapytaj Asystenta AI</button>
       <div class="spd">${svcById('mob').options.map(o => radio('mp-plan', o.id, mdraft.plan === o.id,
         `<span class="nm">${o.name} <span class="gb">${o.meta}</span></span>
          <span class="stp">${o.steps.map(([f, t, v]) => `<span><span>${periodLabel(f, t)}</span><b>${fmt(v)}/mies.</b></span>`).join('')}</span>`)).join('')}</div>
@@ -1776,7 +1846,7 @@ function openPanel(id, opener){
   $('p-add').dataset.editing = editing ? '1' : '';
   $('p-remove').hidden = !editing; $('p-remove').textContent = 'Usuń z pakietu';
   updatePanelFoot();
-  $('scrim').hidden = false; $('panel').hidden = false;
+  $('scrim').hidden = false; $('panel').hidden = false; document.body.classList.add('side-open');
   requestAnimationFrame(() => { $('scrim').classList.add('on'); $('panel').classList.add('on'); });
   setTimeout(() => ($('p-body').querySelector('input') || $('p-close')).focus({preventScroll:true}), 50);
 }
@@ -1793,7 +1863,7 @@ function updatePanelFoot(){
   $('p-add').textContent = editing ? 'Zapisz zmiany' : 'Dodaj do pakietu';
 }
 function closePanel(){
-  $('scrim').classList.remove('on'); $('panel').classList.remove('on');
+  $('scrim').classList.remove('on'); $('panel').classList.remove('on'); document.body.classList.remove('side-open');
   setTimeout(() => { $('scrim').hidden = true; $('panel').hidden = true; }, 300);
   const id = panelSvc && panelSvc.id; panelSvc = null;
   const target = id && document.querySelector(id === 'net' ? '#net-change' : `#svc-${id} [data-open]`);
@@ -1864,6 +1934,86 @@ $('back-lp').addEventListener('click', () => { avReady(); renderAv(); show('av')
 let cartStarted = false;
 $('go-cart').addEventListener('click', () => { avReady(); if (!cartStarted) startCart(); show('cart'); });
 $('go-lp').addEventListener('click', () => { isClient = false; demoRun++; $('cursor').classList.remove('on'); avReady(); show('lp'); });
+
+/* ---------- AI assistant: answers in the cart's context and can change it after 'Zastosuj' ---------- */
+const ai = {msgs:[], max:false};
+const AI_START = ['Którą prędkość światłowodu wybrać?', 'Potrzebuję kolejnego numeru', 'Wyjaśnij moje opłaty', 'Czy opłaca się dodać telewizję?'];
+function aiOpen(q){
+  $('ai-win').hidden = false; $('ai-fab').hidden = true;
+  if (q) aiAsk(q); else renderAi();
+  setTimeout(() => $('ai-q').focus({preventScroll:true}), 30);
+}
+function aiClose(){ $('ai-win').hidden = true; $('ai-fab').hidden = !['cart', 'tvp'].some(v => !$('view-' + v).hidden); $('ai-fab').focus({preventScroll:true}); }
+function renderAi(){
+  $('ai-body').innerHTML = !ai.msgs.length
+    ? `<div class="ai-hi"><img src="assets/ai/sparkles-colored.svg" alt=""><h2>Cześć!</h2><p>Powiedz co chcesz załatwić</p></div>
+       <div class="ai-chips">${AI_START.map(q => `<button class="ai-chip ai-stroke" type="button" data-ai="${q}">${q}</button>`).join('')}</div>`
+    : ai.msgs.map((m, i) => m.me ? `<div class="ai-msg me">${m.text}</div>`
+      : m.typing ? '<div class="ai-msg bot"><div class="ai-dots" aria-label="Asystent pisze"><i></i><i></i><i></i></div></div>'
+      : `<div class="ai-msg bot"><p>${m.text}</p>${m.act ? `<div class="ai-act"><b>${m.act.title}</b><small>${m.act.sub}</small>
+          ${m.done ? '<span class="done">✓ Zastosowano w koszyku</span>' : `<div class="row2"><button class="sb-btn pri" type="button" data-ai-apply="${i}">Zastosuj</button><button class="sb-btn ghost" type="button" data-ai-skip="${i}">Nie teraz</button></div>`}</div>` : ''}</div>`).join('');
+  $('ai-body').scrollTop = $('ai-body').scrollHeight;
+}
+function aiAsk(text){
+  ai.msgs.push({me:true, text}, {typing:true}); renderAi();
+  setTimeout(() => { ai.msgs.pop(); ai.msgs.push(aiAnswer(text)); renderAi(); }, 800);
+}
+/* canned answers that read the live cart */
+function aiAnswer(t){
+  const q = t.toLowerCase(), sp = speedDef(state.speed, state.period);
+  if (/prędko|gb\/s|mb\/s|światłow/.test(q)){
+    const ids = Object.keys(OFFER[state.period]), next = ids[Math.min(ids.indexOf(state.speed) + 1, ids.length - 1)];
+    const to = speedDef(next === state.speed ? state.speed : next, state.period);
+    if (to.id === state.speed) return {text:`Masz już najszybszy światłowód w tej umowie (${sp.name}). Wystarczy nawet dla domu pełnego urządzeń.`};
+    return {text:`Masz teraz Światłowód ${sp.name}. Jeśli w domu kilka osób ogląda w 4K, gra online i pracuje zdalnie naraz, wygodniej będzie ze światłowodem ${to.name}.`,
+      act:{title:`Zmień na Światłowód ${to.name}`, sub:stepsText(to.steps), apply:() => { state.speed = to.id; state.modem = null; fresh = new Set(['net', 'router']); renderSpeeds(); return `Zmieniono prędkość na ${to.name.replace('do ', '')}`; }}};
+  }
+  if (/gb|plan|numer|abonament|komórk|sim/.test(q)){
+    const plan = svcById('mob').options.find(o => o.id === 'm'), extra = state.lines.length > 0;
+    return {text:`Do codziennego korzystania – social media, mapy, muzyka i trochę wideo – wystarczy Plan M z 500 GB.${extra ? ' Jako kolejny numer będzie taniej o 10 zł/mies.' : ''} Numer dostaniesz od razu, na karcie eSIM.`,
+      act:{title:`Dodaj ${extra ? 'kolejny numer' : 'abonament'}: Plan M · eSIM`, sub:`${stepsText(plan.steps)}${extra ? ', minus 10 zł za kolejny numer' : ''}`, apply:() => {
+        const id = `l${Date.now()}`; state.lines.push({id, proc:'new', number:newNumber(), plan:'m', sim:'esim'}); syncMob();
+        fresh = new Set([`mob:${id}`, 'mob:next', 'disc']); return 'Dodano numer z Planem M'; }}};
+  }
+  if (/telewiz|tv|kanał/.test(q)){
+    if (state.period !== '24') return {text:'Przy umowie bezterminowej możesz dodać Extra TV i pakiety CANAL+ lub HBO Max. Telewizja z Amazon Prime jest dostępna tylko przy umowie na 24 miesiące.'};
+    if ((state.added.tv || []).includes('tvap')) return {text:'Masz już Extra TV z Prime Video. Możesz dorzucić CANAL+ albo HBO Max w ekranie Pakiety TV.'};
+    const tv = tvOpt('tvap');
+    return {text:'Tak, jeśli oglądasz seriale i sport. Extra TV z Prime Video to 230 kanałów i Amazon Prime w jednej cenie.',
+      act:{title:'Dodaj Extra TV i Prime Video z Amazon Prime', sub:stepsText(tv.steps), apply:() => {
+        state.added.tv = [...(state.added.tv || []).filter(id => tvOpt(id).group !== 'base'), 'tvap']; fresh = new Set(['tv:tvap']); return 'Dodano telewizję z Amazon Prime'; }}};
+  }
+  if (/opłat|płac|zapłac|najwięcej|ile|cen|koszt/.test(q)){
+    const rows = [...document.querySelectorAll('#pay .pg .hd')].map(h => [h.querySelector('.lb').textContent, h.querySelector('b').textContent]);
+    const per = rows.filter(([l]) => /miesi/.test(l)), start = rows.find(([l]) => l === 'Opłata na start');
+    const top = per.slice().sort((a, b) => parseFloat(b[1].replace(/\s/g, '').replace(',', '.')) - parseFloat(a[1].replace(/\s/g, '').replace(',', '.')))[0];
+    return {text:`Na start płacisz jednorazowo ${start[1]}. Potem opłata miesięczna zmienia się tak:\n${per.map(([l, v]) => `• ${l}: ${v}`).join('\n')}\nNajwięcej zapłacisz ${top[0].charAt(0).toLowerCase() + top[0].slice(1)} – ${top[1]}/mies., bo kończą się okresy promocyjne.`};
+  }
+  return {text:'Mogę pomóc dobrać prędkość światłowodu, dodać numer komórkowy, wyjaśnić opłaty albo doradzić telewizję. Napisz, czego potrzebujesz.'};
+}
+document.addEventListener('click', e => {
+  const a = e.target.closest('[data-ai]'); if (a){ aiOpen(a.dataset.ai); return; }
+  const ap = e.target.closest('[data-ai-apply]');
+  if (ap){
+    const m = ai.msgs[ap.dataset.aiApply];
+    if (panelSvc) closePanel();
+    undoState = JSON.parse(JSON.stringify(state));
+    const msg = m.act.apply(); m.done = true;
+    renderAll(); renderAi(); toast(`Asystent: ${msg}`);
+    return;
+  }
+  const sk = e.target.closest('[data-ai-skip]'); if (sk){ ai.msgs[sk.dataset.aiSkip].act = null; renderAi(); }
+});
+$('ai-fab').addEventListener('click', () => aiOpen());
+$('ai-x').addEventListener('click', aiClose);
+$('ai-new').addEventListener('click', () => { ai.msgs = []; renderAi(); });
+$('ai-hist').addEventListener('click', () => toast('Historia rozmów nie jest częścią prototypu', false));
+$('ai-max').addEventListener('click', () => {
+  ai.max = !ai.max; $('ai-win').classList.toggle('max', ai.max);
+  $('ai-max').setAttribute('aria-label', ai.max ? 'Zmniejsz okno' : 'Powiększ okno');
+});
+$('ai-form').addEventListener('submit', () => { const v = $('ai-q').value.trim(); if (!v) return; $('ai-q').value = ''; aiAsk(v); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('ai-win').hidden && !panelSvc) aiClose(); });
 
 /* demo (cart) */
 let demoRun = 0;
