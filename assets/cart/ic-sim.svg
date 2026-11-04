@@ -1,0 +1,5 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="sim">
+<path id="shape" d="M17.4 22.2H7.2C6.53726 22.2 6 21.6627 6 21V3C6 2.33726 6.53726 1.8 7.2 1.8H14.4L18.6 6V21C18.6 21.6627 18.0627 22.2 17.4 22.2ZM7.2 11.4V13.8H10.2V10.8H7.8C7.46863 10.8 7.2 11.0686 7.2 11.4ZM13.8 10.8H10.8V14.4H7.2V17.4H13.8V10.8ZM17.4 11.4C17.4 11.0686 17.1314 10.8 16.8 10.8H14.4V13.8H17.4V11.4ZM17.4 14.4H14.4V17.4H17.4V14.4ZM17.4 18H14.4V21H13.8V18H10.8V21H10.2V18H7.2V20.4C7.2 20.7314 7.46863 21 7.8 21H16.8C17.1314 21 17.4 20.7314 17.4 20.4V18Z" fill-rule="evenodd" clip-rule="evenodd" fill="#232323"/>
+</g>
+</svg>

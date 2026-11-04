@@ -516,9 +516,6 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .sp-t .av{font-size:12px;color:#666;margin-top:4px}
 .md-t .pn{font-weight:700;font-size:14px;margin-top:4px}
 .mtag{display:inline-block;background:#b5e8f7;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;margin-left:4px;vertical-align:1px}
-.tv-subs{display:flex;flex-direction:column;border-top:1px solid var(--line-soft);padding-top:8px;gap:8px}
-.tv-sub{display:flex;gap:12px;align-items:center;justify-content:space-between}
-.tv-sub small{display:block;font-size:12px;color:var(--muted)}
 @media (max-width:520px){.mdg{grid-template-columns:1fr}}
 .card-b{background:var(--surface);padding:16px;display:flex;flex-direction:column;gap:12px}
 .card-b > .lead{font-weight:700;font-size:14px}
@@ -536,13 +533,21 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .tile .p{font-weight:700;font-size:14px;text-align:right}
 .tile .p small{display:block;font-weight:400;font-size:12px;color:var(--muted)}
 
-.sec-head h2{font-size:20px;margin:8px 0 2px;font-weight:700}
-.sec-head p{margin:0;font-size:14px;color:var(--muted)}
+.sec-head p{margin:4px 0 0;font-size:14px;color:#595959}
 
+/* cards below the internet section (Figma 6641:19765) */
+.sec-head h3{font-size:20px;margin:8px 0 0;font-weight:700;color:#000}
+.svc .ico img{width:40px;height:40px;display:block}
+.svc > .btn-s{border:2px solid #232323;border-radius:4px;padding:6px 16px;font-size:14px;line-height:20px}
+.svc.mv{background:#f5fcff;border-color:#b5e8f7}
+.svc .bbadge{display:inline-block;background:#b5e8f7;border-radius:4px;padding:4px 8px;font-weight:700;font-size:12px;line-height:18px;color:#232323;margin-bottom:4px}
+.svc .logos{grid-column:1 / -1;background:#f5f5f5;border-radius:8px;padding:12px;display:flex;flex-wrap:wrap;gap:8px}
+.svc .logos span{width:86px;height:44px;background:#fff;border-radius:8px;display:grid;place-items:center}
+.svc .logos img{max-width:66px;max-height:28px;display:block}
 .svc{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:16px;align-items:center;padding:20px;background:var(--surface);border:2px solid var(--line);border-radius:8px}
 .svc .ico{width:40px;height:40px}
-.svc h3{margin:0;font-size:16px;font-weight:700}
-.svc .d{font-size:13px;color:var(--muted);margin-top:2px}
+.svc h3{margin:0;font-size:16px;font-weight:700;color:#000}
+.svc .d{font-size:13px;color:#595959;margin-top:4px}
 .svc .from{font-weight:700;font-size:14px;margin-top:4px}
 .badge{display:inline-block;background:var(--t-mob);font-size:12px;font-weight:700;padding:3px 8px;margin-bottom:6px}
 @media (max-width:520px){.svc{grid-template-columns:32px minmax(0,1fr)}.svc .ico{width:32px;height:32px}.svc > .btn-s{grid-column:2;justify-self:start}}
@@ -920,10 +925,6 @@ Paczka L (55 zł/mies. netto) to:
             <div class="net-b" id="speeds"></div>
           </section>
 
-          <div class="sec-head">
-            <h2>Często kupowane razem</h2>
-            <p>Dodaj usługi do światłowodu. Ceny w podsumowaniu przeliczają się od razu.</p>
-          </div>
           <div class="col" id="services"></div>
         </div>
 
@@ -1099,7 +1100,7 @@ const ICONS = {
   multi:'<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="3" y="6" width="22" height="15" rx="1"/><rect x="15" y="17" width="22" height="15" rx="1" fill="#fff"/><path d="M22 36h8"/></svg>'
 };
 const SERVICES = [
-  {id:'tv', icon:'tv', tint:'--t-tv', title:'Pakiety TV i streamingi', desc:'Telewizja z Amazon Prime, CANAL+, HBO Max, Netflix', mode:'multi',
+  {id:'tv', icon:'tv', tint:'--t-tv', title:'Pakiety TV i streamingi', desc:'120+ kanałów, dekoder 4K i Amazon Prime w pakiecie', mode:'multi',
    lead:'Wybierz jeden lub kilka pakietów', options:[
     /* price = umowa na 24 mies., priceBez = umowa bezterminowa; group = można mieć tylko 1 pakiet z grupy */
     {id:'tvap', name:'Extra TV i Prime Video z Amazon Prime', meta:'230 kanałów i Amazon Prime', price:45, steps:TV_STEPS, per:'m', group:'base',
@@ -1127,7 +1128,7 @@ const SERVICES = [
     {id:'s', name:'Plan S', meta:'150 GB', price:70, steps:[[1,3,0],[4,24,70]], per:'m'},
     {id:'m', name:'Plan M', meta:'500 GB', price:80, steps:[[1,3,0],[4,24,80]], per:'m'},
     {id:'l', name:'Plan L', meta:'Bez limitu GB', price:100, steps:[[1,3,0],[4,24,100]], per:'m'}]},
-  {id:'dek', icon:'dek', tint:'--t-dek', under:'tv', title:'Dekoder', desc:'Oglądaj w 4K i nagrywaj w chmurze', mode:'single',
+  {id:'dek', icon:'dek', tint:'--t-dek', title:'Dekoder', desc:'Oglądaj w 4K i nagrywaj w chmurze', mode:'single',
    lead:'Wybierz dekoder', options:[
     {id:'4k', name:'Dekoder 4K', meta:'Jeden telewizor', price:10, per:'m'},
     {id:'duo', name:'Dekoder 4K Duo', meta:'Dwa telewizory w domu', price:18, per:'m'}]},
@@ -1135,11 +1136,13 @@ const SERVICES = [
    lead:'Wybierz poziom ochrony', options:[
     {id:'ct-b', name:'CyberTarcza stacjonarna podstawowa', meta:'Ochrona urządzeń w sieci domowej', price:5, per:'m'},
     {id:'ct-r', name:'CyberTarcza stacjonarna rozszerzona', meta:'Rozszerzona ochrona i kontrola rodzicielska', price:10, per:'m'}]},
-  {id:'multi', icon:'multi', tint:'--t-multi', under:'tv', title:'Multiroom', desc:'Telewizja na kolejnym telewizorze', mode:'single',
+  {id:'multi', icon:'multi', tint:'--t-multi', title:'Multiroom', desc:'Telewizja na kolejnym telewizorze', mode:'single',
    lead:'Oglądaj telewizję w drugim pokoju', options:[
     {id:'mr', name:'Multiroom', meta:'Drugi telewizor w domu', price:15, per:'m'}]}
 ];
 const svcById = id => SERVICES.find(s => s.id === id);
+const SVC_ICON = {tv:'ic-tv.svg', mob:'ic-sim.svg', dek:'ic-dekoder.svg', multi:'ic-multiroom.svg'};
+const TV_LOGOS = [['lg-prime.svg', 'Amazon Prime'], ['lg-canal.png', 'CANAL+ Seriale'], ['lg-hbo.svg', 'HBO Max'], ['lg-disney.svg', 'Disney+'], ['lg-sky.svg', 'SkyShowtime'], ['lg-netflix.svg', 'Netflix']];
 /* installation add-ons live in the internet sidebar */
 const INSTALL = [
   {id:'asysta', name:'Asysta instalacyjna', meta:'Technik podłączy i skonfiguruje modem i dekoder', price:0},
@@ -1485,7 +1488,7 @@ function renderSpeeds(){
 }
 
 function renderServices(){
-  $('services').innerHTML = SERVICES.filter(s => !s.under).map(s => {
+  const card = s => {
     const sel = state.added[s.id];
     const minP = Math.min(...s.options.map(o => optPrice(o)));
     if (sel && sel.length){
@@ -1500,28 +1503,24 @@ function renderServices(){
           ${PERSONAL[s.id] ? pBadges(s.id) : ''}
           <ul class="picked">${list}</ul>
           <div class="foot-b"><button class="btn-s" type="button" data-open="${s.id}">Zmień</button></div>
-          ${s.id === 'tv' ? tvSubs() : ''}
         </div>
       </section>`;
     }
-    return `<article class="svc" id="svc-${s.id}">
-      <div class="ico">${ICONS[s.icon]}</div>
-      <div>${s.badge && !isClient ? `<span class="badge">${s.badge}</span>` : ''}<h3>${s.title}</h3>${PERSONAL[s.id] ? pBadges(s.id) : ''}<div class="d">${s.desc}</div><div class="from num">od +${fmt(minP)}/mies.</div></div>
-      <button class="btn-s" type="button" data-open="${s.id}">${['tv','mob'].includes(s.id) ? 'Wybierz' : '+ Dodaj'}</button>
+    return `<article class="svc ${s.id === 'mob' ? 'mv' : ''}" id="svc-${s.id}">
+      <div class="ico">${SVC_ICON[s.id] ? `<img src="assets/cart/${SVC_ICON[s.id]}" alt="">` : ICONS[s.icon]}</div>
+      <div>${s.id === 'mob' && !isClient ? `<span class="bbadge">Rabat za łączenie do ${zl(BUNDLE_DISCOUNT)}/mies.</span>` : ''}<h3>${s.title}</h3>${PERSONAL[s.id] ? pBadges(s.id) : ''}<div class="d">${s.desc}</div>${['tv', 'mob'].includes(s.id) ? `<div class="from num">od +${fmt(minP)}/mies.</div>` : ''}</div>
+      <button class="btn-s" type="button" data-open="${s.id}">+ Dodaj</button>
+      ${s.id === 'tv' ? `<div class="logos" aria-label="W pakietach">${TV_LOGOS.map(([f, a]) => `<span><img src="assets/cart/${f}" alt="${a}"></span>`).join('')}</div>` : ''}
     </article>`;
-  }).join('');
+  };
+  const group = (title, sub, ids) => `<div class="sec-head"><h3>${title}</h3>${sub ? `<p>${sub}</p>` : ''}</div>${ids.map(id => card(svcById(id))).join('')}`;
+  $('services').innerHTML = group('Często kupowane razem', '', ['tv'])
+    + group('W zestawie taniej!', 'Dodaj usługi do światłowodu i zyskaj rabat!', ['mob'])
+    + group('To może ci się przydać', '', ['dek', 'multi', 'ct']);
   $('services').querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => b.dataset.open === 'tv' ? openTvp() : openPanel(b.dataset.open, b)));
   $('services').querySelectorAll('[data-remove]').forEach(b => b.addEventListener('click', () => removeSvc(b.dataset.remove)));
 }
 
-/* decoder and multiroom only make sense with TV, so they sit inside the TV card */
-function tvSubs(){
-  return `<div class="tv-subs">${SERVICES.filter(x => x.under === 'tv').map(x => {
-    const o = (state.added[x.id] || []).map(id => x.options.find(y => y.id === id))[0];
-    return `<div class="tv-sub" id="svc-${x.id}"><span><b>${x.title}</b><small>${o ? `${o.name} · ${fmt(o.price)}/mies.` : x.desc}</small></span>
-      ${o ? `<span class="hbtns"><button class="btn-s" type="button" data-open="${x.id}">Zmień</button><button class="btn-s" type="button" data-remove="${x.id}">Usuń</button></span>` : `<button class="btn-s" type="button" data-open="${x.id}">+ Dodaj</button>`}</div>`;
-  }).join('')}</div>`;
-}
 function rowsHtml(rows){
   return rows.map(r => `<div class="row ${r.minus?'minus':''} ${fresh.has(r.key)?'fresh':''}"><span>${r.label}${r.note ? `<small>${r.note}</small>` : ''}</span><span class="num">${r.value}</span></div>`).join('');
 }
@@ -1762,7 +1761,7 @@ function commit(){
     const changed = ['period', 'speed', 'modem'].some(k => draft[k] !== state[k]) || draft.inst.join() !== state.inst.join();
     Object.assign(state, {period:draft.period, speed:draft.speed, modem:draft.modem, inst:[...draft.inst]});
     const dropped = state.period === 'bez' ? (state.added.tv || []).filter(id => ONLY24.includes(id)) : [];
-    if (dropped.length){ state.added.tv = state.added.tv.filter(id => !dropped.includes(id)); if (!state.added.tv.length){ delete state.added.tv; delete state.added.dek; delete state.added.multi; } }
+    if (dropped.length){ state.added.tv = state.added.tv.filter(id => !dropped.includes(id)); if (!state.added.tv.length) delete state.added.tv; }
     fresh = new Set(changed ? ['net', 'router', ...state.inst.map(i => `inst:${i}`)] : []);
     renderSpeeds(); renderAll(); closePanel();
     if (dropped.length) toast(`Zapisano. Usunęliśmy ${dropped.map(id => tvOpt(id).name).join(', ')} – dostępne tylko przy umowie na 24 mies.`);
@@ -1780,7 +1779,6 @@ function commit(){
 function removeSvc(id){
   undoState = JSON.parse(JSON.stringify(state));
   delete state.added[id]; delete state.qty[id]; fresh = new Set();
-  if (id === 'tv'){ delete state.added.dek; delete state.added.multi; }
   if (panelSvc) closePanel();
   renderAll(); toast(`Usunięto z pakietu: ${svcById(id).title}`);
 }
