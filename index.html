@@ -504,12 +504,14 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .sp-t .stp{display:flex;flex-direction:column;gap:2px}
 .sp-t .stp > span{display:flex;justify-content:space-between;gap:12px;font-size:14px;line-height:20px;color:#444}
 .sp-t .stp b{font-weight:700;color:#232323;white-space:nowrap}
-.mp-t{grid-template-columns:1fr auto;cursor:default;align-items:center}
-.mp-t .nm{grid-column:1;grid-row:1}
-.mp-t .stepper{grid-column:2;grid-row:1}
-.mp-t .stp{grid-column:1 / -1;grid-row:2}
-.mp-t .gb{font-size:16px;font-weight:500;color:#444}
-.mp-t.on{border-color:var(--orange-ring);box-shadow:0 0 0 3px #ffe2cc}
+.mnum{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.mnum b{font-size:24px;line-height:30px;font-weight:700}
+.sp-t .nm.sm{font-size:16px;line-height:22px}
+.sp-t .sub{font-size:13px;color:#444}
+.mline{align-items:flex-start}
+.mline small + small{margin-top:2px}
+.mnext{font-size:12px;color:var(--plus);font-weight:700;align-self:center;margin-left:8px}
+.sp-t .gb{font-size:16px;font-weight:500;color:#444}
 .ps-n img{width:20px;height:20px;flex:none}
 .md-t .pn small{font-size:12px;color:#444;font-weight:500}
 .md-t .mt{font-size:12px;color:#444}
@@ -653,10 +655,6 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .p-sum b small{display:block;font-size:12px;font-weight:400;color:var(--muted);text-align:right}
 .p-foot .btn-p{width:100%}
 .p-foot .link{align-self:center}
-.stepper{display:flex;align-items:center;border:2px solid var(--ink);border-radius:4px;flex:none}
-.stepper button{width:40px;height:36px;background:none;border:0;font-size:18px;font-weight:700}
-.stepper button:disabled{opacity:.3;cursor:not-allowed}
-.stepper output{min-width:28px;text-align:center;font-weight:700;font-size:16px}
 @media (max-width:640px){
   .panel{top:auto;left:0;width:100%;max-height:88vh;border-radius:16px 16px 0 0;overflow:hidden;transform:translateY(100%);padding-top:0}
   .panel.on{transform:none}
@@ -1095,8 +1093,11 @@ const NEXT_LINE_DISCOUNT = 10;
 const MAX_LINES = 10;
 const MOB_PROC = {new:'Nowy numer', port:'Przenoszę numer'};
 /* several plans at once, e.g. {m:5, s:3}; each plan × count becomes one stepped line */
-const mobPlanSteps = (o, n) => (o.steps || [[1, HORIZON, o.price]]).map(([f, t, v]) => [f, t, v * n]);
-const mobCount = q => Object.values(q).reduce((a, n) => a + n, 0);
+const SIM_TYPE = {esim:'eSIM', sim:'Fizyczna karta SIM'};
+/* every mobile line is added on its own: plan, new or ported number, SIM type */
+const newNumber = () => `5${Math.floor(Math.random() * 3) + 7}${Math.floor(Math.random() * 10)} ${String(Math.floor(Math.random() * 1000)).padStart(3, '0')} ${String(Math.floor(Math.random() * 1000)).padStart(3, '0')}`;
+const lineLabel = l => l.proc === 'new' ? `+48 ${l.number}` : 'Przenoszony numer';
+const syncMob = () => { if (state.lines.length) state.added.mob = state.lines.map(l => l.id); else delete state.added.mob; };
 
 const ICONS = {
   tv:'<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6"><rect x="4" y="8" width="32" height="20" rx="1"/><path d="M14 33h12M20 28v5"/></svg>',
@@ -1455,7 +1456,7 @@ $('lg-back').addEventListener('click', () => show('av'));
 document.querySelectorAll('#view-login [data-soon]').forEach(b => b.addEventListener('click', () => toast('Ta ścieżka nie jest częścią prototypu', false)));
 
 /* ---------- cart ---------- */
-const emptyState = () => ({speed:nearestSpeed(lp.speed, lp.period), period:lp.period, origPeriod:lp.period, modem:null, inst:[], mobProc:'new', added:{}, qty:{}, tvPlan:{}});
+const emptyState = () => ({speed:nearestSpeed(lp.speed, lp.period), period:lp.period, origPeriod:lp.period, modem:null, inst:[], lines:[], added:{}, qty:{}, tvPlan:{}});
 let state = emptyState();
 let fresh = new Set();
 let undoState = null;
@@ -1501,15 +1502,17 @@ function renderServices(){
     if (sel && sel.length){
       const items = sel.map(id => s.options.find(o => o.id === id));
       const list = s.id === 'mob'
-        ? items.map(o => `<li><span>${o.name} × ${state.qty.mob[o.id]}<small>${o.meta} w każdym abonamencie</small></span><span class="num">${stepsText(o.steps)} za abonament</span></li>`).join('')
-          + `<li><span>${MOB_PROC[state.mobProc]}<small>${mobCount(state.qty.mob) > 1 ? `Kolejne abonamenty taniej o ${fmt(NEXT_LINE_DISCOUNT)}/mies.` : 'Rozmowy i SMS-y bez limitu'}</small></span></li>`
+        ? state.lines.map((l, i) => { const o = s.options.find(x => x.id === l.plan); return `<li class="mline"><span>Numer ${i + 1} · ${o.name} ${o.meta}<small>${lineLabel(l)} · ${SIM_TYPE[l.sim]}</small><small>${stepsText(o.steps)}</small></span>
+            <span class="hbtns"><button class="btn-s" type="button" data-line-edit="${l.id}">Zmień</button><button class="btn-s" type="button" data-line-del="${l.id}">Usuń</button></span></li>`; }).join('')
         : items.map(o => `<li><span>${o.name}<small>${o.meta}${s.id === 'tv' && tvPlan(o) === 'bez' ? ' · umowa bezterminowa' : ''}</small></span><span class="num">${o.per === 'm' ? stepsText(optSteps(o)) : fmt(o.price) + perLabel(o)}</span></li>`).join('');
       return `<section class="card" id="svc-${s.id}" style="--tint:var(${s.tint})" aria-label="${s.title}">
         <div class="card-h"><h2>${s.title}</h2><button class="btn-s" type="button" data-remove="${s.id}">Usuń</button></div>
         <div class="card-b">
           ${PERSONAL[s.id] ? pBadges(s.id) : ''}
           <ul class="picked">${list}</ul>
-          <div class="foot-b"><button class="btn-s" type="button" data-open="${s.id}">Zmień</button></div>
+          <div class="foot-b">${s.id === 'mob'
+            ? (state.lines.length < MAX_LINES ? `<button class="btn-s" type="button" data-open="mob">+ Dodaj kolejny numer</button><span class="mnext">taniej o ${zl(NEXT_LINE_DISCOUNT)}/mies.</span>` : '')
+            : `<button class="btn-s" type="button" data-open="${s.id}">Zmień</button>`}</div>
         </div>
       </section>`;
     }
@@ -1526,6 +1529,8 @@ function renderServices(){
     + group('To może ci się przydać', '', ['dek', 'multi', 'ct']);
   $('services').querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => b.dataset.open === 'tv' ? openTvp() : openPanel(b.dataset.open, b)));
   $('services').querySelectorAll('[data-remove]').forEach(b => b.addEventListener('click', () => removeSvc(b.dataset.remove)));
+  $('services').querySelectorAll('[data-line-edit]').forEach(b => b.addEventListener('click', () => openMobPanel(b, b.dataset.lineEdit)));
+  $('services').querySelectorAll('[data-line-del]').forEach(b => b.addEventListener('click', () => removeLine(b.dataset.lineDel)));
 }
 
 /* monthly rows carry price steps; the summary shows month 1 and how the total changes over time */
@@ -1538,10 +1543,10 @@ function renderSummary(){
   const mob = [];
   for (const s of SERVICES){
     for (const id of (state.added[s.id] || [])){
-      const op = s.options.find(x => x.id === id);
+      const op = s.id === 'mob' ? null : s.options.find(x => x.id === id);
       if (s.id === 'mob'){
-        const n = state.qty.mob[id];
-        const r = {key:`mob:${id}`, label:`Abonament komórkowy ${op.name}${n > 1 ? ` × ${n}` : ''} · ${op.meta}`, steps:mobPlanSteps(op, n)};
+        const l = state.lines.find(x => x.id === id), plan = s.options.find(x => x.id === l.plan);
+        const r = {key:`mob:${id}`, label:`Abonament ${plan.name} (${l.proc === 'new' ? l.number : 'przenoszony numer'})`, steps:plan.steps};
         rows.push(r); mob.push(r);
         continue;
       }
@@ -1552,7 +1557,7 @@ function renderSummary(){
   }
   if (mob.length){
     /* mobile discounts never take a line below 0 zł, so they start when the 0 zł months end */
-    const n = mobCount(state.qty.mob);
+    const n = state.lines.length;
     let left = addSteps(...mob.map(r => r.steps));
     const disc = [['disc', 'Rabat za łączenie usług', BUNDLE_DISCOUNT],
       ...(n > 1 ? [['mob:next', `Rabat za kolejne abonamenty (${n - 1} × ${fmt(NEXT_LINE_DISCOUNT)})`, (n - 1) * NEXT_LINE_DISCOUNT]] : []),
@@ -1664,66 +1669,74 @@ $('p-body').addEventListener('change', e => {
   else if (t.name === 'np-modem'){ draft.modem = t.value; updateNetFoot(); }
   else if (t.name === 'np-inst'){ draft.inst = [...$('p-body').querySelectorAll('[name="np-inst"]:checked')].map(i => i.value); updateNetFoot(); }
 });
-/* mobile sidebar: number process on top, then plans one under another with their own counters */
+/* mobile sidebar adds or edits one number: process on top, then plan and SIM type */
 let mdraft = null;
-function openMobPanel(opener){
+function openMobPanel(opener, lineId){
   panelSvc = {id:'mob', mob:true}; lastFocus = opener || document.activeElement;
-  mdraft = {proc:state.mobProc, qty:{...(state.qty.mob || {})}};
+  const cur = state.lines.find(l => l.id === lineId), last = state.lines[state.lines.length - 1];
+  mdraft = cur ? {...cur} : {id:`l${Date.now()}`, proc:'new', number:newNumber(), plan:last?.plan || 'm', sim:last?.sim || 'esim'};
   $('panel').style.setProperty('--tint', 'var(--t-mob)');
-  $('p-title').textContent = 'Abonament komórkowy';
+  $('p-title').textContent = cur ? `Numer ${state.lines.indexOf(cur) + 1}` : state.lines.length ? 'Kolejny numer' : 'Abonament komórkowy';
   $('p-lead').textContent = '';
-  $('p-add').dataset.editing = state.added.mob ? '1' : '';
-  $('p-remove').hidden = !state.added.mob;
+  $('p-add').dataset.editing = cur ? '1' : '';
+  $('p-remove').hidden = !cur;
   renderMobPanel();
   $('scrim').hidden = false; $('panel').hidden = false;
   requestAnimationFrame(() => { $('scrim').classList.add('on'); $('panel').classList.add('on'); });
   setTimeout(() => $('p-body').querySelector('input:checked')?.focus({preventScroll:true}), 50);
 }
 function renderMobPanel(focusSel){
-  const top = $('p-body').scrollTop, total = mobCount(mdraft.qty);
+  const top = $('p-body').scrollTop;
+  const radio = (name, v, on, body) => `<label class="sp-t"><input type="radio" name="${name}" value="${v}" ${on ? 'checked' : ''}><span class="rb" aria-hidden="true"></span>${body}</label>`;
   $('p-body').innerHTML = `
     <section class="ps"><h3>Numer telefonu</h3>
       <div class="seg2b" role="radiogroup" aria-label="Numer telefonu">${Object.entries(MOB_PROC).map(([v, l]) => `<label><input type="radio" name="mp-proc" value="${v}" ${mdraft.proc === v ? 'checked' : ''}><span>${l}</span></label>`).join('')}</div>
-      ${mdraft.proc === 'port' ? '<p class="ps-n"><img src="assets/tv/alert-info.svg" alt="">Numer przeniesiemy bez przerwy w działaniu. Dane do przeniesienia podasz w kolejnym kroku.</p>' : ''}
+      ${mdraft.proc === 'new'
+        ? `<div class="mnum"><b>+48 ${mdraft.number}</b><button class="btn-s" type="button" id="mp-reroll">Wylosuj inny</button></div>`
+        : '<p class="ps-n"><img src="assets/tv/alert-info.svg" alt="">Numer przeniesiemy bez przerwy w działaniu. Dane do przeniesienia podasz w kolejnym kroku.</p>'}
     </section>
-    <section class="ps"><h3>Plany</h3>
-      <p class="ps-n">Rozmowy i SMS-y bez limitu w każdym planie. Każdy kolejny abonament taniej o ${zl(NEXT_LINE_DISCOUNT)}/mies.</p>
-      <div class="spd">${svcById('mob').options.map(o => { const n = mdraft.qty[o.id] || 0; return `<div class="sp-t mp-t ${n ? 'on' : ''}">
-        <span class="nm">${o.name} <span class="gb">${o.meta}</span>${o.tag ? `<span class="mtag">${o.tag}</span>` : ''}</span>
-        <span class="stp">${o.steps.map(([f, t, v]) => `<span><span>${periodLabel(f, t)}</span><b>${fmt(v)}/mies.</b></span>`).join('')}</span>
-        <div class="stepper" role="group" aria-label="Liczba abonamentów ${o.name}">
-          <button type="button" data-minus="${o.id}" aria-label="Jeden ${o.name} mniej" ${n ? '' : 'disabled'}>–</button>
-          <output aria-live="polite">${n}</output>
-          <button type="button" data-plus="${o.id}" aria-label="Jeden ${o.name} więcej" ${total >= MAX_LINES ? 'disabled' : ''}>+</button>
-        </div></div>`; }).join('')}</div>
-      <p class="ps-n">Możesz łączyć różne plany – maksymalnie ${MAX_LINES} abonamentów.</p>
+    <section class="ps"><h3>Plan</h3>
+      <div class="spd">${svcById('mob').options.map(o => radio('mp-plan', o.id, mdraft.plan === o.id,
+        `<span class="nm">${o.name} <span class="gb">${o.meta}</span></span>
+         <span class="stp">${o.steps.map(([f, t, v]) => `<span><span>${periodLabel(f, t)}</span><b>${fmt(v)}/mies.</b></span>`).join('')}</span>`)).join('')}</div>
+    </section>
+    <section class="ps"><h3>Rodzaj karty</h3>
+      ${mdraft.proc === 'new' ? '<p class="ps-n"><img src="assets/tv/alert-info.svg" alt="">Nowy numer możesz aktywować na karcie eSIM. Nie musisz używać tradycyjnej karty SIM.</p>' : ''}
+      <div class="spd">
+        ${radio('mp-sim', 'esim', mdraft.sim === 'esim', '<span class="nm sm">Karta eSIM</span><span class="sub">Wyślemy aktywacyjny kod QR na adres e-mail</span>')}
+        ${radio('mp-sim', 'sim', mdraft.sim === 'sim', '<span class="nm sm">Fizyczna karta SIM</span><span class="sub">Dostarczymy ją razem z zamówieniem</span>')}
+      </div>
     </section>`;
   $('p-body').scrollTop = top;
   if (focusSel) $('p-body').querySelector(focusSel)?.focus({preventScroll:true});
   updateMobFoot();
 }
 function updateMobFoot(){
-  const opts = svcById('mob').options, n = mobCount(mdraft.qty);
-  const lines = opts.filter(o => mdraft.qty[o.id]).map(o => mobPlanSteps(o, mdraft.qty[o.id]));
-  const st = n ? mergeSteps(addSteps(...lines).map(([f, t, v]) => [f, t, v - Math.min((n - 1) * NEXT_LINE_DISCOUNT, v)])) : [];
-  $('p-sum-l').textContent = n ? `${n} ${n === 1 ? 'abonament' : n < 5 ? 'abonamenty' : 'abonamentów'} teraz` : 'Wybierz plan';
-  $('p-sum-v').innerHTML = n ? `+${fmt(st[0][2])}/mies.${st.length > 1 ? `<small>od ${st[1][0]}. mies. +${fmt(st[1][2])}/mies.</small>` : ''}` : '';
-  const editing = !!$('p-add').dataset.editing;
-  $('p-add').disabled = !n && !editing;
-  $('p-add').textContent = editing ? 'Zapisz' : 'Dodaj do pakietu';
+  const plan = svcById('mob').options.find(o => o.id === mdraft.plan);
+  const extra = state.lines.some(l => l.id !== mdraft.id);
+  const st = extra ? mergeSteps(plan.steps.map(([f, t, v]) => [f, t, v - Math.min(NEXT_LINE_DISCOUNT, v)])) : plan.steps;
+  $('p-sum-l').textContent = extra ? 'Ten numer z rabatem za kolejny' : 'Ten numer';
+  $('p-sum-v').innerHTML = `+${fmt(st[0][2])}/mies.${st.length > 1 ? `<small>od ${st[1][0]}. mies. +${fmt(st[1][2])}/mies.</small>` : ''}`;
+  $('p-add').disabled = false;
+  $('p-add').textContent = $('p-add').dataset.editing ? 'Zapisz' : 'Dodaj do koszyka';
+  $('p-remove').textContent = 'Usuń numer';
 }
 $('p-body').addEventListener('click', e => {
-  if (!panelSvc?.mob) return;
-  const b = e.target.closest('[data-plus],[data-minus]'); if (!b || b.disabled) return;
-  const id = b.dataset.plus || b.dataset.minus;
-  mdraft.qty[id] = Math.max(0, (mdraft.qty[id] || 0) + (b.dataset.plus ? 1 : -1));
-  const sel = `[data-${b.dataset.plus ? 'plus' : 'minus'}="${id}"]`;
-  renderMobPanel($('p-body').querySelector(sel) && !(b.dataset.minus && mdraft.qty[id] === 0) ? sel : `[data-plus="${id}"]`);
+  if (!panelSvc?.mob || !e.target.closest('#mp-reroll')) return;
+  mdraft.number = newNumber(); renderMobPanel('#mp-reroll');
 });
 $('p-body').addEventListener('change', e => {
-  if (!panelSvc?.mob || e.target.name !== 'mp-proc') return;
-  mdraft.proc = e.target.value; renderMobPanel(`[name="mp-proc"][value="${mdraft.proc}"]`);
+  if (!panelSvc?.mob) return;
+  const t = e.target, key = {'mp-proc':'proc', 'mp-plan':'plan', 'mp-sim':'sim'}[t.name]; if (!key) return;
+  mdraft[key] = t.value; renderMobPanel(`[name="${t.name}"][value="${t.value}"]`);
 });
+function removeLine(id){
+  undoState = JSON.parse(JSON.stringify(state));
+  const i = state.lines.findIndex(l => l.id === id);
+  state.lines.splice(i, 1); syncMob(); fresh = new Set();
+  if (panelSvc) closePanel();
+  renderAll(); toast(`Usunięto numer ${i + 1}`);
+}
 function openPanel(id, opener){
   if (id === 'net') return openNetPanel(opener);
   if (id === 'mob') return openMobPanel(opener);
@@ -1742,7 +1755,7 @@ function openPanel(id, opener){
       <span class="p num">${fmt(o.price)}<small>${o.per==='m'?'/mies.':'jednorazowo'}</small></span></label>`).join('');
   $('p-body').querySelectorAll('input').forEach(i => i.addEventListener('change', updatePanelFoot));
   $('p-add').dataset.editing = editing ? '1' : '';
-  $('p-remove').hidden = !editing;
+  $('p-remove').hidden = !editing; $('p-remove').textContent = 'Usuń z pakietu';
   updatePanelFoot();
   $('scrim').hidden = false; $('panel').hidden = false;
   requestAnimationFrame(() => { $('scrim').classList.add('on'); $('panel').classList.add('on'); });
@@ -1770,15 +1783,13 @@ function closePanel(){
 function commit(){
   const sel = selectedInPanel(); const s = panelSvc;
   if (s.mob){
-    const q = Object.fromEntries(Object.entries(mdraft.qty).filter(([, n]) => n > 0));
-    if (!mobCount(q)){ if (state.added.mob) removeSvc('mob'); else closePanel(); return; }
     undoState = JSON.parse(JSON.stringify(state));
-    const before = state.qty.mob || {}, opts = svcById('mob').options;
-    state.qty.mob = q; state.mobProc = mdraft.proc;
-    state.added.mob = opts.filter(o => q[o.id]).map(o => o.id);
-    fresh = new Set([...state.added.mob.filter(id => q[id] !== before[id]).map(id => `mob:${id}`), ...(mobCount(q) !== mobCount(before) ? ['mob:next', 'disc'] : [])]);
+    const i = state.lines.findIndex(l => l.id === mdraft.id), plan = svcById('mob').options.find(o => o.id === mdraft.plan);
+    if (i < 0) state.lines.push({...mdraft}); else state.lines[i] = {...mdraft};
+    syncMob();
+    fresh = new Set([`mob:${mdraft.id}`, ...(i < 0 ? ['mob:next', 'disc'] : [])]);
     closePanel(); renderAll();
-    toast(`${mobCount(before) ? 'Zmieniono' : 'Dodano do pakietu'}: ${state.added.mob.map(id => `${opts.find(o => o.id === id).name} × ${q[id]}`).join(', ')}`);
+    toast(`${i < 0 ? 'Dodano do pakietu' : 'Zmieniono'}: ${plan.name} · ${lineLabel(mdraft)}`);
     return;
   }
   if (s.net){
@@ -1804,6 +1815,7 @@ function commit(){
 function removeSvc(id){
   undoState = JSON.parse(JSON.stringify(state));
   delete state.added[id]; delete state.qty[id]; fresh = new Set();
+  if (id === 'mob') state.lines = [];
   if (panelSvc) closePanel();
   renderAll(); toast(`Usunięto z pakietu: ${svcById(id).title}`);
 }
@@ -1814,7 +1826,7 @@ function toast(t, undo = true){
 }
 $('toast-undo').addEventListener('click', () => { if (undoState){ state = undoState; undoState = null; fresh = new Set(); renderSpeeds(); renderAll(); } $('toast').classList.remove('on'); });
 $('p-add').addEventListener('click', commit);
-$('p-remove').addEventListener('click', () => removeSvc(panelSvc.id));
+$('p-remove').addEventListener('click', () => panelSvc.mob ? removeLine(mdraft.id) : removeSvc(panelSvc.id));
 $('p-close').addEventListener('click', closePanel);
 $('scrim').addEventListener('click', closePanel);
 document.addEventListener('keydown', e => {
@@ -1849,10 +1861,14 @@ async function demo(){
   const steps = [
     () => tap(document.querySelector('#svc-mob [data-open]')),
     () => wait(500),
-    () => tap(document.querySelector('[data-plus="m"]')),
-    () => tap(document.querySelector('[data-plus="m"]')),
-    () => tap(document.querySelector('[data-plus="s"]')),
-    () => wait(400),
+    () => tap(document.querySelector('[name="mp-plan"][value="m"]').closest('label')),
+    () => wait(300),
+    () => tap($('p-add')),
+    () => wait(600),
+    () => tap(document.querySelector('#svc-mob [data-open]')),
+    () => wait(500),
+    () => tap(document.querySelector('[name="mp-sim"][value="sim"]').closest('label')),
+    () => wait(300),
     () => tap($('p-add')),
     () => wait(500),
     () => point(document.querySelector('.ln.fresh') || $('summary')),
