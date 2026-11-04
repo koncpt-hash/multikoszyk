@@ -732,7 +732,7 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
           <p class="sub">Przedłużasz umowę? <a href="#offers">Zaloguj się</a>, by poznać oferty</p>
         </div>
         <div class="tgls">
-          <label class="tgl"><span class="t"><b>Telewizja i Amazon Prime</b><span>209 kanałów <u>Szczegóły</u></span></span><input type="checkbox" id="lp-tv" checked><span class="sw" aria-hidden="true"><i></i></span></label>
+          <label class="tgl"><span class="t"><b>Telewizja i Amazon Prime</b><span>209 kanałów <u>Szczegóły</u></span></span><input type="checkbox" id="lp-tv"><span class="sw" aria-hidden="true"><i></i></span></label>
           <label class="tgl"><span class="t"><b>Netflix</b><span>nawet 12 mies. za 0 zł</span></span><input type="checkbox" id="lp-nfx"><span class="sw" aria-hidden="true"><i></i></span></label>
         </div>
         <div class="czas">
@@ -1156,7 +1156,7 @@ function show(view){
 }
 
 /* ---------- LP ---------- */
-const lp = {tv:true, nfx:false, period:'24', speed:'1g'};
+const lp = {tv:false, nfx:false, period:'24', speed:'1g'};
 const promoEnd = Date.now() + ((2*24 + 13)*3600 + 47*60 + 12) * 1000;
 function tick(){
   let s = Math.max(0, Math.floor((promoEnd - Date.now()) / 1000));
