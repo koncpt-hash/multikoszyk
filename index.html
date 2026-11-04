@@ -1362,7 +1362,8 @@ function syncCar(car){
     ind.innerHTML = Array.from({length:pages}, (_, i) => `<i class="${i === cur ? 'on' : ''}"></i>`).join('');
   }
 }
-function openTvp(){ renderTvp(); show('tvp'); requestAnimationFrame(() => document.querySelectorAll('#tvp-body .car').forEach(syncCar)); }
+let tvpFirst = false;
+function openTvp(first = false){ tvpFirst = first; $('tvp-back').textContent = first ? 'Przejdź do koszyka' : 'Wróć do koszyka'; renderTvp(); show('tvp'); requestAnimationFrame(() => document.querySelectorAll('#tvp-body .car').forEach(syncCar)); }
 function toggleTv(id){
   const o = tvOpt(id), cur = state.added.tv || [];
   undoState = JSON.parse(JSON.stringify(state));
@@ -1389,7 +1390,7 @@ $('tvp-body').addEventListener('change', e => {
 });
 $('tvp-body').addEventListener('scroll', e => { if (e.target.classList?.contains('track')) syncCar(e.target.parentElement); }, true);
 window.addEventListener('resize', () => { if (!$('view-tvp').hidden) document.querySelectorAll('#tvp-body .car').forEach(syncCar); });
-$('tvp-back').addEventListener('click', () => { show('cart'); renderAll(); $('svc-tv').scrollIntoView({block:'center'}); });
+$('tvp-back').addEventListener('click', () => { show('cart'); renderAll(); if (tvpFirst) announceCart(); else $('svc-tv').scrollIntoView({block:'center'}); });
 
 /* ---------- client question + login ---------- */
 let isClient = false, cmOpener = null;
@@ -1408,8 +1409,12 @@ function openClientModal(opener){
   setTimeout(() => document.querySelector('input[name="cli"]').focus(), 30);
 }
 function closeClientModal(){ $('cm').hidden = true; cmOpener?.focus({preventScroll:true}); }
+/* half of the entries from 'Konfiguruj' see the TV packages screen before the cart */
+const TVP_FIRST_CHANCE = 0.5;
 function goCart(client){
-  isClient = client; startCart(); show('cart'); announceCart();
+  isClient = client; startCart();
+  if (Math.random() < TVP_FIRST_CHANCE) return openTvp(true);
+  show('cart'); announceCart();
 }
 document.querySelectorAll('input[name="cli"]').forEach(i => i.addEventListener('change', () => $('cm-ok').disabled = false));
 $('cm-ok').addEventListener('click', () => {
