@@ -473,6 +473,7 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .nrows > div{display:flex;gap:12px;padding:10px 0;border-bottom:2px solid #eee}
 .nrows > div:first-child{padding-top:0}
 .nrows dt{width:88px;flex:none;font-weight:500;color:#666}
+.nrows > div > .btn-s{align-self:flex-start;flex:none}
 .nrows dd{margin:0;flex:1;font-weight:700;color:#232323}
 .nrows dd small{display:block;font-weight:500;font-size:13px;color:#444}
 .net-box .pbadges{margin-top:12px}
@@ -924,7 +925,7 @@ Paczka L (55 zł/mies. netto) to:
       <div class="grid">
         <div class="col">
           <section class="card" style="--tint:var(--t-net)" aria-labelledby="net-h">
-            <div class="card-h"><h2 id="net-h">Internet</h2><span class="hbtns"><button class="btn-s" type="button" id="net-change">Zmień</button><button class="btn-s" type="button">Usuń</button></span></div>
+            <div class="card-h"><h2 id="net-h">Internet</h2><button class="btn-s" type="button">Usuń</button></div>
             <div class="net-b" id="speeds"></div>
           </section>
 
@@ -1474,13 +1475,14 @@ function renderSpeeds(){
   $('speeds').innerHTML = `
     <div class="net-box">
       <dl class="nrows">
-        <div><dt>Prędkość</dt><dd>Światłowód ${sp.name}<small>${stepsText(sp.steps)}</small></dd></div>
+        <div><dt>Prędkość</dt><dd>Światłowód ${sp.name}<small>${stepsText(sp.steps)}</small></dd><button class="btn-s" type="button" id="net-change">Zmień</button></div>
         <div><dt>Umowa</dt><dd>${state.period === 'bez' ? 'Bezterminowa' : '24 miesiące'}</dd></div>
         <div><dt>Modem</dt><dd>${md.name}<small>${fmt(modemPrice(md, state.speed))}/mies.</small></dd></div>
         <div><dt>Instalacja</dt><dd>Technik w cenie<small>${inst.length ? inst.join(', ') : 'bez dodatków'}</small></dd></div>
       </dl>
       ${pBadges('net')}
     </div>`;
+  $('net-change').addEventListener('click', e => openPanel('net', e.currentTarget));
 }
 
 function renderServices(){
@@ -1790,7 +1792,6 @@ function toast(t, undo = true){
 }
 $('toast-undo').addEventListener('click', () => { if (undoState){ state = undoState; undoState = null; fresh = new Set(); renderSpeeds(); renderAll(); } $('toast').classList.remove('on'); });
 $('p-add').addEventListener('click', commit);
-$('net-change').addEventListener('click', e => openPanel('net', e.currentTarget));
 $('p-remove').addEventListener('click', () => removeSvc(panelSvc.id));
 $('p-close').addEventListener('click', closePanel);
 $('scrim').addEventListener('click', closePanel);
