@@ -601,24 +601,38 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .side{display:flex;flex-direction:column;gap:16px;position:sticky;top:16px}
 .sum{background:var(--surface);border:2px solid var(--line-soft);border-radius:8px;padding:20px}
 .sum h2{font-size:20px;margin:0 0 12px;font-weight:700}
-.disc-box{border:2px solid var(--info);border-radius:8px;padding:10px 12px;font-size:13px;margin-bottom:14px}
-.disc-box > b{display:block;font-size:13px;margin-bottom:6px}
-.disc-box ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
-.disc-box li::marker{color:var(--info)}
-.sum h3{font-size:14px;font-weight:700;margin:14px 0 6px}
-.rows{display:flex;flex-direction:column}
-.row{display:flex;justify-content:space-between;gap:12px;padding:4px 6px;margin:0 -6px;border-radius:4px;font-size:12px;transition:background-color 1.2s ease}
-.row.minus span:last-child{color:var(--plus);font-weight:700}
-.row.fresh{background:var(--fresh)}
-.row small{display:block;font-size:11px;color:var(--muted);font-weight:400}
-.tsteps{margin-top:8px;background:#f5f5f5;border-radius:4px;padding:8px 10px;font-size:12px}
-.tsteps h4{margin:0 0 4px;font-size:12px;font-weight:700}
-.tsteps div{display:flex;justify-content:space-between;padding:2px 0}
-.tsteps div:last-of-type b{font-weight:700}
-.tsteps p{margin:6px 0 0;color:var(--muted);font-size:11px}
-.total{display:flex;justify-content:space-between;border-top:1px solid var(--line-soft);margin-top:6px;padding-top:8px;font-weight:700;font-size:14px}
+.disc-box{border:2px solid #527edb;border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.disc-box > b{font-size:14px;line-height:20px}
+.disc-box .it{display:grid;grid-template-columns:8px 1fr;column-gap:8px;font-size:14px;line-height:20px}
+.disc-box .it::before{content:"";width:8px;height:8px;border-radius:4px;background:#527edb;margin-top:6px}
+.disc-box .it b{font-weight:700}
+.disc-box .it span{grid-column:2;color:#444;font-weight:500}
+.disc-box p{margin:0;font-size:12px;line-height:18px;color:#444}
+/* payment timeline grouped by period, like the current Orange cart (Figma 6644:19986) */
+.pay{position:relative;display:flex;flex-direction:column;gap:8px;padding:12px 0}
+.pay::before{content:"";position:absolute;left:3px;top:28px;bottom:36px;width:2px;background:#f5f5f5}
+.pg{position:relative;display:flex;flex-direction:column;gap:8px}
+.pg .hd{display:flex;gap:16px;align-items:center;font-weight:700;font-size:14px;line-height:20px;color:#232323}
+.pg .hd > img{width:20px;height:20px;margin:0 -6px;flex:none}
+.pg .hd .lb{flex:1}
+.pg .tg{background:#f5f5f5;border:0;border-radius:4px;padding:6px;display:flex}
+.pg .tg img{width:18px;height:18px;margin:1px;transition:transform .2s}
+.pg .tg[aria-expanded="true"] img{transform:rotate(180deg)}
+.pg .ln{display:flex;gap:16px;padding:0 48px 0 24px;font-weight:500;font-size:14px;line-height:20px;color:#444;border-radius:4px;transition:background-color 1.2s ease}
+.pg .ln span{flex:1}
+.pg .ln b{font-weight:500;font-size:12px;line-height:18px;white-space:nowrap}
+.pg .ln.minus b{color:var(--plus);font-weight:700}
+.pg .ln.fresh{background:var(--fresh)}
+.pg .dv{height:2px;background:#eee;margin-left:24px}
+.pg .after{display:flex;gap:16px;align-items:flex-start}
+.pg .after > img{width:20px;height:20px;margin:0 -6px;flex:none}
+.pg .after div{flex:1;font-size:12px;line-height:18px;color:#232323;font-weight:500}
+.pg .after h4{margin:0 0 8px;font-size:14px;line-height:20px;font-weight:700}
+.pg .after p{margin:0 0 12px}
+.pg .after p:last-child{margin:0}
+.pg .after p b{font-weight:700}
 .sum .fine{color:var(--muted);font-size:11px;margin:12px 0 0}
-.voucher{display:flex;justify-content:space-between;align-items:center;border:2px solid var(--line-soft);border-radius:8px;padding:14px 16px;font-weight:700;font-size:18px;background:var(--surface)}
+.voucher{margin-top:20px;display:flex;justify-content:space-between;align-items:center;border:2px solid var(--line-soft);border-radius:8px;padding:14px 16px;font-weight:700;font-size:18px;background:var(--surface)}
 .voucher span:last-child{width:32px;height:32px;display:grid;place-items:center;background:var(--grey);border-radius:4px;font-size:20px}
 
 .bottom{position:fixed;left:0;right:0;bottom:0;background:var(--surface);box-shadow:0 -2px 8px rgba(0,0,0,.08);padding-block:14px calc(14px + env(safe-area-inset-bottom, 0px));z-index:20}
@@ -932,19 +946,11 @@ Paczka L (55 zł/mies. netto) to:
         <div class="side">
           <aside class="sum" id="summary" aria-labelledby="sum-h" aria-live="polite">
             <h2 id="sum-h">Podsumowanie opłat</h2>
-            <div class="disc-box"><b>Ceny uwzględniają rabaty za:</b>
-              <ul><li><b>5,00 zł/mies.</b> rabat za e-fakturę</li><li><b>5,00 zł/mies.</b> rabat za zgodę marketingową</li></ul>
-            </div>
-            <h3>Co miesiąc</h3>
-            <div class="rows" id="monthly"></div>
-            <div class="total"><span>Razem teraz</span><span class="num" id="tot-m"></span></div>
-            <div class="tsteps" id="tot-steps"></div>
-            <h3>Jednorazowo</h3>
-            <div class="rows" id="once"></div>
-            <div class="total"><span>Razem jednorazowo</span><span class="num" id="tot-o"></span></div>
+            <div class="disc-box" id="disc-box"></div>
+            <div class="pay" id="pay"></div>
             <p class="fine" id="sum-fine"></p>
+            <div class="voucher"><span>Masz kod rabatowy?</span><span aria-hidden="true">+</span></div>
           </aside>
-          <div class="voucher"><span>Masz kod rabatowy?</span><span aria-hidden="true">+</span></div>
         </div>
       </div>
     </div>
@@ -1522,9 +1528,6 @@ function renderServices(){
   $('services').querySelectorAll('[data-remove]').forEach(b => b.addEventListener('click', () => removeSvc(b.dataset.remove)));
 }
 
-function rowsHtml(rows){
-  return rows.map(r => `<div class="row ${r.minus?'minus':''} ${fresh.has(r.key)?'fresh':''}"><span>${r.label}${r.note ? `<small>${r.note}</small>` : ''}</span><span class="num">${r.value}</span></div>`).join('');
-}
 /* monthly rows carry price steps; the summary shows month 1 and how the total changes over time */
 function renderSummary(){
   const sp = speedDef(state.speed, state.period), md = curModem();
@@ -1563,16 +1566,37 @@ function renderSummary(){
   const m = rows.map(r => ({...r, value:money(stepAt(r.steps, 1), r.minus),
     note:r.steps.slice(1).map(([f, , v]) => `od ${f}. mies. ${money(v, r.minus).replace(',00 zł', ' zł')}`).join(' · ')}));
   const total = addSteps(...rows.map(r => r.steps));
-  $('monthly').innerHTML = rowsHtml(m);
-  $('once').innerHTML = rowsHtml(o);
-  $('tot-m').textContent = fmt(total[0][2]) + '/mies.';
-  $('tot-steps').hidden = total.length < 2 && state.period === 'bez';
-  $('tot-steps').innerHTML = (total.length > 1 ? `<h4>Jak zmieni się Twoja opłata</h4>${total.map(([f, t, v]) => `<div><span>${periodLabel(f, t, state.period)}</span><b>${fmt(v)}</b></div>`).join('')}` : '')
-    + (state.period === '24' ? '<p>Gwarancja ceny na 2 lata</p>' : '');
-  $('tot-o').textContent = fmt(o.reduce((a,r) => a + r.n, 0));
+  /* discounts already in the prices */
+  const disc = [[5, 'za e-fakturę odbieraną co miesiąc w Mój Orange'], [5, 'za wyrażenie zgód marketingowych'],
+    ...rows.filter(r => r.minus && r.steps.some(x => x[2] < 0)).map(r => [-Math.min(...r.steps.map(x => x[2])), DISC_TEXT[r.key.replace(/:.*/, '')]])];
+  $('disc-box').innerHTML = `<b>Ceny uwzględniają rabaty za:</b>${disc.map(([n, t]) => `<div class="it"><b>${fmt(n)}/mies.</b><span>${t}</span></div>`).join('')}
+    <p>Zgodę na e-fakturę i zgody marketingowe możesz zaznaczyć na kroku „Dane zamawiającego”.</p>`;
+  /* payment timeline: start fee, then one group per period where the total changes */
+  const line = (label, v, minus, key) => `<div class="ln ${minus ? 'minus' : ''} ${fresh.has(key) ? 'fresh' : ''}"><span>${label}</span><b class="num">${money(v, minus)}</b></div>`;
+  const group = (id, label, value, body, icon = 'pay-bullet.svg') => `<div class="pg"><div class="hd"><img src="assets/cart/${icon}" alt=""><span class="lb">${label}</span><b class="num">${value}</b>
+      ${body ? `<button class="tg" type="button" data-pg="${id}" aria-expanded="${payOpen.has(id)}" aria-label="Szczegóły: ${label}"><img src="assets/cart/arrow-down.svg" alt=""></button>` : ''}</div>
+    ${body && payOpen.has(id) ? body : ''}<div class="dv"></div></div>`;
+  const periodName = (f, t) => f === 1 && t === 1 ? 'W 1. miesiącu' : state.period === 'bez' && t === HORIZON ? `Od ${f}. miesiąca` : f === t ? `W ${f}. miesiącu` : `Od ${f}. do ${t}. miesiąca`;
+  if (!payOpen.size) payOpen.add(`p${total[0][0]}`);
+  const after = [state.period === '24' && ['internet światłowodowy', 'automatycznie przedłuży się na czas nieokreślony i wygasną rabaty na czas określony'],
+    state.added.mob && ['abonament komórkowy', 'na czas określony i wygasną rabaty przyznane na jej czas. Umowa automatycznie przedłuży się na czas nieokreślony, a cena wzrośnie o równowartość tych rabatów'],
+    state.added.tv && ['telewizję', 'na czas określony i wygasną rabaty przyznane na jej czas. Umowa automatycznie przedłuży się na czas nieokreślony, a cena wzrośnie o równowartość tych rabatów']].filter(Boolean);
+  $('pay').innerHTML =
+    group('start', 'Opłata na start', fmt(o.reduce((a, r) => a + r.n, 0)), o.map(r => line(r.label, r.n, false, r.key)).join(''))
+    + total.map(([f, t, v]) => group(`p${f}`, periodName(f, t), fmt(v),
+        m.filter(r => !(r.minus && Math.abs(stepAt(r.steps, f)) < 0.005)).map(r => line(r.label, stepAt(r.steps, f), r.minus, r.key)).join(''))).join('')
+    + (after.length ? `<div class="pg"><div class="after"><img src="assets/cart/assistance.svg" alt=""><div><h4>Co po 24. miesiącu?</h4>${after.map(([what, how]) => `<p>Wtedy kończy się Twoja umowa na <b>${what}</b> ${how}. Zanim to się stanie, zaproponujemy Ci najlepszą dostępną ofertę.</p>`).join('')}</div></div><div class="dv"></div></div>` : '')
+    + group('dost', 'Dostawa lub odbiór', '0,00–14,00 zł', '', 'delivery.svg');
   $('sum-fine').textContent = 'Ceny przykładowe, brutto. ' + (state.period === 'bez' ? 'Umowa bez okresu zobowiązania.' : 'Umowa na 24 miesiące.');
-  if (fresh.size){ const keep = fresh; setTimeout(() => { if (fresh === keep){ document.querySelectorAll('.row.fresh').forEach(r => r.classList.remove('fresh')); fresh = new Set(); } }, 1800); }
+  if (fresh.size){ const keep = fresh; setTimeout(() => { if (fresh === keep){ document.querySelectorAll('.ln.fresh').forEach(r => r.classList.remove('fresh')); fresh = new Set(); } }, 1800); }
 }
+const payOpen = new Set();
+const DISC_TEXT = {disc:'za łączenie usług domowych i mobilnych', mob:'za kolejne abonamenty komórkowe', cli:'dla klienta Orange na abonament komórkowy przez 24 mies.'};
+$('pay').addEventListener('click', e => {
+  const b = e.target.closest('[data-pg]'); if (!b) return;
+  payOpen.has(b.dataset.pg) ? payOpen.delete(b.dataset.pg) : payOpen.add(b.dataset.pg);
+  renderSummary(); $('pay').querySelector(`[data-pg="${b.dataset.pg}"]`)?.focus();
+});
 function renderAll(){ $('cli-note').hidden = !isClient; renderServices(); renderSummary(); }
 
 /* panel */
@@ -1831,7 +1855,7 @@ async function demo(){
     () => wait(400),
     () => tap($('p-add')),
     () => wait(500),
-    () => point(document.querySelector('.row.fresh') || $('summary')),
+    () => point(document.querySelector('.ln.fresh') || $('summary')),
     () => wait(1600),
     () => tap(document.querySelector('#svc-tv [data-open]')),
     () => wait(600),
@@ -1839,7 +1863,7 @@ async function demo(){
     () => wait(900),
     () => tap($('tvp-back')),
     () => wait(500),
-    () => point(document.querySelector('.row.fresh') || $('summary')),
+    () => point(document.querySelector('.ln.fresh') || $('summary')),
     () => wait(1400)
   ];
   for (const s of steps){ if (run !== demoRun) return; await s(); }
