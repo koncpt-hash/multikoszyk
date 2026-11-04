@@ -495,21 +495,26 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .seg2b span{display:block;text-align:center;padding:10px;font-weight:700;font-size:14px}
 .seg2b input:checked + span{background:#232323;color:#fff}
 .seg2b input:focus-visible + span{outline:3px solid var(--orange);outline-offset:-3px}
-.spd{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.spd{display:flex;flex-direction:column;gap:8px}
 .mdg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .sp-t,.md-t{position:relative;border:2px solid #ccc;border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;cursor:pointer;background:#fff}
 .sp-t input,.md-t input{position:absolute;opacity:0}
 .sp-t:has(input:checked),.md-t:has(input:checked){border-color:var(--orange-ring);box-shadow:0 0 0 3px #ffe2cc}
 .sp-t:has(input:focus-visible),.md-t:has(input:focus-visible){outline:3px solid var(--orange);outline-offset:2px}
-.sp-t .nm,.md-t .nm{font-weight:700;font-size:14px}
-.sp-t .pn{font-weight:700;font-size:22px;line-height:28px;color:#f15e00}
-.sp-t .pn small,.md-t .pn small{font-size:12px;color:#444;font-weight:500}
-.sp-t .nx,.md-t .mt{font-size:12px;color:#444}
+.md-t .nm{font-weight:700;font-size:14px}
+.sp-t{display:grid;grid-template-columns:24px 1fr;column-gap:12px;row-gap:6px;padding:14px 16px}
+.sp-t .rb{grid-row:1 / span 3;width:24px;height:24px;border-radius:12px;border:2px solid #8f8f8f;display:grid;place-items:center}
+.sp-t input:checked ~ .rb{background:#17a02f;border-color:#17a02f}
+.sp-t input:checked ~ .rb::after{content:"";width:12px;height:12px;background:url(assets/tv/tick.svg) center/contain no-repeat}
+.sp-t .nm{font-weight:700;font-size:20px;line-height:26px;color:#232323}
+.sp-t .stp{display:flex;flex-direction:column;gap:2px}
+.sp-t .stp > span{display:flex;justify-content:space-between;gap:12px;font-size:14px;line-height:20px;color:#444}
+.sp-t .stp b{font-weight:700;color:#232323;white-space:nowrap}
+.ps-n img{width:20px;height:20px;flex:none}
+.md-t .pn small{font-size:12px;color:#444;font-weight:500}
+.md-t .mt{font-size:12px;color:#444}
 .sp-t .av{font-size:12px;color:#666;margin-top:4px}
 .md-t .pn{font-weight:700;font-size:14px;margin-top:4px}
-.tline{background:#f5f5f5;border-radius:4px;padding:8px 10px;font-size:13px}
-.tline summary{cursor:pointer;font-weight:700}
-.tline div{display:flex;justify-content:space-between;padding:2px 0}
 .mtag{display:inline-block;background:#b5e8f7;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;margin-left:4px;vertical-align:1px}
 .tv-subs{display:flex;flex-direction:column;border-top:1px solid var(--line-soft);padding-top:8px;gap:8px}
 .tv-sub{display:flex;gap:12px;align-items:center;justify-content:space-between}
@@ -1149,8 +1154,8 @@ const SERVICES = [
 const svcById = id => SERVICES.find(s => s.id === id);
 /* installation add-ons live in the internet sidebar */
 const INSTALL = [
-  {id:'asysta', name:'Asysta instalacyjna', meta:'Technik podłączy i skonfiguruje modem i dekoder', price:99},
-  {id:'siec', name:'Wykonanie sieci domowej', meta:'Okablowanie i punkty Wi‑Fi w domu', price:199}];
+  {id:'asysta', name:'Asysta instalacyjna', meta:'Technik podłączy i skonfiguruje modem i dekoder', price:0},
+  {id:'siec', name:'Wykonanie sieci domowej', meta:'Okablowanie i punkty Wi‑Fi w domu', price:149}];
 
 /* ---------- views ---------- */
 let loadTimer = null;
@@ -1595,17 +1600,16 @@ function openNetPanel(opener){
 function renderNetPanel(focusSel){
   const top = $('p-body').scrollTop;
   const mdId = draft.modem || defaultModem(draft.speed);
-  const cur = speedDef(draft.speed, draft.period);
   $('p-body').innerHTML = `
     ${state.origPeriod === 'bez' ? `<section class="ps"><h3>Umowa</h3>
       <div class="seg2b" role="radiogroup" aria-label="Umowa">${[['bez', 'Bezterminowa'], ['24', '24 miesiące']].map(([v, l]) => `<label><input type="radio" name="np-period" value="${v}" ${draft.period === v ? 'checked' : ''}><span>${l}</span></label>`).join('')}</div>
       ${draft.period === '24' ? '<p class="ps-n">Na 24 mies. płacisz mniej i możesz dodać telewizję z Amazon Prime oraz Netflix.</p>' : ''}
       ${draft.note ? `<p class="ps-w" role="status">${draft.note}</p>` : ''}</section>` : ''}
     <section class="ps"><h3>Prędkość</h3>
-      <div class="spd">${speedsFor(draft.period).map(x => `<label class="sp-t"><input type="radio" name="np-speed" value="${x.id}" ${draft.speed === x.id ? 'checked' : ''}>
-        <span class="nm">${x.name}</span><span class="pn">${zl(x.steps[0][2])}<small>/mies.</small></span>
-        <span class="nx">${nextText(x.steps)}</span><span class="av">średnio ${zl(avgSteps(x.steps))}/mies.</span></label>`).join('')}</div>
-      <details class="tline"><summary>Zobacz ceny w czasie · ${cur.name}</summary>${cur.steps.map(([f, t, v]) => `<div><span>${periodLabel(f, t, draft.period)}</span><b>${fmt(v)}</b></div>`).join('')}</details>
+      <div class="spd">${speedsFor(draft.period).map(x => `<label class="sp-t"><input type="radio" name="np-speed" value="${x.id}" ${draft.speed === x.id ? 'checked' : ''}><span class="rb" aria-hidden="true"></span>
+        <span class="nm">Światłowód ${x.name}</span>
+        <span class="stp">${x.steps.map(([f, t, v]) => `<span><span>${periodLabel(f, t, draft.period)}</span><b>${fmt(v)}/mies.</b></span>`).join('')}</span>
+        <span class="av">średnio ${zl(avgSteps(x.steps))}/mies. przez 24 mies.</span></label>`).join('')}</div>
     </section>
     <section class="ps"><h3>Modem</h3>
       <p class="ps-n">Modem podłączysz samodzielnie – łatwo, krok po kroku.</p>
@@ -1613,7 +1617,7 @@ function renderNetPanel(focusSel){
         <span class="nm">${m.name}</span><span class="mt">${m.meta}</span><span class="pn">${fmt(modemPrice(m, draft.speed))}<small>/mies.</small></span></label>`).join('')}</div>
     </section>
     <section class="ps"><h3>Instalacja</h3>
-      <p class="ps-ok">Technik zainstaluje przyłącze w lokalu lub w budynku – w cenie.</p>
+      <p class="ps-n"><img src="assets/tv/alert-info.svg" alt="">Technik zainstaluje przyłącze w lokalu lub w budynku – w cenie.</p>
       <p class="ps-sub">Może Ci się przydać</p>
       ${INSTALL.map(x => `<label class="tile cb"><input type="checkbox" name="np-inst" value="${x.id}" ${draft.inst.includes(x.id) ? 'checked' : ''}><span class="ind" aria-hidden="true"></span>
         <span><span class="t">${x.name}</span><span class="d" style="display:block">${x.meta}</span></span><span class="p num">${fmt(x.price)}<small>jednorazowo</small></span></label>`).join('')}
