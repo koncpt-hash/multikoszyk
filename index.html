@@ -475,6 +475,7 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .nrows > div > .btn-s{align-self:flex-start;flex:none}
 .nrows dd{margin:0;flex:1;font-weight:700;color:#232323}
 .nrows dd small{display:block;font-weight:500;font-size:13px;color:#444}
+.nrows dd small.addr{color:#666;margin-top:2px}
 .net-box .pbadges{margin-top:12px}
 .ps{padding:4px 0 16px;border-bottom:2px solid #eee;display:flex;flex-direction:column;gap:10px}
 .ps:last-child{border-bottom:0}
@@ -1594,7 +1595,7 @@ function renderSpeeds(){
   $('speeds').innerHTML = `
     <div class="net-box">
       <dl class="nrows">
-        <div><dt>Prędkość</dt><dd>Światłowód ${sp.name}<small>${stepsText(sp.steps)}</small></dd><button class="btn-s" type="button" id="net-change">Zmień</button></div>
+        <div><dt>Prędkość</dt><dd>Światłowód ${sp.name}<small>${stepsText(sp.steps)}</small><small class="addr">${avAddress()}</small></dd><button class="btn-s" type="button" id="net-change">Zmień</button></div>
         <div><dt>Umowa</dt><dd>${state.period === 'bez' ? 'Bezterminowa' : '24 miesiące'}</dd></div>
         <div><dt>Modem</dt><dd>${md.name}<small>${fmt(modemPrice(md, state.speed))}/mies.</small></dd></div>
         <div><dt>Instalacja</dt><dd>Technik w cenie<small>${inst.length ? inst.join(', ') : 'bez dodatków'}</small></dd></div>
@@ -1795,9 +1796,9 @@ function renderNets(){
     const sp = speedDef(n.speed, n.period), md = MODEMS.find(m => m.id === (n.modem || defaultModem(n.speed)));
     const inst = n.inst.map(id => INSTALL.find(x => x.id === id).name);
     return `<section class="card" style="--tint:var(--t-net)" aria-label="Internet ${n2Addr(n.addr)}">
-      <div class="card-h"><h2>Internet · ${n2Addr(n.addr)}</h2><button class="btn-s" type="button" data-net2-del="${n.id}">Usuń</button></div>
+      <div class="card-h"><h2>Internet</h2><button class="btn-s" type="button" data-net2-del="${n.id}">Usuń</button></div>
       <div class="net-b"><div class="net-box"><dl class="nrows">
-        <div><dt>Prędkość</dt><dd>Światłowód ${sp.name}<small>${stepsText(sp.steps)}</small></dd><button class="btn-s" type="button" data-net2="${n.id}">Zmień</button></div>
+        <div><dt>Prędkość</dt><dd>Światłowód ${sp.name}<small>${stepsText(sp.steps)}</small><small class="addr">${n2Addr(n.addr)}</small></dd><button class="btn-s" type="button" data-net2="${n.id}">Zmień</button></div>
         <div><dt>Umowa</dt><dd>${n.period === 'bez' ? 'Bezterminowa' : '24 miesiące'}</dd></div>
         <div><dt>Modem</dt><dd>${md.name}<small>${fmt(modemPrice(md, n.speed))}/mies.</small></dd></div>
         <div><dt>Instalacja</dt><dd>Technik w cenie<small>${inst.length ? inst.join(', ') : 'bez dodatków'}</small></dd></div>
