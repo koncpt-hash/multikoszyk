@@ -1689,12 +1689,14 @@ function renderServices(){
   const offers = group('Często kupowane razem', '', ['tv', 'dek'])
     + group('W zestawie taniej!', 'Dodaj usługi do światłowodu i zyskaj rabat!', ['mob'])
     + group('To może ci się przydać', '', ['multi', 'ct']);
-  $('services').innerHTML = ORDER.filter(has).map(id => card(svcById(id))).join('')
+  /* services keep the order they were added in, so the newest sits right above 'Dodaj do pakietu' */
+  const added = [...mineBefore.filter(has), ...ORDER.filter(id => has(id) && !mineBefore.includes(id))];
+  $('services').innerHTML = added.map(id => card(svcById(id))).join('')
     + (offers ? `<div class="offers"><h2 class="zone-h">Dodaj do pakietu</h2>${offers}</div>` : '');
   const n = 1 + state.nets.length + ORDER.filter(has).length;
   $('mine-n').textContent = `· ${n} ${n === 1 ? 'usługa' : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'usługi' : 'usług'}`;
   /* a service that just moved into the cart gets scrolled to and flashed */
-  const added = ORDER.filter(has), moved = added.filter(id => !mineBefore.includes(id));
+  const moved = added.filter(id => !mineBefore.includes(id));
   mineBefore = added;
   if (moved.length && !$('view-cart').hidden && !quietRender){
     const el = $('svc-' + moved[0]); el.scrollIntoView({block:'center', behavior:'smooth'}); el.classList.add('flash');
