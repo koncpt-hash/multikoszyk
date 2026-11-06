@@ -545,7 +545,10 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .mnum b{font-size:24px;line-height:30px;font-weight:700}
 .sp-t .nm.sm{font-size:16px;line-height:22px}
 .sp-t .sub{font-size:13px;color:#444}
-.mline{align-items:flex-start}
+.mline{align-items:flex-start;gap:12px}
+.mline > span:not(.hbtns){flex:1;min-width:0;font-weight:700}
+.mline .mic{width:32px;height:32px;flex:none}
+.mline + .mline{border-top:2px solid #eee;padding-top:12px}
 .add-dev{display:flex;align-items:center;gap:16px;width:100%;margin-top:4px;padding:20px 16px;background:#fff;border:2px solid #ccc;border-radius:8px;font-weight:700;font-size:16px;line-height:22px;color:#232323;text-align:left}
 .add-dev:hover{border-color:#232323}
 .add-dev span{flex:1}
@@ -1659,7 +1662,7 @@ function renderServices(){
     if (sel && sel.length){
       const items = sel.map(id => s.options.find(o => o.id === id));
       const list = s.id === 'mob'
-        ? state.lines.map((l, i) => { const o = s.options.find(x => x.id === l.plan); return `<li class="mline"><span>Numer ${i + 1} · ${o.name} ${o.meta}<small>${lineLabel(l)} · ${SIM_TYPE[l.sim]}</small><small>${stepsText(o.steps)}</small></span>
+        ? state.lines.map((l, i) => { const o = s.options.find(x => x.id === l.plan); return `<li class="mline"><img class="mic" src="assets/cart/ic-sim.svg" alt=""><span>Numer ${i + 1} · ${o.name} ${o.meta}<small>${lineLabel(l)} · ${SIM_TYPE[l.sim]}</small><small>${stepsText(o.steps)}</small></span>
             <span class="hbtns"><button class="lnk3" type="button" data-line-edit="${l.id}">Zmień</button><button class="lnk3" type="button" data-line-del="${l.id}">Usuń</button></span></li>`; }).join('')
         : items.map(o => `<li><span>${o.name}<small>${o.meta}${s.id === 'tv' && tvPlan(o) === 'bez' ? ' · umowa bezterminowa' : ''}</small></span><span class="num">${o.per === 'm' ? stepsText(optSteps(o)) : fmt(o.price) + perLabel(o)}</span></li>`).join('');
       return `<section class="card" id="svc-${s.id}" style="--tint:var(${s.id === 'mob' ? '--t-dek' : s.tint})" aria-label="${s.title}">
