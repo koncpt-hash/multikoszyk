@@ -660,6 +660,39 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .p-sum b{font-size:18px}
 .p-sum b small{display:block;font-size:12px;font-weight:400;color:var(--muted);text-align:right}
 .p-foot .btn-p{width:100%}
+.p-foot.off .p-sum,.p-foot.off #p-add{display:none}
+.add-net{align-self:flex-start;border:2px solid #232323;border-radius:4px;padding:6px 16px;font-weight:700;font-size:14px;line-height:20px}
+/* address check for an extra internet (Figma 6659:20372) */
+.n2f{display:flex;flex-direction:column;gap:16px}
+.n2f h3{margin:0;font-weight:700;font-size:20px;line-height:26px}
+.n2row{display:flex;gap:16px}
+.n2row > *{flex:1 1 0;min-width:0}
+.n2-in{position:relative;display:block}
+.n2-in select,.n2-in input{width:100%;height:60px;border:2px solid #ccc;border-radius:8px;background:#fff;padding:24px 48px 8px 18px;font:inherit;font-weight:500;font-size:14px;color:#232323;appearance:none}
+.n2-in input{padding-right:18px}
+.n2-in > span{position:absolute;left:20px;top:20px;font-weight:500;font-size:14px;color:#666;pointer-events:none;transition:all .15s}
+.n2-in > span i{font-style:normal;color:#f15e00}
+.n2-in.val > span,.n2-in:focus-within > span{top:8px;font-size:12px;line-height:14px}
+.n2-in select:disabled,.n2-in input:disabled{background:#eee}
+.n2-in select:focus,.n2-in input:focus{outline:0;border-color:#232323}
+.n2-in > b{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:4px;background:#f5f5f5;display:grid;place-items:center;pointer-events:none}
+.n2-in > b img{width:18px;height:18px}
+.n2-chk{display:flex;gap:8px;align-items:center;font-weight:500;font-size:14px;cursor:pointer}
+.n2-chk input{width:24px;height:24px;accent-color:#232323;margin:0}
+.n2-err{margin:0;font-size:13px;color:#cd3c14;font-weight:500}
+.n2-note{display:flex;gap:8px;font-size:14px;line-height:20px;font-weight:500;margin:0}
+.n2-note img{width:20px;height:20px;flex:none}
+.n2-note b{text-decoration:underline}
+.n2ld{position:relative;width:40px;height:4px;background:rgba(0,0,0,.3);overflow:hidden}
+.n2ld i{position:absolute;top:0;bottom:0;left:0;width:12.5%;background:#000;animation:ld 1.2s linear forwards}
+.n2-wait{min-height:280px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;font-weight:700;font-size:16px}
+.n2-ok{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;padding:24px 0}
+.n2-ok .tick{width:56px;height:56px;border-radius:28px;background:#17a02f;display:grid;place-items:center}
+.n2-ok .tick img{width:28px;height:28px}
+.n2-ok h3{margin:0;font-weight:700;font-size:24px;line-height:28px}
+.n2-ok p{margin:0;font-weight:500;font-size:14px;color:#444}
+.n2-addr{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;font-weight:700;font-size:14px}
+.n2-addr small{display:block;font-weight:500;color:#666;font-size:12px}
 .p-foot .link{align-self:center}
 @media (max-width:640px){
   .panel{top:auto;left:0;width:100%;max-height:88vh;border-radius:16px 16px 0 0;overflow:hidden;transform:translateY(100%);padding-top:0}
@@ -993,6 +1026,8 @@ Paczka L (55 zł/mies. netto) to:
             <div class="card-h"><h2 id="net-h">Internet</h2><button class="btn-s" type="button">Usuń</button></div>
             <div class="net-b" id="speeds"></div>
           </section>
+          <div class="col" id="nets-extra"></div>
+          <button class="btn-s add-net" type="button" id="add-net">+ Dodaj kolejny internet</button>
 
           <div class="col" id="services"></div>
         </div>
@@ -1530,7 +1565,7 @@ $('lg-back').addEventListener('click', () => show('av'));
 document.querySelectorAll('#view-login [data-soon]').forEach(b => b.addEventListener('click', () => toast('Ta ścieżka nie jest częścią prototypu', false)));
 
 /* ---------- cart ---------- */
-const emptyState = () => ({speed:nearestSpeed(lp.speed, lp.period), period:lp.period, origPeriod:lp.period, modem:null, inst:[], lines:[], added:{}, qty:{}, tvPlan:{}});
+const emptyState = () => ({speed:nearestSpeed(lp.speed, lp.period), period:lp.period, origPeriod:lp.period, modem:null, inst:[], nets:[], lines:[], added:{}, qty:{}, tvPlan:{}});
 let state = emptyState();
 let fresh = new Set();
 let undoState = null;
@@ -1567,6 +1602,7 @@ function renderSpeeds(){
       ${pBadges('net')}
     </div>`;
   $('net-change').addEventListener('click', e => openPanel('net', e.currentTarget));
+  renderNets();
 }
 
 function renderServices(){
@@ -1614,6 +1650,13 @@ function renderSummary(){
                 {key:'router', label:`Modem ${md.name}`, steps:flat(modemPrice(md, state.speed))}];
   const o = [{key:'akt', label:'Opłata aktywacyjna za Światłowód', value:fmt(99), n:99},
              ...state.inst.map(id => { const x = INSTALL.find(i => i.id === id); return {key:`inst:${id}`, label:x.name, value:fmt(x.price), n:x.price}; })];
+  for (const n of state.nets){
+    const sp = speedDef(n.speed, n.period), md = MODEMS.find(m => m.id === (n.modem || defaultModem(n.speed))), where = n2Addr(n.addr);
+    rows.push({key:`net2:${n.id}`, label:`Abonament za Orange Światłowód ${sp.name} (${where})`, steps:sp.steps},
+              {key:`router2:${n.id}`, label:`Modem ${md.name} (${where})`, steps:flat(modemPrice(md, n.speed))});
+    o.push({key:`akt2:${n.id}`, label:`Opłata aktywacyjna za Światłowód (${where})`, value:fmt(99), n:99},
+           ...n.inst.map(id => { const x = INSTALL.find(i => i.id === id); return {key:`inst2:${n.id}:${id}`, label:`${x.name} (${where})`, value:fmt(x.price), n:x.price}; }));
+  }
   const mob = [];
   for (const s of SERVICES){
     for (const id of (state.added[s.id] || [])){
@@ -1681,8 +1724,100 @@ function renderAll(){ $('cli-note').hidden = !isClient; renderServices(); render
 /* panel */
 /* internet sidebar: contract (only for open-ended entries), speed, modem and installation in one place */
 let draft = null;
+/* another internet at a different address: address check first, then the usual configuration */
+const N2_CITIES = {Warszawa:['Marszałkowska', 'Puławska', 'Grochowska'], Kraków:['Długa', 'Karmelicka', 'Wielicka'], Gdańsk:['Grunwaldzka', 'Długa'], Wrocław:['Legnicka', 'Powstańców Śląskich']};
+const n2Addr = a => `${a.nostreet ? '' : `ul. ${a.street} `}${a.no}${a.flat ? '/' + a.flat : ''}, ${a.city}`;
+function openNet2Panel(opener, id){
+  const cur = state.nets.find(n => n.id === id);
+  panelSvc = {id:'net2', net:true}; lastFocus = opener || document.activeElement;
+  draft = cur ? {...cur, inst:[...cur.inst], extra:true, step:'cfg', note:''}
+    : {extra:true, id:`n${Date.now()}`, step:'addr', addr:{city:'', street:'', no:'', flat:'', nostreet:false}, period:state.period, speed:nearestSpeed('1g', state.period), modem:null, inst:[], note:''};
+  $('panel').style.setProperty('--tint', 'var(--t-net)');
+  $('p-title').textContent = cur ? `Internet · ${n2Addr(cur.addr)}` : 'Kolejny internet';
+  $('p-lead').textContent = '';
+  $('p-remove').hidden = !cur; $('p-remove').textContent = 'Usuń ten internet';
+  renderNetPanel();
+  $('scrim').hidden = false; $('panel').hidden = false; document.body.classList.add('side-open');
+  requestAnimationFrame(() => { $('scrim').classList.add('on'); $('panel').classList.add('on'); });
+  setTimeout(() => $('p-body').querySelector('select, input:checked')?.focus({preventScroll:true}), 50);
+}
+function renderNet2Step(){
+  const a = draft.addr, on = !!a.city;
+  $('panel').querySelector('.p-foot').classList.add('off');
+  if (draft.step === 'check'){ $('p-body').innerHTML = '<div class="n2-wait" role="status"><div class="n2ld" aria-hidden="true"><i></i></div>Sprawdzamy dostępność pod tym adresem…</div>'; return; }
+  if (draft.step === 'ok'){
+    const best = Object.keys(OFFER[draft.period]).pop();
+    $('p-body').innerHTML = `<div class="n2-ok"><span class="tick"><img src="assets/tv/tick.svg" alt=""></span><h3>Super, jesteś w zasięgu!</h3>
+      <p>Pod adresem ${n2Addr(a)} dostępny jest światłowód ${SPEED_DEFS[best].name}.</p>
+      <button class="sb-btn pri full" type="button" id="n2-next">Wybierz prędkość</button></div>`;
+    return;
+  }
+  $('p-body').innerHTML = `<form class="n2f" id="n2-form" onsubmit="return false" novalidate>
+    <h3>Sprawdź, czy jesteś w zasięgu.</h3>
+    <label class="n2-in ${a.city ? 'val' : ''}"><span>Miejscowość<i>*</i></span><select id="n2-city"><option value=""></option>${Object.keys(N2_CITIES).map(c => `<option ${a.city === c ? 'selected' : ''}>${c}</option>`).join('')}</select><b aria-hidden="true"><img src="assets/lp/select-arrow.svg" alt=""></b></label>
+    <label class="n2-chk"><input type="checkbox" id="n2-nostreet" ${a.nostreet ? 'checked' : ''}>W mojej miejscowości nie ma ulicy</label>
+    ${a.nostreet ? '' : `<label class="n2-in ${a.street ? 'val' : ''}"><span>Ulica<i>*</i></span><select id="n2-street" ${on ? '' : 'disabled'}><option value=""></option>${(N2_CITIES[a.city] || []).map(x => `<option ${a.street === x ? 'selected' : ''}>${x}</option>`).join('')}</select><b aria-hidden="true"><img src="assets/lp/${on ? 'select-arrow' : 'select-arrow-disabled'}.svg" alt=""></b></label>`}
+    <div class="n2row"><label class="n2-in ${a.no ? 'val' : ''}"><span>Nr domu<i>*</i></span><input id="n2-no" value="${a.no}" ${on ? '' : 'disabled'} autocomplete="off"></label>
+      <label class="n2-in ${a.flat ? 'val' : ''}"><span>Nr lokalu</span><input id="n2-flat" value="${a.flat}" ${on ? '' : 'disabled'} autocomplete="off"></label></div>
+    ${draft.err ? `<p class="n2-err" role="alert">${draft.err}</p>` : ''}
+    <button class="sb-btn pri full" type="submit" id="n2-go">Pokaż oferty</button>
+    <p class="n2-note"><img src="assets/lp/protection-3.svg" alt=""><span><b>Przetwarzanie danych osobowych</b>, w tym adresu, służy jedynie do dopasowania oferty.</span></p>
+  </form>`;
+}
+$('p-body').addEventListener('input', e => {
+  if (!draft?.extra || draft.step !== 'addr') return;
+  const k = {'n2-no':'no', 'n2-flat':'flat'}[e.target.id]; if (!k) return;
+  draft.addr[k] = e.target.value.trim(); e.target.closest('.n2-in').classList.toggle('val', !!e.target.value);
+});
+$('p-body').addEventListener('change', e => {
+  if (!draft?.extra || draft.step !== 'addr' || !panelSvc?.net) return;
+  const t = e.target, a = draft.addr;
+  if (t.id === 'n2-city'){ a.city = t.value; a.street = ''; }
+  else if (t.id === 'n2-street') a.street = t.value;
+  else if (t.id === 'n2-nostreet'){ a.nostreet = t.checked; a.street = ''; }
+  else return;
+  draft.err = ''; renderNet2Step(); $('p-body').querySelector('#' + t.id)?.focus();
+});
+$('p-body').addEventListener('click', e => {
+  if (!draft?.extra || !panelSvc?.net) return;
+  if (e.target.closest('#n2-go')){
+    const a = draft.addr;
+    draft.err = !a.city ? 'Wybierz miejscowość.' : !a.nostreet && !a.street ? 'Wybierz ulicę.' : !a.no ? 'Podaj numer domu.' : '';
+    if (draft.err){ renderNet2Step(); return; }
+    draft.step = 'check'; renderNet2Step();
+    setTimeout(() => { if (draft?.extra && draft.step === 'check'){ draft.step = 'ok'; renderNet2Step(); $('n2-next')?.focus(); } }, 1200);
+  }
+  if (e.target.closest('#n2-next')){ draft.step = 'cfg'; renderNetPanel(); }
+  if (e.target.closest('#n2-addr')){ draft.step = 'addr'; renderNetPanel(); }
+});
+function renderNets(){
+  $('nets-extra').innerHTML = state.nets.map(n => {
+    const sp = speedDef(n.speed, n.period), md = MODEMS.find(m => m.id === (n.modem || defaultModem(n.speed)));
+    const inst = n.inst.map(id => INSTALL.find(x => x.id === id).name);
+    return `<section class="card" style="--tint:var(--t-net)" aria-label="Internet ${n2Addr(n.addr)}">
+      <div class="card-h"><h2>Internet · ${n2Addr(n.addr)}</h2><button class="btn-s" type="button" data-net2-del="${n.id}">Usuń</button></div>
+      <div class="net-b"><div class="net-box"><dl class="nrows">
+        <div><dt>Prędkość</dt><dd>Światłowód ${sp.name}<small>${stepsText(sp.steps)}</small></dd><button class="btn-s" type="button" data-net2="${n.id}">Zmień</button></div>
+        <div><dt>Umowa</dt><dd>${n.period === 'bez' ? 'Bezterminowa' : '24 miesiące'}</dd></div>
+        <div><dt>Modem</dt><dd>${md.name}<small>${fmt(modemPrice(md, n.speed))}/mies.</small></dd></div>
+        <div><dt>Instalacja</dt><dd>Technik w cenie<small>${inst.length ? inst.join(', ') : 'bez dodatków'}</small></dd></div>
+      </dl></div></div></section>`;
+  }).join('');
+}
+$('nets-extra').addEventListener('click', e => {
+  const c = e.target.closest('[data-net2]'); if (c) return openNet2Panel(c, c.dataset.net2);
+  const d = e.target.closest('[data-net2-del]'); if (d) removeNet2(d.dataset.net2Del);
+});
+function removeNet2(id){
+  undoState = JSON.parse(JSON.stringify(state));
+  state.nets = state.nets.filter(n => n.id !== id); fresh = new Set();
+  if (panelSvc) closePanel();
+  renderSpeeds(); renderAll(); toast('Usunięto internet');
+}
+$('add-net').addEventListener('click', e => openNet2Panel(e.currentTarget));
 function openNetPanel(opener){
   panelSvc = {id:'net', net:true}; lastFocus = opener || document.activeElement;
+  $('p-remove').textContent = 'Usuń z pakietu';
   draft = {period:state.period, speed:state.speed, modem:state.modem, inst:[...state.inst], note:''};
   $('panel').style.setProperty('--tint', 'var(--t-net)');
   $('p-title').textContent = 'Internet';
@@ -1694,10 +1829,13 @@ function openNetPanel(opener){
   setTimeout(() => $('p-body').querySelector('input:checked')?.focus({preventScroll:true}), 50);
 }
 function renderNetPanel(focusSel){
+  if (draft.extra && draft.step !== 'cfg') return renderNet2Step();
+  $('panel').querySelector('.p-foot').classList.remove('off');
   const top = $('p-body').scrollTop;
   const mdId = draft.modem || defaultModem(draft.speed);
   $('p-body').innerHTML = `
-    ${state.origPeriod === 'bez' ? `<section class="ps"><h3>Umowa</h3>
+    ${draft.extra ? `<section class="ps"><div class="n2-addr"><span><small>Adres</small>${n2Addr(draft.addr)}</span><button class="lnk2" type="button" id="n2-addr">Zmień adres</button></div></section>` : ''}
+    ${!draft.extra && state.origPeriod === 'bez' ? `<section class="ps"><h3>Umowa</h3>
       <div class="seg2b" role="radiogroup" aria-label="Umowa">${[['bez', 'Bezterminowa'], ['24', '24 miesiące']].map(([v, l]) => `<label><input type="radio" name="np-period" value="${v}" ${draft.period === v ? 'checked' : ''}><span>${l}</span></label>`).join('')}</div>
       ${draft.period === '24' ? '<p class="ps-n">Na 24 mies. płacisz mniej i możesz dodać telewizję z Amazon Prime oraz Netflix.</p>' : ''}
       ${draft.note ? `<p class="ps-w" role="status">${draft.note}</p>` : ''}</section>` : ''}
@@ -1729,7 +1867,7 @@ function updateNetFoot(){
   const once = draft.inst.reduce((a, id) => a + INSTALL.find(x => x.id === id).price, 0);
   $('p-sum-l').textContent = 'Internet teraz';
   $('p-sum-v').innerHTML = `${fmt(st[0][2])}/mies.${st.length > 1 ? `<small>od ${st[1][0]}. mies. ${fmt(st[1][2])}</small>` : ''}${once ? `<small>+${fmt(once)} jednorazowo</small>` : ''}`;
-  $('p-add').disabled = false; $('p-add').textContent = 'Zapisz';
+  $('p-add').disabled = false; $('p-add').textContent = draft.extra && !state.nets.some(n => n.id === draft.id) ? 'Dodaj do koszyka' : 'Zapisz';
 }
 $('p-body').addEventListener('change', e => {
   if (!panelSvc?.net) return;
@@ -1747,6 +1885,7 @@ $('p-body').addEventListener('change', e => {
 /* mobile sidebar adds or edits one number: process on top, then plan and SIM type */
 let mdraft = null;
 function openMobPanel(opener, lineId){
+  $('panel').querySelector('.p-foot').classList.remove('off');
   panelSvc = {id:'mob', mob:true}; lastFocus = opener || document.activeElement;
   const cur = state.lines.find(l => l.id === lineId), last = state.lines[state.lines.length - 1];
   mdraft = cur ? {...cur} : {id:`l${Date.now()}`, proc:'new', number:newNumber(), plan:last?.plan || 'm', sim:last?.sim || 'esim'};
@@ -1829,6 +1968,7 @@ function removeLine(id){
 }
 function openPanel(id, opener){
   if (id === 'net') return openNetPanel(opener);
+  $('panel').querySelector('.p-foot').classList.remove('off');
   if (id === 'mob') return openMobPanel(opener);
   panelSvc = svcById(id); lastFocus = opener || document.activeElement;
   const current = state.added[id] || [];
@@ -1867,7 +2007,7 @@ function closePanel(){
   $('scrim').classList.remove('on'); $('panel').classList.remove('on'); document.body.classList.remove('side-open');
   setTimeout(() => { $('scrim').hidden = true; $('panel').hidden = true; }, 300);
   const id = panelSvc && panelSvc.id; panelSvc = null;
-  const target = id && document.querySelector(id === 'net' ? '#net-change' : `#svc-${id} [data-open]`);
+  const target = id && document.querySelector(id === 'net2' ? '#add-net' : id === 'net' ? '#net-change' : `#svc-${id} [data-open]`);
   (target || lastFocus)?.focus({preventScroll:true});
 }
 function commit(){
@@ -1881,6 +2021,16 @@ function commit(){
     fresh = new Set([`mob:${mdraft.id}`, ...(i < 0 ? ['mob:next', 'disc'] : [])]);
     closePanel(); renderAll();
     toast(`${i < 0 ? 'Dodano do pakietu' : 'Zmieniono'}: ${plan.name} · ${lineLabel(mdraft)}`);
+    return;
+  }
+  if (s.net && draft.extra){
+    undoState = JSON.parse(JSON.stringify(state));
+    const n = {id:draft.id, addr:{...draft.addr}, period:draft.period, speed:draft.speed, modem:draft.modem, inst:[...draft.inst]};
+    const i = state.nets.findIndex(x => x.id === n.id);
+    if (i < 0) state.nets.push(n); else state.nets[i] = n;
+    fresh = new Set([`net2:${n.id}`, `router2:${n.id}`, `akt2:${n.id}`]);
+    renderSpeeds(); renderAll(); closePanel();
+    toast(`${i < 0 ? 'Dodano internet' : 'Zapisano internet'}: ${n2Addr(n.addr)}`);
     return;
   }
   if (s.net){
@@ -1917,7 +2067,7 @@ function toast(t, undo = true){
 }
 $('toast-undo').addEventListener('click', () => { if (undoState){ state = undoState; undoState = null; fresh = new Set(); renderSpeeds(); renderAll(); } $('toast').classList.remove('on'); });
 $('p-add').addEventListener('click', commit);
-$('p-remove').addEventListener('click', () => panelSvc.mob ? removeLine(mdraft.id) : removeSvc(panelSvc.id));
+$('p-remove').addEventListener('click', () => panelSvc.mob ? removeLine(mdraft.id) : panelSvc.id === 'net2' ? removeNet2(draft.id) : removeSvc(panelSvc.id));
 $('p-close').addEventListener('click', closePanel);
 $('scrim').addEventListener('click', closePanel);
 document.addEventListener('keydown', e => {
