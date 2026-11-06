@@ -466,6 +466,14 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .card-h h2{font-size:18px;margin:0;font-weight:700}
 .card-h .btn-s{border-color:color-mix(in srgb, var(--tint) 30%, #000)}
 .card-h .hbtns{display:flex;gap:8px}
+/* two zones: what is already in the cart, then what can be added */
+.zone-h{margin:0;font-weight:700;font-size:24px;line-height:28px;color:#232323}
+.zone-h span{font-weight:500;font-size:16px;color:#666}
+.offers{display:flex;flex-direction:column;gap:12px;margin-top:20px;padding-top:24px;border-top:2px solid #ccc}
+.offers > .zone-h + .sec-head h3{margin-top:4px}
+.incart{display:inline-block;vertical-align:2px;margin-left:8px;background:#fff;border-radius:4px;padding:2px 8px;font-weight:700;font-size:12px;line-height:18px;color:#17a02f}
+.card.flash{animation:flash 1.6s ease-out}
+@keyframes flash{0%,40%{box-shadow:0 0 0 4px #ff7900}100%{box-shadow:0 0 0 4px rgba(255,121,0,0)}}
 /* internet card rows + internet sidebar */
 .nrows{margin:0;display:flex;flex-direction:column}
 .nrows > div{display:flex;gap:12px;padding:10px 0;border-bottom:2px solid #eee}
@@ -548,7 +556,6 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .sec-head h3{font-size:20px;margin:8px 0 0;font-weight:700;color:#000}
 .svc .ico img{width:40px;height:40px;display:block}
 .svc > .btn-s{border:2px solid #232323;border-radius:4px;padding:6px 16px;font-size:14px;line-height:20px}
-.svc.mv{background:#f5fcff;border-color:#b5e8f7}
 .svc .bbadge{display:inline-block;background:#b5e8f7;border-radius:4px;padding:4px 8px;font-weight:700;font-size:12px;line-height:18px;color:#232323;margin-bottom:4px}
 .svc .logos{grid-column:1 / -1;background:#f5f5f5;border-radius:8px;padding:8px;display:grid;grid-template-columns:repeat(6, minmax(0, 1fr));gap:6px}
 .svc .logos span{height:40px;background:#fff;border-radius:6px;display:grid;place-items:center;padding:0 6px}
@@ -1024,8 +1031,9 @@ Paczka L (55 zł/mies. netto) to:
 
       <div class="grid">
         <div class="col">
+          <h2 class="zone-h" id="mine-h">Twój pakiet <span id="mine-n"></span></h2>
           <section class="card" style="--tint:var(--t-net)" aria-labelledby="net-h">
-            <div class="card-h"><h2 id="net-h">Internet</h2><button class="btn-s" type="button">Usuń</button></div>
+            <div class="card-h"><h2 id="net-h">Internet <span class="incart">✓ W koszyku</span></h2><button class="btn-s" type="button">Usuń</button></div>
             <div class="net-b" id="speeds"></div>
           </section>
           <div class="col" id="nets-extra"></div>
@@ -1581,7 +1589,7 @@ function startCart(){
   if (lp.nfx && lp.period === '24') tv.push('nfx');
   if (tv.length) state.added.tv = tv;
   fresh = new Set(['net', ...tv.map(id => `tv:${id}`)]);
-  renderSpeeds(); renderAll();
+  quietRender = true; renderSpeeds(); renderAll(); quietRender = false;
 }
 function announceCart(){
   const sp = speedDef(state.speed, state.period);
@@ -1607,6 +1615,7 @@ function renderSpeeds(){
   renderNets();
 }
 
+let mineBefore = [], quietRender = false;
 function renderServices(){
   const card = s => {
     const sel = state.added[s.id];
@@ -1618,7 +1627,7 @@ function renderServices(){
             <span class="hbtns"><button class="btn-s" type="button" data-line-edit="${l.id}">Zmień</button><button class="btn-s" type="button" data-line-del="${l.id}">Usuń</button></span></li>`; }).join('')
         : items.map(o => `<li><span>${o.name}<small>${o.meta}${s.id === 'tv' && tvPlan(o) === 'bez' ? ' · umowa bezterminowa' : ''}</small></span><span class="num">${o.per === 'm' ? stepsText(optSteps(o)) : fmt(o.price) + perLabel(o)}</span></li>`).join('');
       return `<section class="card" id="svc-${s.id}" style="--tint:var(${s.tint})" aria-label="${s.title}">
-        <div class="card-h"><h2>${s.title}</h2><button class="btn-s" type="button" data-remove="${s.id}">Usuń</button></div>
+        <div class="card-h"><h2>${s.title} <span class="incart">✓ W koszyku</span></h2><button class="btn-s" type="button" data-remove="${s.id}">Usuń</button></div>
         <div class="card-b">
           ${PERSONAL[s.id] ? pBadges(s.id) : ''}
           <ul class="picked">${list}</ul>
@@ -1628,17 +1637,28 @@ function renderServices(){
         </div>
       </section>`;
     }
-    return `<article class="svc ${s.id === 'mob' ? 'mv' : ''}" id="svc-${s.id}">
+    return `<article class="svc" id="svc-${s.id}">
       <div class="ico">${SVC_ICON[s.id] ? `<img src="assets/cart/${SVC_ICON[s.id]}" alt="">` : ICONS[s.icon]}</div>
       <div>${s.id === 'mob' && !isClient ? `<span class="bbadge">Rabat za łączenie do ${zl(BUNDLE_DISCOUNT)}/mies.</span>` : ''}<h3>${s.title}</h3>${PERSONAL[s.id] ? pBadges(s.id) : ''}<div class="d">${s.desc}</div>${['tv', 'mob'].includes(s.id) ? `<div class="from num">od +${fmt(minP)}/mies.</div>` : ''}</div>
       <button class="btn-s" type="button" data-open="${s.id}">+ Dodaj</button>
       ${s.id === 'tv' ? `<div class="logos" aria-label="W pakietach">${TV_LOGOS.map(([f, a]) => `<span><img src="assets/cart/${f}" alt="${a}"></span>`).join('')}</div>` : ''}
     </article>`;
   };
-  const group = (title, sub, ids) => `<div class="sec-head"><h3>${title}</h3>${sub ? `<p>${sub}</p>` : ''}</div>${ids.map(id => card(svcById(id))).join('')}`;
-  $('services').innerHTML = group('Często kupowane razem', '', ['tv', 'dek'])
+  const ORDER = ['tv', 'dek', 'mob', 'multi', 'ct'], has = id => (state.added[id] || []).length > 0;
+  const group = (title, sub, ids) => { ids = ids.filter(id => !has(id)); return ids.length ? `<div class="sec-head"><h3>${title}</h3>${sub ? `<p>${sub}</p>` : ''}</div>${ids.map(id => card(svcById(id))).join('')}` : ''; };
+  const offers = group('Często kupowane razem', '', ['tv', 'dek'])
     + group('W zestawie taniej!', 'Dodaj usługi do światłowodu i zyskaj rabat!', ['mob'])
     + group('To może ci się przydać', '', ['multi', 'ct']);
+  $('services').innerHTML = ORDER.filter(has).map(id => card(svcById(id))).join('')
+    + (offers ? `<div class="offers"><h2 class="zone-h">Dodaj do pakietu</h2>${offers}</div>` : '');
+  const n = 1 + state.nets.length + ORDER.filter(has).length;
+  $('mine-n').textContent = `· ${n} ${n === 1 ? 'usługa' : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 'usługi' : 'usług'}`;
+  /* a service that just moved into the cart gets scrolled to and flashed */
+  const added = ORDER.filter(has), moved = added.filter(id => !mineBefore.includes(id));
+  mineBefore = added;
+  if (moved.length && !$('view-cart').hidden && !quietRender){
+    const el = $('svc-' + moved[0]); el.scrollIntoView({block:'center', behavior:'smooth'}); el.classList.add('flash');
+  }
   $('services').querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => b.dataset.open === 'tv' ? openTvp() : openPanel(b.dataset.open, b)));
   $('services').querySelectorAll('[data-remove]').forEach(b => b.addEventListener('click', () => removeSvc(b.dataset.remove)));
   $('services').querySelectorAll('[data-line-edit]').forEach(b => b.addEventListener('click', () => openMobPanel(b, b.dataset.lineEdit)));
