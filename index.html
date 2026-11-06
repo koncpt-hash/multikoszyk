@@ -1636,9 +1636,9 @@ function renderServices(){
     </article>`;
   };
   const group = (title, sub, ids) => `<div class="sec-head"><h3>${title}</h3>${sub ? `<p>${sub}</p>` : ''}</div>${ids.map(id => card(svcById(id))).join('')}`;
-  $('services').innerHTML = group('Często kupowane razem', '', ['tv'])
+  $('services').innerHTML = group('Często kupowane razem', '', ['tv', 'dek'])
     + group('W zestawie taniej!', 'Dodaj usługi do światłowodu i zyskaj rabat!', ['mob'])
-    + group('To może ci się przydać', '', ['dek', 'multi', 'ct']);
+    + group('To może ci się przydać', '', ['multi', 'ct']);
   $('services').querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => b.dataset.open === 'tv' ? openTvp() : openPanel(b.dataset.open, b)));
   $('services').querySelectorAll('[data-remove]').forEach(b => b.addEventListener('click', () => removeSvc(b.dataset.remove)));
   $('services').querySelectorAll('[data-line-edit]').forEach(b => b.addEventListener('click', () => openMobPanel(b, b.dataset.lineEdit)));
