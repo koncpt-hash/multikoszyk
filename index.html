@@ -473,6 +473,28 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .offers > .zone-h + .sec-head h3{margin-top:4px}
 .incart{display:inline-block;vertical-align:2px;margin-left:8px;background:#fff;border-radius:4px;padding:2px 8px;font-weight:700;font-size:12px;line-height:18px;color:#17a02f}
 .card.flash{animation:flash 1.6s ease-out}
+.fees3{display:flex;flex-direction:column;gap:12px;padding-top:12px;margin-top:4px;border-top:2px solid #eee;width:100%}
+.fees3 h4{margin:0;font-weight:700;font-size:16px;line-height:22px;color:#232323}
+.fbody{position:relative;display:flex;flex-direction:column;gap:8px}
+.fbody::before{content:"";position:absolute;left:3px;top:8px;bottom:11px;width:2px;background:#f5f5f5}
+.fg{position:relative;display:flex;flex-direction:column;gap:8px}
+.fh{display:flex;gap:16px;align-items:flex-start;font-size:14px;line-height:20px;color:#232323}
+.fh i{width:8px;height:8px;border-radius:4px;background:var(--tint, #ccc);flex:none;margin-top:6px;box-shadow:0 0 0 3px #fff}
+.fh b{font-weight:700}
+.fh b:first-of-type{flex:1}
+.fl{display:flex;gap:16px;padding-left:24px;font-weight:500;font-size:14px;line-height:20px;color:#444}
+.fl span:first-child{flex:1}
+.fl.minus .num{color:var(--plus);font-weight:700}
+.fdv{height:2px;background:#eee;margin-left:24px}
+.fa{display:flex;flex-direction:column;gap:8px}
+.fat{display:flex;gap:16px;align-items:center;font-size:14px;line-height:20px}
+.fat > img{width:20px;height:20px;margin:0 -6px;flex:none}
+.fat b{flex:1;font-weight:700}
+.fat .tg{background:#f5f5f5;border:0;border-radius:4px;padding:6px;display:flex}
+.fat .tg img{width:18px;height:18px;margin:1px;transition:transform .2s}
+.fat .tg[aria-expanded="true"] img{transform:rotate(180deg)}
+.fa p{margin:0;padding-left:24px;font-size:12px;line-height:18px;font-weight:500;color:#232323}
+.fa p b{font-weight:700}
 @keyframes flash{0%,40%{box-shadow:0 0 0 4px #ff7900}100%{box-shadow:0 0 0 4px rgba(255,121,0,0)}}
 /* internet card rows + internet sidebar */
 .nrows{margin:0;display:flex;flex-direction:column}
@@ -1610,6 +1632,9 @@ function renderSpeeds(){
         <div><dt>Instalacja</dt><dd>Technik w cenie<small>${inst.length ? inst.join(', ') : 'bez dodatków'}</small></dd></div>
       </dl>
       ${pBadges('net')}
+      ${feesHtml('net', [{label:`Abonament za Światłowód ${sp.name}`, steps:sp.steps}, {label:`Modem ${md.name}`, steps:flat(modemPrice(md, state.speed))}], state.period,
+        [{label:'Opłata aktywacyjna', n:99}, ...state.inst.map(id => { const x = INSTALL.find(i => i.id === id); return {label:x.name, n:x.price}; })],
+        state.period === '24' ? AFTER_24.net : null)}
     </div>`;
   $('net-change').addEventListener('click', e => openPanel('net', e.currentTarget));
   renderNets();
@@ -1634,6 +1659,10 @@ function renderServices(){
           <div class="foot-b">${s.id === 'mob'
             ? (state.lines.length < MAX_LINES ? `<button class="btn-s" type="button" data-open="mob">+ Dodaj kolejny numer</button><span class="mnext">taniej o ${zl(NEXT_LINE_DISCOUNT)}/mies.</span>` : '')
             : `<button class="btn-s" type="button" data-open="${s.id}">Zmień</button>`}</div>
+          ${s.id === 'mob'
+            ? (() => { const ls = state.lines.map(l => { const o = s.options.find(x => x.id === l.plan); return {label:`Abonament ${o.name} (${l.proc === 'new' ? l.number : 'przenoszony numer'})`, steps:o.steps}; }); return feesHtml('mob', [...ls, ...mobDiscounts(ls)], '24', [], AFTER_24.mob); })()
+            : feesHtml(s.id, items.filter(o => o.per === 'm').map(o => ({label:o.name, steps:optSteps(o)})), s.id === 'tv' ? '24' : 'bez',
+                items.filter(o => o.per === 'o').map(o => ({label:o.name, n:o.price})), s.id === 'tv' ? AFTER_24.tv : null)}
         </div>
       </section>`;
     }
@@ -1665,6 +1694,40 @@ function renderServices(){
   $('services').querySelectorAll('[data-line-del]').forEach(b => b.addEventListener('click', () => removeLine(b.dataset.lineDel)));
 }
 
+const money = (v, minus) => ((minus || v < 0) && Math.abs(v) >= 0.005 ? '−' : '') + fmt(Math.abs(v));
+const periodName = (f, t, period) => f === 1 && t === 1 ? 'W 1. miesiącu' : period === 'bez' && t === HORIZON ? `Od ${f}. miesiąca` : f === t ? `W ${f}. miesiącu` : `Od ${f}. do ${t}. miesiąca`;
+const AFTER_24 = {
+  net:['internet światłowodowy', 'automatycznie przedłuży się na czas nieokreślony i wygasną rabaty na czas określony'],
+  mob:['abonament komórkowy', 'na czas określony i wygasną rabaty przyznane na jej czas. Umowa automatycznie przedłuży się na czas nieokreślony, a cena wzrośnie o równowartość tych rabatów'],
+  tv:['telewizję', 'na czas określony i wygasną rabaty przyznane na jej czas. Umowa automatycznie przedłuży się na czas nieokreślony, a cena wzrośnie o równowartość tych rabatów']};
+const afterText = ([what, how]) => `<p>Wtedy kończy się Twoja umowa na <b>${what}</b> ${how}. Zanim to się stanie, zaproponujemy Ci najlepszą dostępną ofertę.</p>`;
+/* mobile discounts never take a line below 0 zł, so they start when the 0 zł months end */
+function mobDiscounts(lines){
+  const n = state.lines.length;
+  let left = addSteps(...lines.map(r => r.steps));
+  const disc = [['disc', 'Rabat za łączenie usług', BUNDLE_DISCOUNT],
+    ...(n > 1 ? [['mob:next', `Rabat za kolejne abonamenty (${n - 1} × ${fmt(NEXT_LINE_DISCOUNT)})`, (n - 1) * NEXT_LINE_DISCOUNT]] : []),
+    ...(isClient ? [['cli', 'Rabat na abonament komórkowy przez 24 mies.', CLIENT_MOB_DISCOUNT]] : [])];
+  return disc.map(([key, label, d]) => { const r = {key, label, minus:true, steps:mergeSteps(left.map(([f, t, v]) => [f, t, -Math.min(d, v)]))}; left = left.map(([f, t, v]) => [f, t, v - Math.min(d, v)]); return r; });
+}
+/* per-service fees at the end of each card in the cart (Figma 6376:15537) */
+const afterOpen = new Set();
+function feesHtml(id, rows, period, once = [], after = null){
+  const total = addSteps(...rows.map(r => r.steps));
+  const line = (label, v, minus) => `<div class="fl ${minus ? 'minus' : ''}"><span>${label}</span><span class="num">${money(v, minus)}</span></div>`;
+  const grp = (label, value, body) => `<div class="fg"><div class="fh"><i aria-hidden="true"></i><b>${label}</b><b class="num">${value}</b></div>${body}<div class="fdv"></div></div>`;
+  return `<div class="fees3"><h4>Opłaty z rabatami</h4><div class="fbody">
+    ${once.length ? grp('Opłata na start', fmt(once.reduce((a, r) => a + r.n, 0)), once.map(r => line(r.label, r.n)).join('')) : ''}
+    ${total.map(([f, t, v]) => grp(periodName(f, t, period), fmt(v), rows.filter(r => !(r.minus && Math.abs(stepAt(r.steps, f)) < 0.005)).map(r => line(r.label, stepAt(r.steps, f), r.minus)).join(''))).join('')}
+    ${after ? `<div class="fa"><div class="fat"><img src="assets/cart/assistance.svg" alt=""><b>Co po 24. miesiącu?</b><button class="tg" type="button" data-after="${id}" aria-expanded="${afterOpen.has(id)}" aria-label="Co po 24. miesiącu?"><img src="assets/cart/arrow-down.svg" alt=""></button></div>${afterOpen.has(id) ? afterText(after) : ''}</div>` : ''}
+  </div></div>`;
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-after]'); if (!b) return;
+  const id = b.dataset.after; afterOpen.has(id) ? afterOpen.delete(id) : afterOpen.add(id);
+  renderSpeeds(); renderServices(); document.querySelector(`[data-after="${id}"]`)?.focus();
+});
+
 /* monthly rows carry price steps; the summary shows month 1 and how the total changes over time */
 function renderSummary(){
   const sp = speedDef(state.speed, state.period), md = curModem();
@@ -1694,19 +1757,7 @@ function renderSummary(){
       else o.push({key:`${s.id}:${id}`, label, value:fmt(op.price), n:op.price});
     }
   }
-  if (mob.length){
-    /* mobile discounts never take a line below 0 zł, so they start when the 0 zł months end */
-    const n = state.lines.length;
-    let left = addSteps(...mob.map(r => r.steps));
-    const disc = [['disc', 'Rabat za łączenie usług', BUNDLE_DISCOUNT],
-      ...(n > 1 ? [['mob:next', `Rabat za kolejne abonamenty (${n - 1} × ${fmt(NEXT_LINE_DISCOUNT)})`, (n - 1) * NEXT_LINE_DISCOUNT]] : []),
-      ...(isClient ? [['cli', 'Rabat na abonament komórkowy przez 24 mies.', CLIENT_MOB_DISCOUNT]] : [])];
-    for (const [key, label, d] of disc){
-      rows.push({key, label, minus:true, steps:mergeSteps(left.map(([f, t, v]) => [f, t, -Math.min(d, v)]))});
-      left = left.map(([f, t, v]) => [f, t, v - Math.min(d, v)]);
-    }
-  }
-  const money = (v, minus) => ((minus || v < 0) && Math.abs(v) >= 0.005 ? '−' : '') + fmt(Math.abs(v));
+  if (mob.length) rows.push(...mobDiscounts(mob));
   const m = rows.map(r => ({...r, value:money(stepAt(r.steps, 1), r.minus),
     note:r.steps.slice(1).map(([f, , v]) => `od ${f}. mies. ${money(v, r.minus).replace(',00 zł', ' zł')}`).join(' · ')}));
   const total = addSteps(...rows.map(r => r.steps));
@@ -1720,16 +1771,13 @@ function renderSummary(){
   const group = (id, label, value, body, icon = 'pay-bullet.svg') => `<div class="pg"><div class="hd"><img src="assets/cart/${icon}" alt=""><span class="lb">${label}</span><b class="num">${value}</b>
       ${body ? `<button class="tg" type="button" data-pg="${id}" aria-expanded="${payOpen.has(id)}" aria-label="Szczegóły: ${label}"><img src="assets/cart/arrow-down.svg" alt=""></button>` : ''}</div>
     ${body && payOpen.has(id) ? body : ''}<div class="dv"></div></div>`;
-  const periodName = (f, t) => f === 1 && t === 1 ? 'W 1. miesiącu' : state.period === 'bez' && t === HORIZON ? `Od ${f}. miesiąca` : f === t ? `W ${f}. miesiącu` : `Od ${f}. do ${t}. miesiąca`;
   if (!payOpen.size) payOpen.add(`p${total[0][0]}`);
-  const after = [state.period === '24' && ['internet światłowodowy', 'automatycznie przedłuży się na czas nieokreślony i wygasną rabaty na czas określony'],
-    state.added.mob && ['abonament komórkowy', 'na czas określony i wygasną rabaty przyznane na jej czas. Umowa automatycznie przedłuży się na czas nieokreślony, a cena wzrośnie o równowartość tych rabatów'],
-    state.added.tv && ['telewizję', 'na czas określony i wygasną rabaty przyznane na jej czas. Umowa automatycznie przedłuży się na czas nieokreślony, a cena wzrośnie o równowartość tych rabatów']].filter(Boolean);
+  const after = [state.period === '24' && AFTER_24.net, state.added.mob && AFTER_24.mob, state.added.tv && AFTER_24.tv].filter(Boolean);
   $('pay').innerHTML =
     group('start', 'Opłata na start', fmt(o.reduce((a, r) => a + r.n, 0)), o.map(r => line(r.label, r.n, false, r.key)).join(''))
-    + total.map(([f, t, v]) => group(`p${f}`, periodName(f, t), fmt(v),
+    + total.map(([f, t, v]) => group(`p${f}`, periodName(f, t, state.period), fmt(v),
         m.filter(r => !(r.minus && Math.abs(stepAt(r.steps, f)) < 0.005)).map(r => line(r.label, stepAt(r.steps, f), r.minus, r.key)).join(''))).join('')
-    + (after.length ? `<div class="pg"><div class="after"><img src="assets/cart/assistance.svg" alt=""><div><h4>Co po 24. miesiącu?</h4>${after.map(([what, how]) => `<p>Wtedy kończy się Twoja umowa na <b>${what}</b> ${how}. Zanim to się stanie, zaproponujemy Ci najlepszą dostępną ofertę.</p>`).join('')}</div></div><div class="dv"></div></div>` : '')
+    + (after.length ? `<div class="pg"><div class="after"><img src="assets/cart/assistance.svg" alt=""><div><h4>Co po 24. miesiącu?</h4>${after.map(afterText).join('')}</div></div><div class="dv"></div></div>` : '')
     + group('dost', 'Dostawa lub odbiór', '0,00–14,00 zł', '', 'delivery.svg');
   $('sum-fine').textContent = 'Ceny przykładowe, brutto. ' + (state.period === 'bez' ? 'Umowa bez okresu zobowiązania.' : 'Umowa na 24 miesiące.');
   if (fresh.size){ const keep = fresh; setTimeout(() => { if (fresh === keep){ document.querySelectorAll('.ln.fresh').forEach(r => r.classList.remove('fresh')); fresh = new Set(); } }, 1800); }
@@ -1823,7 +1871,11 @@ function renderNets(){
         <div><dt>Umowa</dt><dd>${n.period === 'bez' ? 'Bezterminowa' : '24 miesiące'}</dd></div>
         <div><dt>Modem</dt><dd>${md.name}<small>${fmt(modemPrice(md, n.speed))}/mies.</small></dd></div>
         <div><dt>Instalacja</dt><dd>Technik w cenie<small>${inst.length ? inst.join(', ') : 'bez dodatków'}</small></dd></div>
-      </dl></div></div></section>`;
+      </dl>
+      ${feesHtml(n.id, [{label:`Abonament za Światłowód ${sp.name}`, steps:sp.steps}, {label:`Modem ${md.name}`, steps:flat(modemPrice(md, n.speed))}], n.period,
+        [{label:'Opłata aktywacyjna', n:99}, ...n.inst.map(id => { const x = INSTALL.find(i => i.id === id); return {label:x.name, n:x.price}; })],
+        n.period === '24' ? AFTER_24.net : null)}
+      </div></div></section>`;
   }).join('');
 }
 $('nets-extra').addEventListener('click', e => {
