@@ -546,6 +546,10 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .sp-t .nm.sm{font-size:16px;line-height:22px}
 .sp-t .sub{font-size:13px;color:#444}
 .mline{align-items:flex-start}
+.add-dev{display:flex;align-items:center;gap:16px;width:100%;margin-top:4px;padding:20px 16px;background:#fff;border:2px solid #ccc;border-radius:8px;font-weight:700;font-size:16px;line-height:22px;color:#232323;text-align:left}
+.add-dev:hover{border-color:#232323}
+.add-dev span{flex:1}
+.add-dev svg{width:28px;height:28px;flex:none}
 .lnk3{background:none;border:0;padding:0;font-weight:700;font-size:14px;line-height:20px;color:#232323;text-decoration:underline}
 .mline .hbtns{gap:16px}
 .mline small + small{margin-top:2px}
@@ -1235,6 +1239,8 @@ const NO_COMMIT_EXTRA = 20;
 const BUNDLE_DISCOUNT = 20;
 const NEXT_LINE_DISCOUNT = 10;
 const MAX_LINES = 10;
+/* entry point only for now: devices on instalments come later */
+const ADD_DEVICE = `<button class="add-dev" type="button" data-soon-dev><svg viewBox="0 0 24 24" fill="none" stroke="#232323" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><rect x="6.5" y="2.5" width="11" height="19" rx="2"/><path d="M10.5 5h3"/><circle cx="12" cy="18.2" r=".6" fill="#232323"/></svg><span>Dodaj urządzenie</span><svg viewBox="0 0 24 24" fill="none" stroke="#232323" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M12 7.5v9M7.5 12h9"/></svg></button>`;
 const MOB_PROC = {new:'Nowy numer', port:'Przenoszę numer'};
 /* several plans at once, e.g. {m:5, s:3}; each plan × count becomes one stepped line */
 const SIM_TYPE = {esim:'eSIM', sim:'Fizyczna karta SIM'};
@@ -1598,6 +1604,7 @@ $('lg-go').addEventListener('click', () => fakeLogin($('lg-go')));
 $('lg-number').addEventListener('click', () => fakeLogin($('lg-number')));
 $('lg-guest').addEventListener('click', () => goCart(false));
 $('lg-back').addEventListener('click', () => show('av'));
+document.addEventListener('click', e => { if (e.target.closest('[data-soon-dev]')) toast('Dodawanie urządzenia pokażemy w kolejnej wersji prototypu', false); });
 document.querySelectorAll('#view-login [data-soon]').forEach(b => b.addEventListener('click', () => toast('Ta ścieżka nie jest częścią prototypu', false)));
 
 /* ---------- cart ---------- */
@@ -1664,7 +1671,7 @@ function renderServices(){
             ? (state.lines.length < MAX_LINES ? `<button class="btn-s" type="button" data-open="mob">+ Dodaj kolejny numer</button><span class="mnext">taniej o ${zl(NEXT_LINE_DISCOUNT)}/mies.</span>` : '')
             : `<button class="btn-s" type="button" data-open="${s.id}">Zmień</button>`}</div>
           ${s.id === 'mob'
-            ? (() => { const ls = state.lines.map(l => { const o = s.options.find(x => x.id === l.plan); return {label:`Abonament ${o.name} (${l.proc === 'new' ? l.number : 'przenoszony numer'})`, steps:o.steps}; }); return feesHtml('mob', [...ls, ...mobDiscounts(ls)], '24', [], AFTER_24.mob); })()
+            ? (() => { const ls = state.lines.map(l => { const o = s.options.find(x => x.id === l.plan); return {label:`Abonament ${o.name} (${l.proc === 'new' ? l.number : 'przenoszony numer'})`, steps:o.steps}; }); return feesHtml('mob', [...ls, ...mobDiscounts(ls)], '24', [], AFTER_24.mob) + ADD_DEVICE; })()
             : feesHtml(s.id, items.filter(o => o.per === 'm').map(o => ({label:o.name, steps:optSteps(o)})), s.id === 'tv' ? '24' : 'bez',
                 items.filter(o => o.per === 'o').map(o => ({label:o.name, n:o.price})), s.id === 'tv' ? AFTER_24.tv : null)}
         </div>
