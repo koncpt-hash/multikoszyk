@@ -1734,7 +1734,7 @@ function openNet2Panel(opener, id){
   draft = cur ? {...cur, inst:[...cur.inst], extra:true, step:'cfg', note:''}
     : {extra:true, id:`n${Date.now()}`, step:'addr', addr:{city:'', street:'', no:'', flat:'', nostreet:false}, period:state.period, speed:nearestSpeed('1g', state.period), modem:null, inst:[], note:''};
   $('panel').style.setProperty('--tint', 'var(--t-net)');
-  $('p-title').textContent = cur ? `Internet · ${n2Addr(cur.addr)}` : 'Kolejny internet';
+  $('p-title').textContent = cur ? 'Internet' : 'Kolejny internet';
   $('p-lead').textContent = '';
   $('p-remove').hidden = !cur; $('p-remove').textContent = 'Usuń ten internet';
   renderNetPanel();
