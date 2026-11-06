@@ -662,7 +662,8 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .p-sum b small{display:block;font-size:12px;font-weight:400;color:var(--muted);text-align:right}
 .p-foot .btn-p{width:100%}
 .p-foot.off .p-sum,.p-foot.off #p-add{display:none}
-.add-net{align-self:flex-start;border:2px solid #232323;border-radius:4px;padding:6px 16px;font-weight:700;font-size:14px;line-height:20px}
+.add-net{align-self:flex-end;background:none;border:0;padding:4px 0;font-weight:700;font-size:14px;line-height:20px;color:#232323;text-decoration:underline}
+.add-net:hover{text-decoration-thickness:2px}
 /* address check for an extra internet (Figma 6659:20372) */
 .n2f{display:flex;flex-direction:column;gap:16px}
 .n2f h3{margin:0;font-weight:700;font-size:20px;line-height:26px}
@@ -1028,7 +1029,7 @@ Paczka L (55 zł/mies. netto) to:
             <div class="net-b" id="speeds"></div>
           </section>
           <div class="col" id="nets-extra"></div>
-          <button class="btn-s add-net" type="button" id="add-net">+ Dodaj kolejny internet</button>
+          <button class="add-net" type="button" id="add-net">+ Dodaj kolejny internet</button>
 
           <div class="col" id="services"></div>
         </div>
