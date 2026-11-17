@@ -561,6 +561,70 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .pvas .vas .ct .ds{font-size:13px;line-height:18px}
 .pvas .vas .add:disabled{border-color:#ccc;color:#666;background:#f5f5f5}
 .pvas .ps-n b{white-space:nowrap}
+/* device panel: phone list, short product card, steps */
+.dv-back{align-self:flex-start;background:none;border:0;padding:0;font-weight:700;font-size:14px;color:#232323;text-decoration:underline}
+.dv-chips{display:flex;flex-wrap:wrap;gap:8px}
+.dv-chips label{position:relative;cursor:pointer}
+.dv-chips input{position:absolute;opacity:0}
+.dv-chips span{display:block;padding:6px 14px;border:2px solid #ccc;border-radius:20px;font-weight:700;font-size:14px;line-height:20px}
+.dv-chips input:checked + span{background:#232323;border-color:#232323;color:#fff}
+.dv-chips input:focus-visible + span{outline:3px solid var(--c-active);outline-offset:2px}
+.dv-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.dvt{position:relative;border:2px solid #ccc;border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:4px}
+.dvt:hover{border-color:#232323}
+.dv-bd{position:absolute;left:8px;top:8px;background:#232323;color:#fff;border-radius:4px;padding:2px 8px;font-weight:700;font-size:12px;line-height:18px;z-index:1}
+.dvt-im{background:#f5f5f5;border:0;border-radius:6px;height:120px;display:grid;place-items:center;padding:8px;margin-bottom:4px;cursor:pointer}
+.dvt-im svg{height:100%;width:auto}
+.dvt-br{font-size:12px;line-height:18px;color:#666;font-weight:500}
+.dvt-nm{background:none;border:0;padding:0;text-align:left;font-weight:700;font-size:16px;line-height:22px;color:#232323;display:flex;align-items:flex-start;justify-content:space-between;gap:4px;cursor:pointer}
+.dvt-nm img{width:16px;height:16px;flex:none;margin-top:3px}
+.dvt-pr{font-size:13px;color:#444}
+.dvt-pr b{font-size:16px;color:#232323}
+.dvt-pr small{display:block;font-size:12px;color:#666}
+.dvt-cl{display:flex;gap:4px;margin:2px 0 6px}
+.dvt-cl i{width:12px;height:12px;border-radius:6px;border:1px solid rgba(0,0,0,.25)}
+.dvt .btn-s{margin-top:auto;width:100%}
+.dv-shop{align-self:center}
+.dv-card{gap:12px}
+.dv-gal{background:#f5f5f5;border-radius:8px;padding:12px 0 8px}
+.dv-gt{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
+.dv-gt::-webkit-scrollbar{display:none}
+.dv-gi{flex:0 0 100%;scroll-snap-align:center;height:200px;display:grid;place-items:center}
+.dv-gi svg{height:100%;width:auto}
+.dv-dots{display:flex;justify-content:center;gap:6px;margin-top:8px}
+.dv-dots i{width:24px;height:4px;border-radius:2px;background:#ccc}
+.dv-dots i.on{background:#232323}
+.dv-ttl{display:flex;align-items:flex-end;gap:8px;flex-wrap:wrap}
+.dv-ttl > div{flex:1;min-width:0}
+.dv-ttl h3{font-size:22px;line-height:28px}
+.dv-rt{font-weight:700;color:#232323}
+.dv-rc{font-size:12px;color:#666;width:100%;text-align:right;margin-top:-6px}
+.dv-price{margin:0;font-size:14px;color:#444}
+.dv-price b{font-size:18px;color:#232323}
+.dv-price small{display:block;font-size:12px;color:#666}
+.dv-h{margin:4px 0 0;font-size:14px}
+.dv-key{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.dv-key div{background:#f5f5f5;border-radius:6px;padding:8px 10px;display:flex;flex-direction:column}
+.dv-key span{font-size:12px;color:#666}
+.dv-key b{font-size:14px}
+.dv-spec summary{cursor:pointer;font-weight:700;font-size:14px;text-decoration:underline}
+.dv-spec dl{margin:8px 0 0}
+.dv-spec dl div{display:flex;justify-content:space-between;gap:12px;padding:6px 0;border-bottom:1px solid #eee;font-size:13px}
+.dv-spec dt{color:#666}
+.dv-spec dd{margin:0;font-weight:700;text-align:right}
+.dv-inf{margin:0;font-size:13px;color:#444}
+.dv-mini{display:flex;align-items:center;gap:12px}
+.dv-mini svg{width:36px;height:auto;flex:none}
+.dv-mini b{display:block;font-size:16px}
+.dv-mini span{font-size:13px;color:#666}
+.dv-sw{display:flex;flex-wrap:wrap;gap:12px}
+.dv-sw label{position:relative;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;width:72px;text-align:center;font-size:12px;line-height:16px}
+.dv-sw input{position:absolute;opacity:0}
+.dv-sw i{width:36px;height:36px;border-radius:18px;border:1px solid rgba(0,0,0,.25);box-shadow:0 0 0 3px #fff}
+.dv-sw input:checked + i{box-shadow:0 0 0 3px #fff, 0 0 0 5px #232323}
+.dv-sw input:focus-visible + i{outline:3px solid var(--c-active);outline-offset:4px}
+.dv-pol{display:inline-block;vertical-align:2px;margin-left:6px;background:#b8ebd6;border-radius:4px;padding:1px 6px;font-size:11px;line-height:16px;font-weight:700}
+.mline small.mdev-l{color:#232323;font-weight:700}
 .add-dev img{width:28px;height:28px;flex:none}
 .add-dev small{display:block;margin-top:2px;font-size:12px;line-height:18px;color:var(--plus)}
 .mline > span:not(.hbtns){flex:1;min-width:0;font-weight:700}
@@ -1262,7 +1326,7 @@ const NEXT_LINE_DISCOUNT = 10;
 const MAX_LINES = 10;
 /* entry point only for now: devices on instalments come later */
 /* one entry point per mobile number, so the device is tied to that number */
-const addDevice = (n, l) => `<div class="mdev"><button class="btn-s" type="button" data-soon-dev="${n}" aria-label="Dodaj urządzenie do numeru ${n}">+ Dodaj urządzenie</button><button class="btn-s" type="button" data-line-vas="${l.id}" aria-label="Usługi dodatkowe do numeru ${n}">+ Usługi dodatkowe</button></div>`;
+const addDevice = (n, l) => `<div class="mdev"><button class="btn-s" type="button" data-line-dev="${l.id}" aria-label="${l.dev ? 'Zmień' : 'Dodaj'} urządzenie do numeru ${n}">${l.dev ? 'Zmień urządzenie' : '+ Dodaj urządzenie'}</button><button class="btn-s" type="button" data-line-vas="${l.id}" aria-label="Usługi dodatkowe do numeru ${n}">+ Usługi dodatkowe</button></div>`;
 /* security add-ons tied to one mobile number (Figma 6722:15598, VAS card – preSoller); prices are example values */
 const MOB_VAS = [
   {id:'pak', name:'Pakiet bezpieczeństwa', icon:'safety.svg', img:'pakiet.jpg', hl:'Polecane', plan:'24', steps:[[1,24,25]], incl:['cyb','pesel','kid'],
@@ -1705,7 +1769,7 @@ function renderServices(){
     if (sel && sel.length){
       const items = sel.map(id => s.options.find(o => o.id === id));
       const list = s.id === 'mob'
-        ? state.lines.map((l, i) => { const o = s.options.find(x => x.id === l.plan); return `<li class="mline"><img class="mic" src="assets/cart/ic-sim.svg" alt=""><span>Numer ${i + 1} · ${o.name} ${o.meta}<small>${lineLabel(l)} · ${SIM_TYPE[l.sim]}</small><small>${stepsText(o.steps)}</small>${l.vas?.length ? `<small class="mvas">Usługi: ${l.vas.map(id => vasDef(id).name).join(', ')}</small>` : ''}</span>
+        ? state.lines.map((l, i) => { const o = s.options.find(x => x.id === l.plan); return `<li class="mline"><img class="mic" src="assets/cart/ic-sim.svg" alt=""><span>Numer ${i + 1} · ${o.name} ${o.meta}<small>${lineLabel(l)} · ${SIM_TYPE[l.sim]}</small><small>${stepsText(o.steps)}</small>${l.vas?.length ? `<small class="mvas">Usługi: ${l.vas.map(id => vasDef(id).name).join(', ')}</small>` : ''}${l.dev ? `<small class="mdev-l">Telefon: ${devName(l.dev)}, ${l.dev.color} · ${l.dev.pay === 'once' ? 'zapłacony jednorazowo' : `${l.dev.pay} × ${fmt(devRate(l.dev))}`}</small>${l.dev.prot ? `<small>${protById(l.dev.prot).name}</small>` : ''}` : ''}</span>
             <span class="hbtns"><button class="lnk3" type="button" data-line-edit="${l.id}">Zmień</button><button class="lnk3" type="button" data-line-del="${l.id}">Usuń</button></span>${addDevice(i + 1, l)}</li>`; }).join('')
         : items.map(o => `<li><span>${o.name}<small>${o.meta}${s.id === 'tv' && tvPlan(o) === 'bez' ? ' · umowa bezterminowa' : ''}</small></span><span class="num">${o.per === 'm' ? stepsText(optSteps(o)) : fmt(o.price) + perLabel(o)}</span></li>`).join('');
       return `<section class="card" id="svc-${s.id}" style="--tint:var(${s.id === 'mob' ? '--t-dek' : s.tint})" aria-label="${s.title}">
@@ -1715,7 +1779,7 @@ function renderServices(){
           <ul class="picked">${list}</ul>
           ${s.id === 'mob' ? '' : `<div class="foot-b"><button class="btn-s" type="button" data-open="${s.id}">Zmień</button></div>`}
           ${s.id === 'mob'
-            ? (() => { const ls = state.lines.map(l => { const o = s.options.find(x => x.id === l.plan); return {label:`Abonament ${o.name} (${lineName(l)})`, steps:o.steps}; }); return feesHtml('mob', [...ls, ...vasRows(state.lines), ...mobDiscounts(ls)], '24', [], AFTER_24.mob) + (state.lines.length < MAX_LINES ? addLineTile() : ''); })()
+            ? (() => { const ls = state.lines.map(l => { const o = s.options.find(x => x.id === l.plan); return {label:`Abonament ${o.name} (${lineName(l)})`, steps:o.steps}; }); return feesHtml('mob', [...ls, ...vasRows(state.lines), ...devRows(state.lines), ...mobDiscounts(ls)], '24', devOnce(state.lines), AFTER_24.mob) + (state.lines.length < MAX_LINES ? addLineTile() : ''); })()
             : feesHtml(s.id, items.filter(o => o.per === 'm').map(o => ({label:o.name, steps:optSteps(o)})), s.id === 'tv' ? '24' : 'bez',
                 items.filter(o => o.per === 'o').map(o => ({label:o.name, n:o.price})), s.id === 'tv' ? AFTER_24.tv : null)}
         </div>
@@ -1748,6 +1812,7 @@ function renderServices(){
   $('services').querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => b.dataset.open === 'tv' ? openTvp() : openPanel(b.dataset.open, b)));
   $('services').querySelectorAll('[data-remove]').forEach(b => b.addEventListener('click', () => removeSvc(b.dataset.remove)));
   $('services').querySelectorAll('[data-line-edit]').forEach(b => b.addEventListener('click', () => openMobPanel(b, b.dataset.lineEdit)));
+  $('services').querySelectorAll('[data-line-dev]').forEach(b => b.addEventListener('click', () => openDevPanel(b, b.dataset.lineDev)));
   $('services').querySelectorAll('[data-line-vas]').forEach(b => b.addEventListener('click', () => { openMobPanel(b, b.dataset.lineVas); setTimeout(() => $('p-body').querySelector('.pvas')?.scrollIntoView({block:'start', behavior:'smooth'}), 350); }));
   $('services').querySelectorAll('[data-line-del]').forEach(b => b.addEventListener('click', () => removeLine(b.dataset.lineDel)));
 }
@@ -1807,7 +1872,7 @@ function renderSummary(){
       if (s.id === 'mob'){
         const l = state.lines.find(x => x.id === id), plan = s.options.find(x => x.id === l.plan);
         const r = {key:`mob:${id}`, label:`Abonament ${plan.name} (${l.proc === 'new' ? l.number : 'przenoszony numer'})`, steps:plan.steps};
-        rows.push(r); mob.push(r); rows.push(...vasRows([l]));
+        rows.push(r); mob.push(r); rows.push(...vasRows([l]), ...devRows([l])); o.push(...devOnce([l]));
         continue;
       }
       const label = op.name + (s.id === 'tv' && tvPlan(op) === 'bez' ? ' (bezterminowo)' : '');
@@ -2186,6 +2251,194 @@ function updatePanelFoot(){
   $('p-add').disabled = !sel.length;
   $('p-add').textContent = editing ? 'Zapisz zmiany' : 'Dodaj do pakietu';
 }
+/* ---------- device for a mobile number: list → short product card → version → payment → protection ---------- */
+/* phones and prices are example values; pictures are drawn, not product photos */
+const PHONES = [
+  {id:'ip16', brand:'Apple', name:'iPhone 16', badge:'Bestseller', rating:4.7, reviews:312,
+   colors:[['Czarny', '#2b2b2e'], ['Biały', '#f1f0ea'], ['Różowy', '#f2c5d2'], ['Ultramaryna', '#5d70d4']], mem:[[128, 3999], [256, 4599], [512, 5799]],
+   key:[['Aparat', '48 Mpx'], ['Ekran', '6,1" OLED'], ['Bateria', 'do 22 h wideo'], ['Łączność', '5G, eSIM']],
+   spec:[['Procesor', 'A18'], ['Pamięć RAM', '8 GB'], ['Waga', '170 g'], ['Odporność', 'IP68'], ['Złącze', 'USB-C']], box:'Telefon, kabel USB-C'},
+  {id:'ip16p', brand:'Apple', name:'iPhone 16 Pro', rating:4.8, reviews:198,
+   colors:[['Tytan pustynny', '#c9b49a'], ['Tytan czarny', '#3a3a3c'], ['Tytan naturalny', '#bdb8ae']], mem:[[128, 5299], [256, 5899], [512, 6999]],
+   key:[['Aparat', '48 Mpx, zoom 5×'], ['Ekran', '6,3" 120 Hz'], ['Bateria', 'do 27 h wideo'], ['Łączność', '5G, eSIM']],
+   spec:[['Procesor', 'A18 Pro'], ['Pamięć RAM', '8 GB'], ['Waga', '199 g'], ['Odporność', 'IP68'], ['Złącze', 'USB-C 3']], box:'Telefon, kabel USB-C'},
+  {id:'s25', brand:'Samsung', name:'Galaxy S25', badge:'Nowość', rating:4.6, reviews:241,
+   colors:[['Granatowy', '#2e3a55'], ['Lodowy błękit', '#b9d3e6'], ['Srebrny', '#d8d9dc'], ['Miętowy', '#bfe3d2']], mem:[[128, 3999], [256, 4299]],
+   key:[['Aparat', '50 Mpx'], ['Ekran', '6,2" 120 Hz'], ['Bateria', '4000 mAh'], ['Łączność', '5G, eSIM']],
+   spec:[['Procesor', 'Snapdragon 8 Elite'], ['Pamięć RAM', '12 GB'], ['Waga', '162 g'], ['Odporność', 'IP68'], ['Złącze', 'USB-C']], box:'Telefon, kabel USB-C, kluczyk do karty SIM'},
+  {id:'a56', brand:'Samsung', name:'Galaxy A56 5G', rating:4.5, reviews:167,
+   colors:[['Grafitowy', '#3b3d42'], ['Oliwkowy', '#9aa384'], ['Różowy', '#e9c7cf']], mem:[[128, 1799], [256, 1999]],
+   key:[['Aparat', '50 Mpx'], ['Ekran', '6,7" 120 Hz'], ['Bateria', '5000 mAh'], ['Łączność', '5G']],
+   spec:[['Procesor', 'Exynos 1580'], ['Pamięć RAM', '8 GB'], ['Waga', '198 g'], ['Odporność', 'IP67'], ['Złącze', 'USB-C']], box:'Telefon, kabel USB-C, kluczyk do karty SIM'},
+  {id:'rn14', brand:'Xiaomi', name:'Redmi Note 14 Pro 5G', rating:4.4, reviews:129,
+   colors:[['Czarny', '#26272b'], ['Fioletowy', '#9b8fd1'], ['Zielony', '#7fae94']], mem:[[256, 1499]],
+   key:[['Aparat', '200 Mpx'], ['Ekran', '6,67" AMOLED'], ['Bateria', '5110 mAh'], ['Łączność', '5G']],
+   spec:[['Procesor', 'Dimensity 7300'], ['Pamięć RAM', '8 GB'], ['Waga', '190 g'], ['Odporność', 'IP68'], ['Złącze', 'USB-C']], box:'Telefon, ładowarka 45 W, kabel, etui'},
+  {id:'g85', brand:'Motorola', name:'moto g85 5G', rating:4.3, reviews:88,
+   colors:[['Grafitowy', '#3c4048'], ['Niebieski', '#3d5f8f'], ['Zielony', '#6f8f73']], mem:[[256, 1099]],
+   key:[['Aparat', '50 Mpx'], ['Ekran', '6,67" pOLED'], ['Bateria', '5000 mAh'], ['Łączność', '5G']],
+   spec:[['Procesor', 'Snapdragon 6s Gen 3'], ['Pamięć RAM', '12 GB'], ['Waga', '172 g'], ['Odporność', 'IP52'], ['Złącze', 'USB-C']], box:'Telefon, ładowarka, kabel, etui'}];
+const phoneById = id => PHONES.find(p => p.id === id);
+const DEV_BRANDS = ['Wszystkie', ...new Set(PHONES.map(p => p.brand))];
+const DEV_DOWN = [0, 199, 499];
+/* phone protection (Figma 6722:15395 "Ochrona telefonu"); one choice per device */
+const DEV_PROT = [
+  {id:'std', name:'Ochrona Smartfona', ds:'Naprawa urządzenia do limitu 1200 zł', plan:'24', steps:[[1,1,0],[2,24,17]]},
+  {id:'prem', name:'Ochrona Smartfona Premium', ds:'Naprawa urządzenia bez limitu', plan:'24', steps:[[1,24,17]], hl:true},
+  {id:'multi', name:'Ochrona Smartfonów', ds:'Naprawa urządzeń zakupionych w zestawie', plan:'bez', steps:[[1,1,0],[2,24,33]]}];
+const protById = id => DEV_PROT.find(p => p.id === id);
+const phonePrice = d => phoneById(d.phone).mem.find(m => m[0] === d.mem)[1];
+const devRate = d => d.pay === 'once' ? 0 : Math.ceil((phonePrice(d) - d.down) / +d.pay * 100) / 100;
+const devStart = d => d.pay === 'once' ? phonePrice(d) : d.down;
+const minRate = p => Math.ceil(p.mem[0][1] / 24 * 100) / 100;
+const devName = d => `${phoneById(d.phone).name} ${d.mem} GB`;
+const devRows = lines => lines.filter(l => l.dev).flatMap(l => { const d = l.dev, rows = [];
+  if (d.pay !== 'once') rows.push({key:`dev:${l.id}`, label:`Rata za ${devName(d)} (${lineName(l)})`, steps:[[1, Math.min(+d.pay, HORIZON), devRate(d)]]});
+  if (d.prot) rows.push({key:`prot:${l.id}`, label:`${protById(d.prot).name} (${lineName(l)})`, steps:protById(d.prot).steps});
+  return rows; });
+const devOnce = lines => lines.filter(l => l.dev && devStart(l.dev) > 0).map(l => ({key:`devs:${l.id}`, label:`${l.dev.pay === 'once' ? 'Zakup' : 'Wpłata początkowa za'} ${devName(l.dev)}`, n:devStart(l.dev), value:fmt(devStart(l.dev))}));
+const phoneSvg = (c, back = false) => `<svg viewBox="0 0 120 220" aria-hidden="true"><rect x="12" y="4" width="96" height="212" rx="18" fill="${c}" stroke="rgba(0,0,0,.22)" stroke-width="2"/>${back
+  ? `<rect x="22" y="16" width="44" height="50" rx="12" fill="rgba(0,0,0,.14)"/><circle cx="35" cy="30" r="8" fill="#1d1d1f" stroke="rgba(255,255,255,.35)" stroke-width="2"/><circle cx="35" cy="52" r="8" fill="#1d1d1f" stroke="rgba(255,255,255,.35)" stroke-width="2"/><circle cx="55" cy="41" r="3" fill="#eee"/>`
+  : `<rect x="18" y="10" width="84" height="200" rx="13" fill="#1c2333"/><path d="M18 120 L102 40 L102 90 L18 170Z" fill="rgba(255,255,255,.06)"/><rect x="48" y="16" width="24" height="7" rx="3.5" fill="#000"/>`}</svg>`;
+const stars = r => `<span class="dv-rt" aria-label="Ocena ${String(r).replace('.', ',')} na 5">★ ${String(r).replace('.', ',')}</span>`;
+
+let ddraft = null;
+function openDevPanel(opener, lineId){
+  const l = state.lines.find(x => x.id === lineId); if (!l) return;
+  panelSvc = {id:'dev', dev:true}; lastFocus = opener || document.activeElement;
+  ddraft = l.dev ? {...l.dev, lineId, step:'ver', brand:'Wszystkie', editing:true} : {lineId, step:'list', brand:'Wszystkie', phone:null, color:null, mem:null, pay:'24', down:0, prot:null};
+  $('panel').style.setProperty('--tint', 'var(--t-mob)');
+  $('p-title').textContent = `Urządzenie do numeru ${state.lines.indexOf(l) + 1}`;
+  $('p-lead').textContent = '';
+  $('p-remove').hidden = !l.dev; $('p-remove').textContent = 'Usuń urządzenie';
+  renderDevPanel();
+  $('scrim').hidden = false; $('panel').hidden = false; document.body.classList.add('side-open');
+  requestAnimationFrame(() => { $('scrim').classList.add('on'); $('panel').classList.add('on'); });
+}
+const DEV_STEPS = ['ver', 'pay', 'prot'];
+function renderDevPanel(focusSel){
+  const d = ddraft, l = state.lines.find(x => x.id === d.lineId), p = d.phone && phoneById(d.phone);
+  const foot = $('panel').querySelector('.p-foot'); foot.classList.toggle('off', d.step === 'list' || d.step === 'detail');
+  const radio = (name, v, on, body) => `<label class="sp-t"><input type="radio" name="${name}" value="${v}" ${on ? 'checked' : ''}><span class="rb" aria-hidden="true"></span>${body}</label>`;
+  const back = (id, label) => `<button class="dv-back" type="button" id="${id}">← ${label}</button>`;
+  const stepNo = DEV_STEPS.indexOf(d.step) + 2;
+  const head = p ? `<div class="dv-mini">${phoneSvg(p.colors.find(c => c[0] === d.color)?.[1] || p.colors[0][1])}<div><b>${p.name}</b><span>${d.mem ? `${d.mem} GB · ${d.color}` : p.brand}</span></div></div>` : '';
+  let html = '';
+  if (d.step === 'list'){
+    const list = PHONES.filter(x => d.brand === 'Wszystkie' || x.brand === d.brand);
+    html = `<section class="ps"><p class="mlab">Krok 1 z 4 · do numeru ${lineName(l) === 'przenoszony numer' ? 'przenoszonego' : '+48 ' + l.number}</p><h3>Wybierz telefon</h3>
+      <div class="dv-chips" role="radiogroup" aria-label="Marka">${DEV_BRANDS.map(b => `<label><input type="radio" name="dv-brand" value="${b}" ${d.brand === b ? 'checked' : ''}><span>${b}</span></label>`).join('')}</div>
+      <button class="ai-chip ai-stroke" type="button" data-ai="Który telefon wybrać?"><img src="assets/ai/sparkles.svg" alt="">Który telefon wybrać? Zapytaj Asystenta AI</button>
+      <div class="dv-grid">${list.map(x => `<article class="dvt" aria-label="${x.name}">
+        ${x.badge ? `<span class="dv-bd">${x.badge}</span>` : ''}
+        <button class="dvt-im" type="button" data-dv-open="${x.id}" aria-label="Szczegóły: ${x.name}">${phoneSvg(x.colors[0][1])}</button>
+        <span class="dvt-br">${x.brand}</span>
+        <button class="dvt-nm" type="button" data-dv-open="${x.id}">${x.name}<img src="assets/tv/arrow-right.svg" alt=""></button>
+        <span class="dvt-pr">od <b>${fmt(minRate(x))}</b>/mies.<small>w 24 ratach, wpłata 0 zł</small></span>
+        <span class="dvt-cl">${x.colors.map(c => `<i style="background:${c[1]}" title="${c[0]}"></i>`).join('')}</span>
+        <button class="btn-s" type="button" data-dv-pick="${x.id}">Wybierz</button>
+      </article>`).join('')}</div>
+      <button class="lnk2 dv-shop" type="button" data-dv-shop>Pełny katalog w sklepie ↗</button></section>`;
+  } else if (d.step === 'detail'){
+    const x = phoneById(d.view), col = x.colors[0][1];
+    html = `<section class="ps dv-card">${back('dv-to-list', 'Wróć do listy')}
+      <div class="dv-gal"><div class="dv-gt" tabindex="0" aria-label="Zdjęcia ${x.name}">${[phoneSvg(col), phoneSvg(col, true), ...x.colors.slice(1, 3).map(c => phoneSvg(c[1], true))].map(s => `<div class="dv-gi">${s}</div>`).join('')}</div>
+        <div class="dv-dots" aria-hidden="true">${[0, 1, 2, 3].slice(0, 2 + Math.min(2, x.colors.length - 1)).map(i => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div></div>
+      <div class="dv-ttl"><div><span class="dvt-br">${x.brand}</span><h3>${x.name}</h3></div>${stars(x.rating)}<small class="dv-rc">${x.reviews} opinii</small></div>
+      <p class="dv-price">od <b>${fmt(minRate(x))}/mies.</b> · 24 raty · wpłata 0 zł<small>lub ${fmt(x.mem[0][1])} jednorazowo</small></p>
+      <h4 class="dv-h">Najważniejsze</h4>
+      <div class="dv-key">${x.key.map(([k, v]) => `<div><span>${k}</span><b>${v}</b></div>`).join('')}</div>
+      <details class="dv-spec"><summary>Pełna specyfikacja</summary><dl>${[...x.key, ...x.spec, ['Kolory', x.colors.map(c => c[0]).join(', ')], ['Pamięć', x.mem.map(m => m[0] + ' GB').join(', ')]].map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl></details>
+      <p class="dv-inf"><b>W zestawie:</b> ${x.box}</p>
+      <p class="dv-inf"><b>Dostawa:</b> razem z kartą SIM, 1–2 dni robocze</p>
+      <button class="sb-btn pri full" type="button" data-dv-pick="${x.id}">Wybierz ten telefon</button>
+      <button class="lnk2 dv-shop" type="button" data-dv-shop>Pełna karta produktu ↗</button></section>`;
+  } else if (d.step === 'ver'){
+    html = `<section class="ps"><p class="mlab">Krok ${stepNo} z 4</p>${d.editing ? '' : back('dv-to-list', 'Zmień telefon')}${head}</section>
+      <section class="ps"><h3>Kolor</h3><div class="dv-sw" role="radiogroup" aria-label="Kolor">${p.colors.map(([n, c]) => `<label title="${n}"><input type="radio" name="dv-color" value="${n}" ${d.color === n ? 'checked' : ''}><i style="background:${c}"></i><span>${n}</span></label>`).join('')}</div></section>
+      <section class="ps"><h3>Pamięć</h3><div class="spd">${p.mem.map(([g, pr]) => radio('dv-mem', g, d.mem === g, `<span class="nm sm">${g} GB</span><span class="sub">${fmt(pr)} lub od ${fmt(Math.ceil(pr / 24 * 100) / 100)}/mies.</span>`)).join('')}</div></section>
+      ${d.editing ? `<section class="ps"><button class="lnk2" type="button" id="dv-to-list">Wybierz inny telefon</button></section>` : ''}`;
+  } else if (d.step === 'pay'){
+    const price = phonePrice(d), r = n => Math.ceil((price - (d.pay === 'once' ? 0 : d.down)) / n * 100) / 100;
+    html = `<section class="ps"><p class="mlab">Krok ${stepNo} z 4</p>${back('dv-to-ver', 'Wstecz')}${head}</section>
+      <section class="ps"><h3>Płatność</h3><div class="spd">
+        ${radio('dv-pay', '24', d.pay === '24', `<span class="nm sm">24 raty</span><span class="sub">${fmt(r(24))}/mies.</span>`)}
+        ${radio('dv-pay', '36', d.pay === '36', `<span class="nm sm">36 rat</span><span class="sub">${fmt(r(36))}/mies.</span>`)}
+        ${radio('dv-pay', 'once', d.pay === 'once', `<span class="nm sm">Jednorazowo</span><span class="sub">${fmt(price)} przy zamówieniu</span>`)}
+      </div></section>
+      ${d.pay === 'once' ? '' : `<section class="ps"><h3>Wpłata początkowa</h3><div class="dv-chips" role="radiogroup" aria-label="Wpłata początkowa">${DEV_DOWN.map(v => `<label><input type="radio" name="dv-down" value="${v}" ${d.down === v ? 'checked' : ''}><span>${v ? fmt(v) : '0 zł'}</span></label>`).join('')}</div>
+        <p class="ps-n"><img src="assets/tv/alert-info.svg" alt="">Rata doliczy się do rachunku za numer ${lineName(l) === 'przenoszony numer' ? 'przenoszony' : '+48 ' + l.number}. Raty 0% – płacisz tyle, ile kosztuje telefon.</p></section>`}`;
+  } else {
+    html = `<section class="ps"><p class="mlab">Krok 4 z 4</p>${back('dv-to-pay', 'Wstecz')}${head}</section>
+      <section class="ps"><h3>Ochrona telefonu</h3><p class="mlab">Naprawa po zalaniu, upadku czy pęknięciu ekranu</p><div class="spd">
+        ${radio('dv-prot', '', !d.prot, '<span class="nm sm">Bez ochrony</span>')}
+        ${DEV_PROT.map(o => radio('dv-prot', o.id, d.prot === o.id, `<span class="nm sm">${o.name}${o.hl ? ' <span class="dv-pol">Polecane</span>' : ''}</span><span class="sub">${o.ds} · ${o.plan === '24' ? 'umowa na 24 mies.' : 'umowa bezterminowa'}</span>
+          <span class="stp">${o.steps.map(([f, t, v]) => `<span><span>${periodLabel(f, t)}</span><b>${fmt(v)}/mies.</b></span>`).join('')}</span>`)).join('')}
+      </div></section>`;
+  }
+  const keep = d.step === 'list' ? d.listTop || 0 : 0;
+  $('p-body').innerHTML = html;
+  $('p-body').scrollTop = keep;
+  if (focusSel) $('p-body').querySelector(focusSel)?.focus({preventScroll:true});
+  updateDevFoot();
+}
+function updateDevFoot(){
+  const d = ddraft; if (!d.phone || !d.mem) return;
+  const prot = d.prot ? protById(d.prot).steps : null, rate = devRate(d);
+  const st = addSteps(rate ? [[1, Math.min(+d.pay || 24, HORIZON), rate]] : [[1, HORIZON, 0]], ...(prot ? [prot] : []));
+  $('p-sum-l').textContent = d.prot ? 'Telefon z ochroną' : 'Telefon';
+  $('p-sum-v').innerHTML = `+${fmt(st[0][2])}/mies.${st.slice(1).map(([f, , v]) => `<small>od ${f}. mies. +${fmt(v)}/mies.</small>`).join('')}${devStart(d) ? `<small>${d.pay === 'once' ? 'zakup' : 'wpłata'} ${fmt(devStart(d))} na start</small>` : ''}`;
+  $('p-add').disabled = false;
+  $('p-add').textContent = d.step === 'prot' ? (d.editing ? 'Zapisz' : 'Dodaj do koszyka') : 'Dalej';
+}
+function pickPhone(id){
+  const d = ddraft, p = phoneById(id);
+  if (d.phone !== id){ d.phone = id; d.color = p.colors[0][0]; d.mem = p.mem[0][0]; }
+  d.step = 'ver'; renderDevPanel('[name="dv-color"]:checked');
+}
+$('p-body').addEventListener('click', e => {
+  if (!panelSvc?.dev) return;
+  const d = ddraft, t = e.target;
+  const o = t.closest('[data-dv-open]'); if (o){ d.listTop = $('p-body').scrollTop; d.view = o.dataset.dvOpen; d.step = 'detail'; renderDevPanel('#dv-to-list'); return; }
+  const pk = t.closest('[data-dv-pick]'); if (pk) return pickPhone(pk.dataset.dvPick);
+  if (t.closest('[data-dv-shop]')) return toast('Pełna karta produktu otworzy się w sklepie, w nowej karcie – poza prototypem', false);
+  if (t.closest('#dv-to-list')){ d.step = 'list'; d.editing = false; renderDevPanel(d.view ? `[data-dv-open="${d.view}"]` : null); return; }
+  if (t.closest('#dv-to-ver')){ d.step = 'ver'; renderDevPanel(); return; }
+  if (t.closest('#dv-to-pay')){ d.step = 'pay'; renderDevPanel(); }
+});
+$('p-body').addEventListener('change', e => {
+  if (!panelSvc?.dev) return;
+  const d = ddraft, t = e.target;
+  if (t.name === 'dv-brand'){ d.brand = t.value; d.listTop = 0; }
+  else if (t.name === 'dv-color') d.color = t.value;
+  else if (t.name === 'dv-mem') d.mem = +t.value;
+  else if (t.name === 'dv-pay') d.pay = t.value;
+  else if (t.name === 'dv-down') d.down = +t.value;
+  else if (t.name === 'dv-prot') d.prot = t.value || null;
+  else return;
+  renderDevPanel(`[name="${t.name}"][value="${t.value}"]`);
+});
+/* gallery dots follow the swipe */
+$('p-body').addEventListener('scroll', e => {
+  const g = e.target.classList?.contains('dv-gt') && e.target; if (!g) return;
+  const i = Math.round(g.scrollLeft / g.clientWidth);
+  g.parentElement.querySelectorAll('.dv-dots i').forEach((x, k) => x.classList.toggle('on', k === i));
+}, true);
+function commitDev(){
+  const d = ddraft;
+  if (d.step !== 'prot'){ d.step = DEV_STEPS[DEV_STEPS.indexOf(d.step) + 1]; renderDevPanel(); $('p-body').scrollTop = 0; return; }
+  undoState = JSON.parse(JSON.stringify(state));
+  const l = state.lines.find(x => x.id === d.lineId), had = !!l.dev;
+  l.dev = {phone:d.phone, color:d.color, mem:d.mem, pay:d.pay, down:d.pay === 'once' ? 0 : d.down, prot:d.prot};
+  fresh = new Set([`dev:${l.id}`, `prot:${l.id}`, `devs:${l.id}`]);
+  closePanel(); renderAll();
+  toast(`${had ? 'Zmieniono' : 'Dodano'}: ${devName(l.dev)}${d.prot ? ' z ochroną' : ''} do numeru ${state.lines.indexOf(l) + 1}`);
+}
+function removeDev(){
+  undoState = JSON.parse(JSON.stringify(state));
+  const l = state.lines.find(x => x.id === ddraft.lineId); delete l.dev;
+  fresh = new Set(); closePanel(); renderAll(); toast('Usunięto urządzenie');
+}
 function closePanel(){
   $('scrim').classList.remove('on'); $('panel').classList.remove('on'); document.body.classList.remove('side-open');
   setTimeout(() => { $('scrim').hidden = true; $('panel').hidden = true; }, 300);
@@ -2194,6 +2447,7 @@ function closePanel(){
   (target || lastFocus)?.focus({preventScroll:true});
 }
 function commit(){
+  if (panelSvc?.dev) return commitDev();
   const sel = selectedInPanel(); const s = panelSvc;
   if (s.mob){
     undoState = JSON.parse(JSON.stringify(state));
@@ -2250,7 +2504,7 @@ function toast(t, undo = true){
 }
 $('toast-undo').addEventListener('click', () => { if (undoState){ state = undoState; undoState = null; fresh = new Set(); renderSpeeds(); renderAll(); } $('toast').classList.remove('on'); });
 $('p-add').addEventListener('click', commit);
-$('p-remove').addEventListener('click', () => panelSvc.mob ? removeLine(mdraft.id) : panelSvc.id === 'net2' ? removeNet2(draft.id) : removeSvc(panelSvc.id));
+$('p-remove').addEventListener('click', () => panelSvc.dev ? removeDev() : panelSvc.mob ? removeLine(mdraft.id) : panelSvc.id === 'net2' ? removeNet2(draft.id) : removeSvc(panelSvc.id));
 $('p-close').addEventListener('click', closePanel);
 $('scrim').addEventListener('click', closePanel);
 document.addEventListener('keydown', e => {
