@@ -1343,7 +1343,7 @@ const NEXT_LINE_DISCOUNT = 10;
 const MAX_LINES = 10;
 /* entry point only for now: devices on instalments come later */
 /* one entry point per mobile number, so the device is tied to that number */
-const addDevice = (n, l) => `<div class="mdev"><button class="btn-s" type="button" data-line-dev="${l.id}" aria-label="${l.dev ? 'Zmień' : 'Dodaj'} urządzenie do numeru ${n}">${l.dev ? 'Zmień urządzenie' : '+ Dodaj urządzenie'}</button>${l.vas?.length ? '' : `<button class="btn-s" type="button" data-line-vas="${l.id}" aria-label="Usługi dodatkowe do numeru ${n}">+ Usługi dodatkowe</button>`}</div>`;
+const addDevice = (n, l) => `<div class="mdev"><button class="btn-s" type="button" data-line-dev="${l.id}" aria-label="${l.dev ? 'Zmień' : 'Dodaj'} urządzenie do numeru ${n}">${l.dev ? 'Zmień urządzenie' : '+ Dodaj urządzenie'}</button>${l.vas?.length || !l.dev ? '' : `<button class="btn-s" type="button" data-line-vas="${l.id}" aria-label="Usługi dodatkowe do numeru ${n}">+ Usługi dodatkowe</button>`}</div>`;
 /* security add-ons tied to one mobile number (Figma 6722:15598, VAS card – preSoller); prices are example values */
 const MOB_VAS = [
   {id:'pak', name:'Pakiet bezpieczeństwa', icon:'safety.svg', img:'pakiet.jpg', hl:'Polecane', plan:'24', steps:[[1,24,25]], incl:['cyb','pesel','kid'],
