@@ -143,7 +143,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 .czas button[aria-pressed="true"]{border-color:var(--c-active)}
 .dishes{display:grid;grid-template-columns:repeat(4,minmax(0,294px));gap:16px;justify-content:center;margin-top:16px;padding-bottom:24px}
 @media (max-width:1260px){.dishes{grid-template-columns:repeat(2,minmax(0,294px))}}
-@media (max-width:640px){.dishes{grid-template-columns:minmax(0,294px)}}
+/* phones: the dishes become a horizontal swipe row, the next one peeks in from the edge */
+@media (max-width:640px){.dishes{display:flex;justify-content:flex-start;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:16px;margin-inline:calc(50% - 50vw);padding-inline:16px;gap:12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}.dishes::-webkit-scrollbar{display:none}.dishes > .dish{flex:0 0 min(294px,82vw);scroll-snap-align:start}}
 .dish{border:2px solid var(--c-input);border-radius:8px;overflow:hidden;background:#fff;display:flex}
 .dish .c{flex:1;display:flex;flex-direction:column;align-items:center;gap:16px;padding:24px 20px}
 .dish .top{flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;width:100%;text-align:center}
@@ -325,7 +326,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .av-faq h2{margin:0;font-weight:700;font-size:24px;line-height:28px}
 .av-faq .faql details p{white-space:pre-line;font-size:14px;line-height:20px;max-width:none}
 @media (max-width:1100px){.av-cards{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:50px}}
-@media (max-width:640px){.av-cards{grid-template-columns:1fr}.av-hero h1{font-size:28px;line-height:32px}.av-addr{flex-direction:column;align-items:stretch;gap:16px}}
+@media (max-width:640px){.av-cards{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-inline:16px;margin-inline:calc(50% - 50vw);padding-inline:16px;gap:12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}.av-cards::-webkit-scrollbar{display:none}.av-cards > .avd{flex:0 0 min(294px,82vw);scroll-snap-align:start}.av-hero h1{font-size:28px;line-height:32px}.av-addr{flex-direction:column;align-items:stretch;gap:16px}}
 /* ================= TV packages ================= */
 .tvp{background:#fff;padding-bottom:74px}
 .tvp .av-hero h1{margin:0;color:#fff;font-weight:700;font-size:40px;line-height:44px}
