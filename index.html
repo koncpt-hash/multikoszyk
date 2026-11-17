@@ -560,6 +560,7 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .pvas .vas .ct .ds{font-size:13px;line-height:18px}
 .pvas .vas .add:disabled{border-color:#ccc;color:#666;background:#f5f5f5}
 .pvas .ps-n b{white-space:nowrap}
+.pprot .vas .hl{background:#b5e8f7}
 /* device panel: phone list, short product card, steps */
 .dv-back{align-self:flex-start;background:none;border:0;padding:0;font-weight:700;font-size:14px;color:#232323;text-decoration:underline}
 .dv-chips{display:flex;flex-wrap:wrap;gap:8px}
@@ -1364,7 +1365,7 @@ function lineExtras(l){
       <span class="mph-th">${phoneSvg(p.colors.find(c => c[0] === d.color)[1])}</span>
       <div class="mph-tx"><b>${devName(d)}</b><small>${d.color}</small>
         <small>${d.pay === 'once' ? `zapłacony jednorazowo: ${fmt(phonePrice(d))}` : `${d.pay} rat × ${fmt(devRate(d))}${d.down ? ` · wpłata ${fmt(d.down)}` : ''}`}</small>
-        ${d.prot ? `<span class="mph-pr"><img src="assets/vas/safety.svg" alt="">${protById(d.prot).name} · ${stepsText(protById(d.prot).steps)}</span>` : ''}</div>
+        ${d.prot ? `<span class="mph-pr"><img src="assets/vas/${protById(d.prot).icon}" alt="">${protById(d.prot).name} · ${stepsText(protById(d.prot).steps)}</span>` : ''}</div>
       <span class="mph-act"><button class="lnk3" type="button" data-line-dev="${l.id}" aria-label="Zmień ${devName(d)}">Zmień</button><button class="lnk3" type="button" data-dev-del="${l.id}" aria-label="Usuń ${devName(d)}">Usuń</button></span></div>` : '';
   const vas = l.vas?.length ? `<div class="mx-h">Usługi dodatkowe<button class="lnk3" type="button" data-line-vas="${l.id}" aria-label="Zmień usługi dodatkowe">Zmień</button></div><ul class="mvl">${l.vas.map(id => { const v = vasDef(id);
       return `<li><span class="mvl-ic"><img src="assets/vas/${v.icon}" alt=""></span><span class="mvl-tx"><b>${v.name}</b><small>${stepsText(v.steps)} · ${v.plan === '24' ? 'umowa na 24 mies.' : 'bezterminowo'}</small></span><button class="lnk3" type="button" data-vas-del="${l.id}:${id}" aria-label="Usuń ${v.name}">Usuń</button></li>`; }).join('')}</ul>` : '';
@@ -2323,11 +2324,12 @@ const PHONES = [
 const phoneById = id => PHONES.find(p => p.id === id);
 const DEV_BRANDS = ['Wszystkie', ...new Set(PHONES.map(p => p.brand))];
 const DEV_DOWN = [0, 199, 499];
-/* phone protection (Figma 6722:15395 "Ochrona telefonu"); one choice per device */
+/* phone protection: carousel "Ochrona telefonu" (Figma 6722:15395), one choice per device */
 const DEV_PROT = [
-  {id:'std', name:'Ochrona Smartfona', ds:'Naprawa urządzenia do limitu 1200 zł', plan:'24', steps:[[1,1,0],[2,24,17]]},
-  {id:'prem', name:'Ochrona Smartfona Premium', ds:'Naprawa urządzenia bez limitu', plan:'24', steps:[[1,24,17]], hl:true},
-  {id:'multi', name:'Ochrona Smartfonów', ds:'Naprawa urządzeń zakupionych w zestawie', plan:'bez', steps:[[1,1,0],[2,24,33]]}];
+  {id:'prem', name:'Ochrona Smartfona Premium', ds:'Naprawa urządzenia bez limitu', plan:'24', steps:[[1,24,17]], icon:'smart-care.svg', img:'ochrona.jpg', hl:'Polecane'},
+  {id:'multi', name:'Ochrona Smartfonów', ds:'Naprawa urządzeń zakupionych w zestawie', plan:'bez', steps:[[1,1,0],[2,24,33]], icon:'smart-care-multi.svg'},
+  {id:'prem1', name:'Ochrona Smartfona Premium', ds:'1 naprawa na rok – bez limitu kosztów', plan:'bez', steps:[[1,1,0],[2,24,20]], icon:'smart-care.svg'},
+  {id:'std', name:'Ochrona Smartfona', ds:'Naprawa urządzenia do limitu 1200 zł', plan:'24', steps:[[1,1,0],[2,24,17]], icon:'smartphone-happy.svg'}];
 const protById = id => DEV_PROT.find(p => p.id === id);
 const phonePrice = d => phoneById(d.phone).mem.find(m => m[0] === d.mem)[1];
 const devRate = d => d.pay === 'once' ? 0 : Math.ceil((phonePrice(d) - d.down) / +d.pay * 100) / 100;
@@ -2344,6 +2346,22 @@ const phoneSvg = (c, back = false) => `<svg viewBox="0 0 120 220" aria-hidden="t
   : `<rect x="18" y="10" width="84" height="200" rx="13" fill="#1c2333"/><path d="M18 120 L102 40 L102 90 L18 170Z" fill="rgba(255,255,255,.06)"/><rect x="48" y="16" width="24" height="7" rx="3.5" fill="#000"/>`}</svg>`;
 const stars = r => `<span class="dv-rt" aria-label="Ocena ${String(r).replace('.', ',')} na 5">★ ${String(r).replace('.', ',')}</span>`;
 
+function protCard(o){
+  const on = ddraft.prot === o.id;
+  const lines = o.steps.map(([f, t, v]) => `<div class="ln"><span>${f === 1 && t === 1 ? 'W pierwszym miesiącu' : `Od ${f}. do ${t}. mies.`}</span><b>${fmt(v)}</b></div>`).join('');
+  return `<article class="vas ${on ? 'on' : ''}" aria-label="${o.name}">
+    ${o.hl ? `<div class="hl">${o.hl}</div>` : ''}
+    <div class="card2">
+      <div class="im ${o.img ? '' : 'blank'}">${o.img ? `<img src="assets/vas/${o.img}" alt="">` : ''}<span class="lg"><img src="assets/vas/${o.icon}" alt=""></span></div>
+      <div class="ct">
+        <div class="h"><h3>${o.name}</h3><span class="ar" aria-hidden="true"><img src="assets/tv/arrow-right.svg" alt=""></span></div>
+        <p class="ds">${o.ds}</p><hr>
+        <div class="plans"><div class="one"><b>${o.plan === '24' ? 'Umowa na 24 miesiące' : 'Umowa bezterminowa'}</b>${lines}</div></div>
+        <button class="add" type="button" data-dv-prot="${o.id}" aria-pressed="${on}">${on ? 'Dodano – usuń' : 'Dodaj'}<img src="assets/tv/plus.svg" alt=""></button>
+      </div>
+    </div>
+  </article>`;
+}
 let ddraft = null;
 function openDevPanel(opener, lineId){
   const l = state.lines.find(x => x.id === lineId); if (!l) return;
@@ -2412,15 +2430,18 @@ function renderDevPanel(focusSel){
         <p class="ps-n"><img src="assets/tv/alert-info.svg" alt="">Rata doliczy się do rachunku za numer ${lineName(l) === 'przenoszony numer' ? 'przenoszony' : '+48 ' + l.number}. Raty 0% – płacisz tyle, ile kosztuje telefon.</p></section>`}`;
   } else {
     html = `<section class="ps"><p class="mlab">Krok 4 z 4</p>${back('dv-to-pay', 'Wstecz')}${head}</section>
-      <section class="ps"><h3>Ochrona telefonu</h3><p class="mlab">Naprawa po zalaniu, upadku czy pęknięciu ekranu</p><div class="spd">
-        ${radio('dv-prot', '', !d.prot, '<span class="nm sm">Bez ochrony</span>')}
-        ${DEV_PROT.map(o => radio('dv-prot', o.id, d.prot === o.id, `<span class="nm sm">${o.name}${o.hl ? ' <span class="dv-pol">Polecane</span>' : ''}</span><span class="sub">${o.ds} · ${o.plan === '24' ? 'umowa na 24 mies.' : 'umowa bezterminowa'}</span>
-          <span class="stp">${o.steps.map(([f, t, v]) => `<span><span>${periodLabel(f, t)}</span><b>${fmt(v)}/mies.</b></span>`).join('')}</span>`)).join('')}
-      </div></section>`;
+      <section class="ps pvas pprot"><h3>Ochrona telefonu</h3><p class="mlab">Naprawa po zalaniu, upadku czy pęknięciu ekranu · możesz wybrać jedną albo pominąć ten krok</p>
+        <div class="car"><button class="nav l" type="button" aria-label="Poprzednie" hidden><img src="assets/tv/arrow-left.svg" alt=""></button>
+          <div class="track">${DEV_PROT.map(protCard).join('')}</div>
+          <button class="nav r" type="button" aria-label="Następne" hidden><img src="assets/tv/arrow-right.svg" alt=""></button><div class="ind" hidden></div></div>
+      </section>`;
   }
-  const keep = d.step === 'list' ? d.listTop || 0 : 0;
+  const keep = d.step === 'list' ? d.listTop || 0 : d.step === 'prot' ? $('p-body').scrollTop : 0;
+  const keepX = $('p-body').querySelector('.pprot .track')?.scrollLeft || 0;
   $('p-body').innerHTML = html;
   $('p-body').scrollTop = keep;
+  const car = $('p-body').querySelector('.pprot .car');
+  if (car) setTimeout(() => { car.querySelector('.track').scrollLeft = keepX; syncCar(car); });
   if (focusSel) $('p-body').querySelector(focusSel)?.focus({preventScroll:true});
   updateDevFoot();
 }
@@ -2443,6 +2464,8 @@ $('p-body').addEventListener('click', e => {
   const d = ddraft, t = e.target;
   const o = t.closest('[data-dv-open]'); if (o){ d.listTop = $('p-body').scrollTop; d.view = o.dataset.dvOpen; d.step = 'detail'; renderDevPanel('#dv-to-list'); return; }
   const pk = t.closest('[data-dv-pick]'); if (pk) return pickPhone(pk.dataset.dvPick);
+  const pr = t.closest('[data-dv-prot]'); if (pr){ d.prot = d.prot === pr.dataset.dvProt ? null : pr.dataset.dvProt; renderDevPanel(`[data-dv-prot="${pr.dataset.dvProt}"]`); return; }
+  const nv = t.closest('.pprot .nav'); if (nv){ const tr = nv.parentElement.querySelector('.track'); tr.scrollBy({left:(nv.classList.contains('l') ? -1 : 1) * tr.clientWidth * .8, behavior:'smooth'}); return; }
   if (t.closest('[data-dv-shop]')) return toast('Pełna karta produktu otworzy się w sklepie, w nowej karcie – poza prototypem', false);
   if (t.closest('#dv-to-list')){ d.step = 'list'; d.editing = false; renderDevPanel(d.view ? `[data-dv-open="${d.view}"]` : null); return; }
   if (t.closest('#dv-to-ver')){ d.step = 'ver'; renderDevPanel(); return; }
@@ -2456,7 +2479,6 @@ $('p-body').addEventListener('change', e => {
   else if (t.name === 'dv-mem') d.mem = +t.value;
   else if (t.name === 'dv-pay') d.pay = t.value;
   else if (t.name === 'dv-down') d.down = +t.value;
-  else if (t.name === 'dv-prot') d.prot = t.value || null;
   else return;
   renderDevPanel(`[name="${t.name}"][value="${t.value}"]`);
 });
