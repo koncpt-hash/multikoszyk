@@ -549,7 +549,18 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .sp-t .nm.sm{font-size:16px;line-height:22px}
 .sp-t .sub{font-size:13px;color:#444}
 .mline{align-items:flex-start;gap:12px;flex-wrap:wrap}
-.mline .mdev{flex-basis:100%;padding-left:44px}
+.mline .mdev{flex-basis:100%;padding-left:44px;display:flex;flex-wrap:wrap;gap:8px}
+.mline small.mvas{color:var(--plus);font-weight:700}
+/* security add-ons inside the mobile number panel: the TV VAS card, with a shorter picture */
+.pvas .car .track{padding-top:34px;margin-top:0;padding-bottom:4px}
+.pvas .car .nav.l{left:4px}.pvas .car .nav.r{right:4px}
+.pvas .car .ind{margin-top:4px}
+.pvas .vas{width:min(300px,76vw)}
+.pvas .vas .im{height:112px}
+.pvas .vas .im.blank{background:#f5f5f5}
+.pvas .vas .ct .ds{font-size:13px;line-height:18px}
+.pvas .vas .add:disabled{border-color:#ccc;color:#666;background:#f5f5f5}
+.pvas .ps-n b{white-space:nowrap}
 .add-dev img{width:28px;height:28px;flex:none}
 .add-dev small{display:block;margin-top:2px;font-size:12px;line-height:18px;color:var(--plus)}
 .mline > span:not(.hbtns){flex:1;min-width:0;font-weight:700}
@@ -1251,7 +1262,19 @@ const NEXT_LINE_DISCOUNT = 10;
 const MAX_LINES = 10;
 /* entry point only for now: devices on instalments come later */
 /* one entry point per mobile number, so the device is tied to that number */
-const addDevice = n => `<div class="mdev"><button class="btn-s" type="button" data-soon-dev="${n}" aria-label="Dodaj urządzenie do numeru ${n}">+ Dodaj urządzenie</button></div>`;
+const addDevice = (n, l) => `<div class="mdev"><button class="btn-s" type="button" data-soon-dev="${n}" aria-label="Dodaj urządzenie do numeru ${n}">+ Dodaj urządzenie</button><button class="btn-s" type="button" data-line-vas="${l.id}" aria-label="Usługi dodatkowe do numeru ${n}">+ Usługi dodatkowe</button></div>`;
+/* security add-ons tied to one mobile number (Figma 6722:15598, VAS card – preSoller); prices are example values */
+const MOB_VAS = [
+  {id:'pak', name:'Pakiet bezpieczeństwa', icon:'safety.svg', img:'pakiet.jpg', hl:'Polecane', plan:'24', steps:[[1,24,25]], incl:['cyb','pesel','kid'],
+   ds:'Chroń swoje dane, lokalizuj bliskich i chroń dziecko przed zagrożeniami w sieci. Okazja: 4 usługi w cenie 2!'},
+  {id:'cyb', name:'CyberTarcza na telefon', icon:'cyber.svg', plan:'24', steps:[[1,1,0],[2,24,12]], ds:'Ochrona przed niebezpiecznymi stronami oraz kradzieżą loginów i haseł'},
+  {id:'pesel', name:'Zabezpiecz PESEL', icon:'identity.svg', plan:'bez', steps:[[1,1,0],[2,24,9.99]], ds:'Usługa, która 24/7 monitoruje Twój numer PESEL i pomaga chronić Twoje dane'},
+  {id:'kid', name:'Bezpieczne Dziecko w Sieci', icon:'kid.svg', plan:'bez', steps:[[1,1,0],[2,24,14.99]], ds:'Zadbaj o bezpieczeństwo swojego dziecka w sieci'},
+  {id:'srv', name:'Serwisant 24', icon:'repair.svg', plan:'24', steps:[[1,24,25]], ds:'Potrzebujesz fachowca? Wszystkie usługi serwisowe w jednym miejscu'}];
+const vasDef = id => MOB_VAS.find(v => v.id === id);
+const PAK = MOB_VAS[0];
+const lineName = l => l.proc === 'new' ? l.number : 'przenoszony numer';
+const vasRows = (lines, key = 'mvas') => lines.flatMap(l => (l.vas || []).map(id => ({key:`${key}:${l.id}:${id}`, label:`${vasDef(id).name} (${lineName(l)})`, steps:vasDef(id).steps})));
 /* the next number is the big tile at the end of the mobile section */
 const addLineTile = () => `<button class="add-dev" type="button" data-open="mob"><img src="assets/cart/ic-sim.svg" alt="" aria-hidden="true"><span>Dodaj kolejny numer<small>taniej o ${zl(NEXT_LINE_DISCOUNT)}/mies.</small></span><svg viewBox="0 0 24 24" fill="none" stroke="#232323" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M12 7.5v9M7.5 12h9"/></svg></button>`;
 const MOB_PROC = {new:'Nowy numer', port:'Przenoszę numer'};
@@ -1682,8 +1705,8 @@ function renderServices(){
     if (sel && sel.length){
       const items = sel.map(id => s.options.find(o => o.id === id));
       const list = s.id === 'mob'
-        ? state.lines.map((l, i) => { const o = s.options.find(x => x.id === l.plan); return `<li class="mline"><img class="mic" src="assets/cart/ic-sim.svg" alt=""><span>Numer ${i + 1} · ${o.name} ${o.meta}<small>${lineLabel(l)} · ${SIM_TYPE[l.sim]}</small><small>${stepsText(o.steps)}</small></span>
-            <span class="hbtns"><button class="lnk3" type="button" data-line-edit="${l.id}">Zmień</button><button class="lnk3" type="button" data-line-del="${l.id}">Usuń</button></span>${addDevice(i + 1)}</li>`; }).join('')
+        ? state.lines.map((l, i) => { const o = s.options.find(x => x.id === l.plan); return `<li class="mline"><img class="mic" src="assets/cart/ic-sim.svg" alt=""><span>Numer ${i + 1} · ${o.name} ${o.meta}<small>${lineLabel(l)} · ${SIM_TYPE[l.sim]}</small><small>${stepsText(o.steps)}</small>${l.vas?.length ? `<small class="mvas">Usługi: ${l.vas.map(id => vasDef(id).name).join(', ')}</small>` : ''}</span>
+            <span class="hbtns"><button class="lnk3" type="button" data-line-edit="${l.id}">Zmień</button><button class="lnk3" type="button" data-line-del="${l.id}">Usuń</button></span>${addDevice(i + 1, l)}</li>`; }).join('')
         : items.map(o => `<li><span>${o.name}<small>${o.meta}${s.id === 'tv' && tvPlan(o) === 'bez' ? ' · umowa bezterminowa' : ''}</small></span><span class="num">${o.per === 'm' ? stepsText(optSteps(o)) : fmt(o.price) + perLabel(o)}</span></li>`).join('');
       return `<section class="card" id="svc-${s.id}" style="--tint:var(${s.id === 'mob' ? '--t-dek' : s.tint})" aria-label="${s.title}">
         <div class="card-h"><h2>${s.title} <span class="incart">✓ W koszyku</span></h2><button class="btn-s" type="button" data-remove="${s.id}">Usuń</button></div>
@@ -1692,7 +1715,7 @@ function renderServices(){
           <ul class="picked">${list}</ul>
           ${s.id === 'mob' ? '' : `<div class="foot-b"><button class="btn-s" type="button" data-open="${s.id}">Zmień</button></div>`}
           ${s.id === 'mob'
-            ? (() => { const ls = state.lines.map(l => { const o = s.options.find(x => x.id === l.plan); return {label:`Abonament ${o.name} (${l.proc === 'new' ? l.number : 'przenoszony numer'})`, steps:o.steps}; }); return feesHtml('mob', [...ls, ...mobDiscounts(ls)], '24', [], AFTER_24.mob) + (state.lines.length < MAX_LINES ? addLineTile() : ''); })()
+            ? (() => { const ls = state.lines.map(l => { const o = s.options.find(x => x.id === l.plan); return {label:`Abonament ${o.name} (${lineName(l)})`, steps:o.steps}; }); return feesHtml('mob', [...ls, ...vasRows(state.lines), ...mobDiscounts(ls)], '24', [], AFTER_24.mob) + (state.lines.length < MAX_LINES ? addLineTile() : ''); })()
             : feesHtml(s.id, items.filter(o => o.per === 'm').map(o => ({label:o.name, steps:optSteps(o)})), s.id === 'tv' ? '24' : 'bez',
                 items.filter(o => o.per === 'o').map(o => ({label:o.name, n:o.price})), s.id === 'tv' ? AFTER_24.tv : null)}
         </div>
@@ -1725,6 +1748,7 @@ function renderServices(){
   $('services').querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => b.dataset.open === 'tv' ? openTvp() : openPanel(b.dataset.open, b)));
   $('services').querySelectorAll('[data-remove]').forEach(b => b.addEventListener('click', () => removeSvc(b.dataset.remove)));
   $('services').querySelectorAll('[data-line-edit]').forEach(b => b.addEventListener('click', () => openMobPanel(b, b.dataset.lineEdit)));
+  $('services').querySelectorAll('[data-line-vas]').forEach(b => b.addEventListener('click', () => { openMobPanel(b, b.dataset.lineVas); setTimeout(() => $('p-body').querySelector('.pvas')?.scrollIntoView({block:'start', behavior:'smooth'}), 350); }));
   $('services').querySelectorAll('[data-line-del]').forEach(b => b.addEventListener('click', () => removeLine(b.dataset.lineDel)));
 }
 
@@ -1783,7 +1807,7 @@ function renderSummary(){
       if (s.id === 'mob'){
         const l = state.lines.find(x => x.id === id), plan = s.options.find(x => x.id === l.plan);
         const r = {key:`mob:${id}`, label:`Abonament ${plan.name} (${l.proc === 'new' ? l.number : 'przenoszony numer'})`, steps:plan.steps};
-        rows.push(r); mob.push(r);
+        rows.push(r); mob.push(r); rows.push(...vasRows([l]));
         continue;
       }
       const label = op.name + (s.id === 'tv' && tvPlan(op) === 'bez' ? ' (bezterminowo)' : '');
@@ -1996,7 +2020,7 @@ function openMobPanel(opener, lineId){
   $('panel').querySelector('.p-foot').classList.remove('off');
   panelSvc = {id:'mob', mob:true}; lastFocus = opener || document.activeElement;
   const cur = state.lines.find(l => l.id === lineId), last = state.lines[state.lines.length - 1];
-  mdraft = cur ? {...cur} : {id:`l${Date.now()}`, proc:'new', number:newNumber(), plan:last?.plan || 'm', sim:last?.sim || 'esim'};
+  mdraft = cur ? {...cur, vas:[...(cur.vas || [])]} : {id:`l${Date.now()}`, proc:'new', number:newNumber(), plan:last?.plan || 'm', sim:last?.sim || 'esim', vas:[]};
   $('panel').style.setProperty('--tint', 'var(--t-mob)');
   $('p-title').textContent = cur ? `Numer ${state.lines.indexOf(cur) + 1}` : state.lines.length ? 'Kolejny numer' : 'Abonament komórkowy';
   $('p-lead').textContent = '';
@@ -2008,7 +2032,7 @@ function openMobPanel(opener, lineId){
   setTimeout(() => $('p-body').querySelector('input:checked')?.focus({preventScroll:true}), 50);
 }
 function renderMobPanel(focusSel){
-  const top = $('p-body').scrollTop;
+  const top = $('p-body').scrollTop, keepX = $('p-body').querySelector('.pvas .track')?.scrollLeft || 0;
   const radio = (name, v, on, body) => `<label class="sp-t"><input type="radio" name="${name}" value="${v}" ${on ? 'checked' : ''}><span class="rb" aria-hidden="true"></span>${body}</label>`;
   $('p-body').innerHTML = `
     <section class="ps"><h3>Numer telefonu</h3>
@@ -2034,17 +2058,68 @@ function renderMobPanel(focusSel){
         ${radio('mp-sim', 'sim', mdraft.sim === 'sim', '<span class="nm sm">Fizyczna karta SIM</span><span class="sub">Dostarczymy ją razem z zamówieniem</span>')}
       </div>
       <button class="ai-chip ai-stroke" type="button" data-ai="Czym różni się karta eSIM od fizycznej karty SIM?"><img src="assets/ai/sparkles.svg" alt="">Czym różni się karta eSIM od fizycznej karty SIM?</button>
-    </section>`;
+    </section>
+    ${mobVasSection()}`;
   $('p-body').scrollTop = top;
+  const car = $('p-body').querySelector('.pvas .car');
+  /* measured after the panel is shown, or the carousel thinks it has no overflow and centres itself */
+  if (car) setTimeout(() => { car.querySelector('.track').scrollLeft = keepX; syncCar(car); });
   if (focusSel) $('p-body').querySelector(focusSel)?.focus({preventScroll:true});
   updateMobFoot();
 }
+/* "Usługi dodatkowe" section of the number panel: VAS cards in a carousel, opt-in only */
+function mobVasCard(v){
+  const sel = mdraft.vas || [], on = sel.includes(v.id);
+  const inPak = !on && v.id !== 'pak' && sel.includes('pak') && PAK.incl.includes(v.id);
+  const lines = v.steps.map(([f, t, n]) => `<div class="ln"><span>${f === 1 && t === 1 ? 'W pierwszym miesiącu' : `Od ${f}. do ${t}. mies.`}</span><b>${fmt(n)}</b></div>`).join('');
+  return `<article class="vas ${on ? 'on' : ''}" aria-label="${v.name}">
+    ${v.hl ? `<div class="hl">${v.hl}</div>` : ''}
+    <div class="card2">
+      <div class="im ${v.img ? '' : 'blank'}">${v.img ? `<img src="assets/vas/${v.img}" alt="">` : ''}<span class="lg"><img src="assets/vas/${v.icon}" alt=""></span></div>
+      <div class="ct">
+        <div class="h"><h3>${v.name}</h3><span class="ar" aria-hidden="true"><img src="assets/tv/arrow-right.svg" alt=""></span></div>
+        <p class="ds">${v.ds}</p><hr>
+        <div class="plans"><div class="one"><b>${v.plan === '24' ? 'Umowa na 24 miesiące' : 'Umowa bezterminowa'}</b>${lines}</div></div>
+        ${inPak ? '<button class="add" type="button" disabled>W Pakiecie bezpieczeństwa</button>'
+          : `<button class="add" type="button" data-mvas="${v.id}" aria-pressed="${on}">${on ? 'Dodano – usuń' : 'Dodaj'}<img src="assets/tv/plus.svg" alt=""></button>`}
+      </div>
+    </div>
+  </article>`;
+}
+function mobVasSection(){
+  const sel = mdraft.vas || [], picked = sel.filter(id => PAK.incl.includes(id));
+  /* two or more services that the package covers: the package is the better deal */
+  const hint = !sel.includes('pak') && picked.length >= 2
+    ? `<p class="ps-n"><img src="assets/tv/alert-info.svg" alt=""><span>Wybrane usługi są w Pakiecie bezpieczeństwa – 4 usługi za <b>${fmt(PAK.steps[0][2])}/mies.</b> <button class="lnk2" type="button" id="mv-pak">Zamień na pakiet</button></span></p>` : '';
+  return `<section class="ps pvas"><h3>Usługi dodatkowe</h3>
+    <p class="mlab">Do numeru ${mdraft.proc === 'new' ? `+48 ${mdraft.number}` : 'przenoszonego'} · możesz je zmienić w każdej chwili</p>
+    ${hint}
+    <div class="car"><button class="nav l" type="button" aria-label="Poprzednie usługi" hidden><img src="assets/tv/arrow-left.svg" alt=""></button>
+      <div class="track">${MOB_VAS.map(mobVasCard).join('')}</div>
+      <button class="nav r" type="button" aria-label="Następne usługi" hidden><img src="assets/tv/arrow-right.svg" alt=""></button><div class="ind" hidden></div></div>
+  </section>`;
+}
+function toggleMobVas(id){
+  const sel = mdraft.vas || [];
+  if (sel.includes(id)) mdraft.vas = sel.filter(x => x !== id);
+  else mdraft.vas = [...(id === 'pak' ? sel.filter(x => !PAK.incl.includes(x)) : sel), id];
+  renderMobPanel(`[data-mvas="${id}"]`);
+}
+$('p-body').addEventListener('click', e => {
+  if (!panelSvc?.mob) return;
+  const n = e.target.closest('.pvas .nav');
+  if (n){ const t = n.parentElement.querySelector('.track'); t.scrollBy({left:(n.classList.contains('l') ? -1 : 1) * t.clientWidth * .8, behavior:'smooth'}); return; }
+  const a = e.target.closest('[data-mvas]'); if (a) return toggleMobVas(a.dataset.mvas);
+  if (e.target.closest('#mv-pak')){ $('p-body').querySelector('.pvas .track').scrollLeft = 0; toggleMobVas('pak'); }
+});
+$('p-body').addEventListener('scroll', e => { if (e.target.classList?.contains('track') && e.target.closest('.pvas')) syncCar(e.target.parentElement); }, true);
 function updateMobFoot(){
   const plan = svcById('mob').options.find(o => o.id === mdraft.plan);
   const extra = state.lines.some(l => l.id !== mdraft.id);
-  const st = extra ? mergeSteps(plan.steps.map(([f, t, v]) => [f, t, v - Math.min(NEXT_LINE_DISCOUNT, v)])) : plan.steps;
-  $('p-sum-l').textContent = extra ? 'Ten numer z rabatem za kolejny' : 'Ten numer';
-  $('p-sum-v').innerHTML = `+${fmt(st[0][2])}/mies.${st.length > 1 ? `<small>od ${st[1][0]}. mies. +${fmt(st[1][2])}/mies.</small>` : ''}`;
+  const base = extra ? mergeSteps(plan.steps.map(([f, t, v]) => [f, t, v - Math.min(NEXT_LINE_DISCOUNT, v)])) : plan.steps;
+  const vas = mdraft.vas || [], st = vas.length ? addSteps(base, ...vas.map(id => vasDef(id).steps)) : base;
+  $('p-sum-l').textContent = (extra ? 'Ten numer z rabatem za kolejny' : 'Ten numer') + (vas.length ? ` ${extra ? "i" : "z"} ${vas.length === 1 ? "usługą" : "usługami"}` : "");
+  $('p-sum-v').innerHTML = `+${fmt(st[0][2])}/mies.${st.slice(1).map(([f, , v]) => `<small>od ${f}. mies. +${fmt(v)}/mies.</small>`).join("")}`;
   $('p-add').disabled = false;
   $('p-add').textContent = $('p-add').dataset.editing ? 'Zapisz' : 'Dodaj do koszyka';
   $('p-remove').textContent = 'Usuń numer';
