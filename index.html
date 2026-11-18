@@ -1825,11 +1825,11 @@ function renderServices(){
       ${s.id === 'tv' ? `<div class="logos" aria-label="W pakietach">${TV_LOGOS.map(([f, a]) => `<span><img src="assets/cart/${f}" alt="${a}"></span>`).join('')}</div>` : ''}
     </article>`;
   };
-  const ORDER = ['tv', 'dek', 'mob', 'multi', 'ct'], has = id => (state.added[id] || []).length > 0;
+  const ORDER = ['tv', 'dek', 'mob', 'multi'], has = id => (state.added[id] || []).length > 0;
   const group = (title, sub, ids) => { ids = ids.filter(id => !has(id)); return ids.length ? `<div class="sec-head"><h3>${title}</h3>${sub ? `<p>${sub}</p>` : ''}</div>${ids.map(id => card(svcById(id))).join('')}` : ''; };
   const offers = group('Często kupowane razem', '', ['tv', 'dek'])
     + group('W zestawie taniej!', 'Dodaj usługi do światłowodu i zyskaj rabat!', ['mob'])
-    + group('To może ci się przydać', '', ['multi', 'ct']);
+    + group('To może ci się przydać', '', ['multi']);
   /* services keep the order they were added in, so the newest sits right above 'Dodaj do pakietu' */
   const added = [...mineBefore.filter(has), ...ORDER.filter(id => has(id) && !mineBefore.includes(id))];
   $('services').innerHTML = added.map(id => card(svcById(id))).join('')
