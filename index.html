@@ -885,6 +885,7 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .fees-b{overflow:auto;padding:8px 20px 20px}
 .fees .fine{color:var(--muted);font-size:11px;margin:8px 0 0}
 .fees-ai{margin:12px 0 4px}
+.fees-ai .ai-chips{flex-direction:row;flex-wrap:wrap}
 .after-b{padding:0 48px 0 24px;font-size:12px;line-height:18px;font-weight:500;color:#232323}
 .after-b p{margin:0 0 12px}.after-b p:last-child{margin:0}
 .after-b p b{font-weight:700}
@@ -1325,7 +1326,7 @@ Paczka L (55 zł/mies. netto) to:
   <div class="fees-grab" aria-hidden="true"></div>
   <div class="fees-h"><h2 id="fees-h">Szczegóły opłat</h2>
     <button class="fees-x" type="button" id="fees-x" aria-label="Zamknij"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>
-  <div class="fees-b"><div class="ai-sug fees-ai" id="fees-ai"></div><div class="pay" id="fees-pay"></div><p class="fine" id="fees-fine"></p></div>
+  <div class="fees-b"><div class="pay" id="fees-pay"></div><div class="fees-ai" id="fees-ai"></div><p class="fine" id="fees-fine"></p></div>
 </dialog>
 <dialog class="pu" id="pu" aria-labelledby="pu-t">
   <div class="pu-h"><img class="pu-logo" src="assets/dev/payu-logo.png" alt="PayU"><span class="pu-0">0%</span>
@@ -2118,8 +2119,7 @@ function feesChips(){
   if (i > 0) qs.push(`Dlaczego od ${feesData.total[i][0]}. miesiąca płacę więcej?`);
   if (feesData.o.length) qs.push('Co składa się na opłatę na start?');
   qs.push('Kiedy zapłacę najwięcej?');
-  return `<span class="ttl"><img src="assets/ai/sparkles.svg" alt="">Nie wszystko jasne? Zapytaj Asystenta AI</span>
-    <div class="ai-chips">${qs.map(q => `<button class="ai-chip ai-stroke" type="button" data-ai="${q}">${q}</button>`).join('')}</div>`;
+  return `<div class="ai-chips">${qs.map(q => `<button class="ai-chip ai-stroke" type="button" data-ai="${q}">${q}</button>`).join('')}</div>`;
 }
 /* answers for those questions, read from the same numbers as the table */
 function feesAnswer(q){
