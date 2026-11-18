@@ -629,6 +629,57 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .mph{display:flex;gap:12px;align-items:center;background:#f5f5f5;border-radius:8px;padding:10px 12px}
 .mph-th{width:44px;height:64px;flex:none;display:grid;place-items:center;background:#fff;border-radius:6px}
 .mph-th svg{height:56px;width:auto}
+.mph-th .ph-img,.dvt-im .ph-img{height:100%;width:auto;max-width:100%;object-fit:contain}
+.dv-mini .ph-img{width:40px;height:52px;object-fit:contain;flex:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* device product card (Figma 6730:14813) */
+.dv-pc{gap:12px}
+.dv-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.dv-top .mlab{margin:0}
+.dv-bdg{display:flex;gap:5px;flex-wrap:wrap}
+.dv-bdg span{background:#fc0;border-radius:4px;padding:5px 10px 6px;font-weight:700;font-size:12px;line-height:14px;color:#000}
+.dv-pc .dv-gal{position:relative;background:#fff;padding:0 0 4px}
+.dv-pc .dv-gi{height:260px;overflow:hidden}
+.dv-gi.ph{display:block;text-align:center}
+.dv-gi.ph img{height:100%;width:auto;max-width:100%;object-fit:contain;display:inline-block}
+.dv-gn{position:absolute;top:110px;width:40px;height:40px;border-radius:20px;border:1px solid #ccc;background:#fff;display:grid;place-items:center;padding:0;cursor:pointer}
+.dv-gn img{width:20px;height:20px}
+.dv-gn.l{left:0}.dv-gn.r{right:0}
+.dv-gn:hover{border-color:#000}
+@media (hover:none){.dv-gn{display:none}}
+.dv-nm h3{font-size:24px;line-height:26px;letter-spacing:-.5px;margin:0}
+.dv-rv{margin:8px 0 0;font-size:12px;line-height:14px;display:flex;align-items:center;gap:4px}
+.dv-st{color:#fc0;font-size:16px;letter-spacing:1px;margin-right:6px}
+.dv-rv span:not(.dv-st){color:#999}
+.dv-opt{gap:10px}
+.dv-lab{margin:0;font-size:14px;line-height:16px}
+.dv-lab.sm{margin-top:6px}
+.dv-sw2{display:flex;flex-wrap:wrap;gap:10px}
+.dv-sw2 label{position:relative;cursor:pointer;display:block}
+.dv-sw2 input{position:absolute;opacity:0}
+.dv-sw2 i{display:block;width:23px;height:23px;border-radius:50%;border:1px solid rgba(0,0,0,.3);box-shadow:0 0 0 2px #fff}
+.dv-sw2 input:checked + i{box-shadow:0 0 0 2px #fff,0 0 0 4px #f16e00}
+.dv-sw2 input:focus-visible + i{outline:3px solid var(--c-active);outline-offset:5px}
+.dv-mem{display:flex;flex-wrap:wrap;gap:8px}
+.dv-mem label{position:relative;cursor:pointer;flex:1 1 90px}
+.dv-mem input{position:absolute;opacity:0}
+.dv-mem span{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 8px;border:2px solid #ccc;border-radius:6px}
+.dv-mem b{font-size:16px;line-height:18px}
+.dv-mem small{font-size:12px;color:#666}
+.dv-mem input:checked + span{border-color:#000;box-shadow:inset 0 0 0 1px #000}
+.dv-mem input:focus-visible + span{outline:3px solid var(--c-active);outline-offset:2px}
+.dv-raty{background:#f5f5f5;border-radius:4px;padding:15px 15px 15px 10px;display:flex;align-items:center;gap:12px}
+.dv-raty-l{display:flex;flex-direction:column;align-items:center;justify-content:center;width:72px;flex:none;text-align:center}
+.dv-raty-l b{background:#000;color:#fff;border-radius:4px;padding:3px 8px;font-size:14px;line-height:18px}
+.dv-raty-l span{font-size:11px;line-height:13px;margin-top:5px;color:#444}
+.dv-raty > i{width:1px;height:30px;background:#ccc;flex:none}
+.dv-raty-r{flex:1;display:flex;flex-direction:column;align-items:flex-end;gap:5px;text-align:right;font-size:12px;line-height:14px}
+.dv-raty-r p{margin:0;font-weight:700;font-size:24px;line-height:26px;letter-spacing:-.5px}
+.dv-raty-r p small{font-size:14px;letter-spacing:0;font-weight:700}
+.dv-raty-r .lnk2{font-size:16px}
+.dv-tot{display:flex;flex-direction:column;align-items:flex-end;gap:6px;padding:4px 0 8px}
+.dv-tot span{font-size:14px;line-height:16px}
+.dv-tot b{font-size:18px;line-height:20px;letter-spacing:-.2px}
 .mph-tx{flex:1;display:flex;flex-direction:column;min-width:0}
 .sdevs{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
 .offers .add-dev{margin:0 0 16px}
@@ -1365,7 +1416,7 @@ const lineName = l => l.proc === 'new' ? l.number : 'przenoszony numer';
 function phoneRow(h){
   const d = h.dev, p = phoneById(d.phone);
   return `<div class="mph">
-      <span class="mph-th">${phoneSvg(p.colors.find(c => c[0] === d.color)[1])}</span>
+      <span class="mph-th">${phonePic(p, d.color)}</span>
       <div class="mph-tx"><b>${devName(d)}</b><small>${d.color}</small>
         <small>${d.pay === 'once' ? `zapłacony jednorazowo: ${fmt(phonePrice(d))}` : `${d.pay} rat × ${fmt(devRate(d))}${d.down ? ` · wpłata ${fmt(d.down)}` : ''}`}</small>
         ${d.prot ? `<span class="mph-pr"><img src="assets/vas/${protById(d.prot).icon}" alt="">${protById(d.prot).name} · ${stepsText(protById(d.prot).steps)}</span>` : ''}</div>
@@ -2188,6 +2239,7 @@ function renderMobPanel(focusSel){
   const car = $('p-body').querySelector('.pvas .car');
   /* measured after the panel is shown, or the carousel thinks it has no overflow and centres itself */
   if (car) setTimeout(() => { car.querySelector('.track').scrollLeft = keepX; syncCar(car); });
+  const gt = $('p-body').querySelector('.dv-gt'); if (gt && keepG) gt.scrollLeft = keepG;
   if (focusSel) $('p-body').querySelector(focusSel)?.focus({preventScroll:true});
   updateMobFoot();
 }
@@ -2311,8 +2363,12 @@ function updatePanelFoot(){
   $('p-add').textContent = editing ? 'Zapisz zmiany' : 'Dodaj do pakietu';
 }
 /* ---------- device for a mobile number: list → short product card → version → payment → protection ---------- */
-/* phones and prices are example values; pictures are drawn, not product photos */
+/* phones and prices are example values; a color may carry a product photo (3rd item), otherwise the phone is drawn */
 const PHONES = [
+  {id:'ip17pm', brand:'Apple', name:'iPhone 17 Pro Max', badge:'Nowość', rating:5, reviews:1,
+   colors:[['Pomarańczowy', '#e8792f', 'assets/dev/ip17pm.png'], ['Głęboki błękit', '#2f3f5c'], ['Srebrny', '#d9d9dc']], mem:[[256, 6299], [512, 7399], [1024, 8499]],
+   key:[['Aparat', '48 Mpx, zoom 8×'], ['Ekran', '6,9" 120 Hz'], ['Bateria', 'do 37 h wideo'], ['Łączność', '5G, eSIM']],
+   spec:[['Procesor', 'A19 Pro'], ['Pamięć RAM', '12 GB'], ['Waga', '231 g'], ['Odporność', 'IP68'], ['Złącze', 'USB-C 3']], box:'Telefon, kabel USB-C (bez ładowarki)'},
   {id:'ip16', brand:'Apple', name:'iPhone 16', badge:'Bestseller', rating:4.7, reviews:312,
    colors:[['Czarny', '#2b2b2e'], ['Biały', '#f1f0ea'], ['Różowy', '#f2c5d2'], ['Ultramaryna', '#5d70d4']], mem:[[128, 3999], [256, 4599], [512, 5799]],
    key:[['Aparat', '48 Mpx'], ['Ekran', '6,1" OLED'], ['Bateria', 'do 22 h wideo'], ['Łączność', '5G, eSIM']],
@@ -2361,6 +2417,24 @@ const phoneSvg = (c, back = false) => `<svg viewBox="0 0 120 220" aria-hidden="t
   ? `<rect x="22" y="16" width="44" height="50" rx="12" fill="rgba(0,0,0,.14)"/><circle cx="35" cy="30" r="8" fill="#1d1d1f" stroke="rgba(255,255,255,.35)" stroke-width="2"/><circle cx="35" cy="52" r="8" fill="#1d1d1f" stroke="rgba(255,255,255,.35)" stroke-width="2"/><circle cx="55" cy="41" r="3" fill="#eee"/>`
   : `<rect x="18" y="10" width="84" height="200" rx="13" fill="#1c2333"/><path d="M18 120 L102 40 L102 90 L18 170Z" fill="rgba(255,255,255,.06)"/><rect x="48" y="16" width="24" height="7" rx="3.5" fill="#000"/>`}</svg>`;
 const stars = r => `<span class="dv-rt" aria-label="Ocena ${String(r).replace('.', ',')} na 5">★ ${String(r).replace('.', ',')}</span>`;
+const pCol = (p, name) => p.colors.find(c => c[0] === name) || p.colors[0];
+/* thumbnail: product photo when we have one for that color, drawn phone otherwise */
+const phonePic = (p, name) => { const c = pCol(p, name); return c[2] ? `<img class="ph-img" src="${c[2]}" alt="">` : phoneSvg(c[1]); };
+const opinie = n => `${n} ${n === 1 ? 'opinia' : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? 'opinie' : 'opinii'}`;
+const rFmt = r => (Number.isInteger(r) ? r.toFixed(1) : String(r)).replace('.', ',');
+function devGallery(p, name){
+  const c = pCol(p, name);
+  /* with a photo: whole phone, then close-ups of the cameras and the screen; without: drawn front and back */
+  const slides = c[2]
+    ? [['', 'Telefon z tyłu i z przodu'], ['transform:scale(2.1);transform-origin:0 0', 'Aparaty'], ['transform:scale(1.7);transform-origin:100% 45%', 'Ekran']]
+        .map(([st, al]) => `<div class="dv-gi ph"><img src="${c[2]}" alt="${al}" style="${st}"></div>`)
+    : [phoneSvg(c[1]), phoneSvg(c[1], true)].map(s => `<div class="dv-gi">${s}</div>`);
+  return `<div class="dv-gal">
+    <div class="dv-gt" tabindex="0" aria-label="Zdjęcia: ${p.name}, ${c[0]}">${slides.join('')}</div>
+    <button class="dv-gn l" type="button" aria-label="Poprzednie zdjęcie"><img src="assets/tv/arrow-left.svg" alt=""></button>
+    <button class="dv-gn r" type="button" aria-label="Następne zdjęcie"><img src="assets/tv/arrow-right.svg" alt=""></button>
+    <div class="dv-dots" aria-hidden="true">${slides.map((_, i) => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div></div>`;
+}
 
 function protCard(o){
   const on = ddraft.prot === o.id;
@@ -2386,7 +2460,7 @@ function openDevPanel(opener, lineId){
   if (!l) return;
   lineId = l.id;
   panelSvc = {id:'dev', dev:true}; lastFocus = opener || document.activeElement;
-  ddraft = l.dev ? {...l.dev, lineId, step:'ver', brand:'Wszystkie', editing:true} : {lineId, step:'list', brand:'Wszystkie', phone:null, color:null, mem:null, pay:'24', down:0, prot:null};
+  ddraft = l.dev ? {...l.dev, lineId, step:'card', brand:'Wszystkie', editing:true} : {lineId, step:'list', brand:'Wszystkie', phone:null, color:null, mem:null, pay:'24', down:0, prot:null};
   $('panel').style.setProperty('--tint', 'var(--t-mob)');
   $('p-title').textContent = state.lines.includes(l) ? `Urządzenie do numeru ${state.lines.indexOf(l) + 1}` : l.dev ? 'Urządzenie' : state.devs.length ? 'Kolejne urządzenie' : 'Dodaj urządzenie';
   $('p-lead').textContent = '';
@@ -2395,69 +2469,74 @@ function openDevPanel(opener, lineId){
   $('scrim').hidden = false; $('panel').hidden = false; document.body.classList.add('side-open');
   requestAnimationFrame(() => { $('scrim').classList.add('on'); $('panel').classList.add('on'); });
 }
-const DEV_STEPS = ['ver', 'pay', 'prot'];
+const DEV_STEPS = ['card', 'prot'];
 function renderDevPanel(focusSel){
   const d = ddraft, l = state.lines.find(x => x.id === d.lineId), p = d.phone && phoneById(d.phone);
   const toNum = l ? (lineName(l) === 'przenoszony numer' ? 'przenoszonego' : '+48 ' + l.number) : '';
-  const foot = $('panel').querySelector('.p-foot'); foot.classList.toggle('off', d.step === 'list' || d.step === 'detail');
+  const ctx = l ? ` · do numeru ${toNum}` : ' · bez abonamentu komórkowego';
+  const foot = $('panel').querySelector('.p-foot'); foot.classList.toggle('off', d.step === 'list');
   const radio = (name, v, on, body) => `<label class="sp-t"><input type="radio" name="${name}" value="${v}" ${on ? 'checked' : ''}><span class="rb" aria-hidden="true"></span>${body}</label>`;
   const back = (id, label) => `<button class="dv-back" type="button" id="${id}">← ${label}</button>`;
-  const stepNo = DEV_STEPS.indexOf(d.step) + 2;
-  const head = p ? `<div class="dv-mini">${phoneSvg(p.colors.find(c => c[0] === d.color)?.[1] || p.colors[0][1])}<div><b>${p.name}</b><span>${d.mem ? `${d.mem} GB · ${d.color}` : p.brand}</span></div></div>` : '';
+  const head = p ? `<div class="dv-mini">${phonePic(p, d.color)}<div><b>${p.name}</b><span>${d.mem} GB · ${d.color}</span></div></div>` : '';
   let html = '';
   if (d.step === 'list'){
     const list = PHONES.filter(x => d.brand === 'Wszystkie' || x.brand === d.brand);
-    html = `<section class="ps"><p class="mlab">Krok 1 z 4${l ? ` · do numeru ${toNum}` : ' · bez abonamentu komórkowego'}</p><h3>Wybierz telefon</h3>
+    html = `<section class="ps"><p class="mlab">Wybierz telefon${ctx}</p><h3>Wybierz telefon</h3>
       <div class="dv-chips" role="radiogroup" aria-label="Marka">${DEV_BRANDS.map(b => `<label><input type="radio" name="dv-brand" value="${b}" ${d.brand === b ? 'checked' : ''}><span>${b}</span></label>`).join('')}</div>
       <button class="ai-chip ai-stroke" type="button" data-ai="Który telefon wybrać?"><img src="assets/ai/sparkles.svg" alt="">Który telefon wybrać? Zapytaj Asystenta AI</button>
       <div class="dv-grid">${list.map(x => `<article class="dvt" aria-label="${x.name}">
         ${x.badge ? `<span class="dv-bd">${x.badge}</span>` : ''}
-        <button class="dvt-im" type="button" data-dv-open="${x.id}" aria-label="Szczegóły: ${x.name}">${phoneSvg(x.colors[0][1])}</button>
+        <button class="dvt-im" type="button" data-dv-pick="${x.id}" aria-label="Zobacz: ${x.name}">${phonePic(x)}</button>
         <span class="dvt-br">${x.brand}</span>
-        <button class="dvt-nm" type="button" data-dv-open="${x.id}">${x.name}<img src="assets/tv/arrow-right.svg" alt=""></button>
+        <button class="dvt-nm" type="button" data-dv-pick="${x.id}">${x.name}<img src="assets/tv/arrow-right.svg" alt=""></button>
         <span class="dvt-pr">od <b>${fmt(minRate(x))}</b>/mies.<small>w 24 ratach, wpłata 0 zł</small></span>
         <span class="dvt-cl">${x.colors.map(c => `<i style="background:${c[1]}" title="${c[0]}"></i>`).join('')}</span>
-        <button class="btn-s" type="button" data-dv-pick="${x.id}">Wybierz</button>
+        <button class="btn-s" type="button" data-dv-pick="${x.id}">Zobacz</button>
       </article>`).join('')}</div>
       <button class="lnk2 dv-shop" type="button" data-dv-shop>Pełny katalog w sklepie ↗</button></section>`;
-  } else if (d.step === 'detail'){
-    const x = phoneById(d.view), col = x.colors[0][1];
-    html = `<section class="ps dv-card">${back('dv-to-list', 'Wróć do listy')}
-      <div class="dv-gal"><div class="dv-gt" tabindex="0" aria-label="Zdjęcia ${x.name}">${[phoneSvg(col), phoneSvg(col, true), ...x.colors.slice(1, 3).map(c => phoneSvg(c[1], true))].map(s => `<div class="dv-gi">${s}</div>`).join('')}</div>
-        <div class="dv-dots" aria-hidden="true">${[0, 1, 2, 3].slice(0, 2 + Math.min(2, x.colors.length - 1)).map(i => `<i class="${i ? '' : 'on'}"></i>`).join('')}</div></div>
-      <div class="dv-ttl"><div><span class="dvt-br">${x.brand}</span><h3>${x.name}</h3></div>${stars(x.rating)}<small class="dv-rc">${x.reviews} opinii</small></div>
-      <p class="dv-price">od <b>${fmt(minRate(x))}/mies.</b> · 24 raty · wpłata 0 zł<small>lub ${fmt(x.mem[0][1])} jednorazowo</small></p>
-      <h4 class="dv-h">Najważniejsze</h4>
-      <div class="dv-key">${x.key.map(([k, v]) => `<div><span>${k}</span><b>${v}</b></div>`).join('')}</div>
-      <details class="dv-spec"><summary>Pełna specyfikacja</summary><dl>${[...x.key, ...x.spec, ['Kolory', x.colors.map(c => c[0]).join(', ')], ['Pamięć', x.mem.map(m => m[0] + ' GB').join(', ')]].map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl></details>
-      <p class="dv-inf"><b>W zestawie:</b> ${x.box}</p>
-      <p class="dv-inf"><b>Dostawa:</b> razem z kartą SIM, 1–2 dni robocze</p>
-      <button class="sb-btn pri full" type="button" data-dv-pick="${x.id}">Wybierz ten telefon</button>
-      <button class="lnk2 dv-shop" type="button" data-dv-shop>Pełna karta produktu ↗</button></section>`;
-  } else if (d.step === 'ver'){
-    html = `<section class="ps"><p class="mlab">Krok ${stepNo} z 4</p>${d.editing ? '' : back('dv-to-list', 'Zmień telefon')}${head}</section>
-      <section class="ps"><h3>Kolor</h3><div class="dv-sw" role="radiogroup" aria-label="Kolor">${p.colors.map(([n, c]) => `<label title="${n}"><input type="radio" name="dv-color" value="${n}" ${d.color === n ? 'checked' : ''}><i style="background:${c}"></i><span>${n}</span></label>`).join('')}</div></section>
-      <section class="ps"><h3>Pamięć</h3><div class="spd">${p.mem.map(([g, pr]) => radio('dv-mem', g, d.mem === g, `<span class="nm sm">${g} GB</span><span class="sub">${fmt(pr)} lub od ${fmt(Math.ceil(pr / 24 * 100) / 100)}/mies.</span>`)).join('')}</div></section>
-      ${d.editing ? `<section class="ps"><button class="lnk2" type="button" id="dv-to-list">Wybierz inny telefon</button></section>` : ''}`;
-  } else if (d.step === 'pay'){
-    const price = phonePrice(d), r = n => Math.ceil((price - (d.pay === 'once' ? 0 : d.down)) / n * 100) / 100;
-    html = `<section class="ps"><p class="mlab">Krok ${stepNo} z 4</p>${back('dv-to-ver', 'Wstecz')}${head}</section>
-      <section class="ps"><h3>Płatność</h3><div class="spd">
-        ${radio('dv-pay', '24', d.pay === '24', `<span class="nm sm">24 raty</span><span class="sub">${fmt(r(24))}/mies.</span>`)}
-        ${radio('dv-pay', '36', d.pay === '36', `<span class="nm sm">36 rat</span><span class="sub">${fmt(r(36))}/mies.</span>`)}
+  } else if (d.step === 'card'){
+    /* step 1: product card (Figma 6730:14813) – photos first, then color, memory and how to pay */
+    const price = phonePrice(d), rate = devRate(d), esim = p.key.some(([, v]) => /eSIM/.test(v));
+    const from = Math.ceil(price / 36 * 100) / 100;
+    html = `<section class="ps dv-pc">
+        <div class="dv-top">${back('dv-to-list', d.editing ? 'Wybierz inny telefon' : 'Wróć do listy')}<p class="mlab">Krok 1 z 2${ctx}</p></div>
+        <div class="dv-bdg"><span>Raty 0%</span>${esim ? '<span>Funkcja eSIM</span>' : ''}</div>
+        ${devGallery(p, d.color)}
+        <div class="dv-nm"><h3>${p.brand} ${p.name} ${d.mem >= 1024 ? d.mem / 1024 + ' TB' : d.mem + 'GB'} ${d.color}</h3>
+          <p class="dv-rv"><span class="dv-st" aria-hidden="true">★★★★★</span><b>${rFmt(p.rating)}</b> <span>(${opinie(p.reviews)})</span><span class="sr">Ocena ${rFmt(p.rating)} na 5</span></p></div>
+      </section>
+      <section class="ps dv-opt"><p class="dv-lab">Kolor: <b>${d.color}</b></p>
+        <div class="dv-sw2" role="radiogroup" aria-label="Kolor">${p.colors.map(([n, c]) => `<label title="${n}"><input type="radio" name="dv-color" value="${n}" ${d.color === n ? 'checked' : ''}><i style="background:${c}"></i><span class="sr">${n}</span></label>`).join('')}</div></section>
+      <section class="ps dv-opt"><p class="dv-lab">Pamięć: <b>${d.mem >= 1024 ? d.mem / 1024 + ' TB' : d.mem + ' GB'}</b></p>
+        <div class="dv-mem" role="radiogroup" aria-label="Pamięć">${p.mem.map(([g, pr]) => `<label><input type="radio" name="dv-mem" value="${g}" ${d.mem === g ? 'checked' : ''}><span><b>${g >= 1024 ? g / 1024 + ' TB' : g + ' GB'}</b><small>${fmt(pr)}</small></span></label>`).join('')}</div></section>
+      <section class="ps dv-opt"><p class="dv-lab">Forma płatności</p><div class="spd">
+        ${radio('dv-pay', '24', d.pay === '24', `<span class="nm sm">24 raty 0%</span><span class="sub">${fmt(Math.ceil((price - d.down) / 24 * 100) / 100)}/mies. na rachunku</span>`)}
+        ${radio('dv-pay', '36', d.pay === '36', `<span class="nm sm">36 rat 0%</span><span class="sub">${fmt(Math.ceil((price - d.down) / 36 * 100) / 100)}/mies. na rachunku</span>`)}
         ${radio('dv-pay', 'once', d.pay === 'once', `<span class="nm sm">Jednorazowo</span><span class="sub">${fmt(price)} przy zamówieniu</span>`)}
-      </div></section>
-      ${d.pay === 'once' ? '' : `<section class="ps"><h3>Wpłata początkowa</h3><div class="dv-chips" role="radiogroup" aria-label="Wpłata początkowa">${DEV_DOWN.map(v => `<label><input type="radio" name="dv-down" value="${v}" ${d.down === v ? 'checked' : ''}><span>${v ? fmt(v) : '0 zł'}</span></label>`).join('')}</div>
-        <p class="ps-n"><img src="assets/tv/alert-info.svg" alt="">${l ? `Rata doliczy się do rachunku za numer ${lineName(l) === 'przenoszony numer' ? 'przenoszony' : '+48 ' + l.number}.` : 'Ratę doliczymy do Twojego rachunku za usługi Orange.'} Raty 0% – płacisz tyle, ile kosztuje telefon.</p></section>`}`;
+      </div>
+      ${d.pay === 'once' ? '' : `<p class="dv-lab sm">Wpłata początkowa</p><div class="dv-chips" role="radiogroup" aria-label="Wpłata początkowa">${DEV_DOWN.map(v => `<label><input type="radio" name="dv-down" value="${v}" ${d.down === v ? 'checked' : ''}><span>${v ? fmt(v) : '0 zł'}</span></label>`).join('')}</div>`}
+      </section>
+      <section class="ps dv-opt">
+        <div class="dv-raty"><div class="dv-raty-l"><b>Raty 0%</b><span>na rachunku Orange</span></div><i aria-hidden="true"></i>
+          <div class="dv-raty-r">${d.pay === 'once'
+            ? `<span>Możesz kupić na raty</span><p><small>Raty od</small> ${fmt(from)}</p><button class="lnk2" type="button" data-dv-raty>Wybierz raty</button>`
+            : `<span>${d.pay} rat${d.down ? `, wpłata ${fmt(d.down)}` : ', wpłata 0 zł'}</span><p>${fmt(rate)}<small>/mies.</small></p><span>płacisz tyle, ile kosztuje telefon</span>`}</div></div>
+        <div class="dv-tot"><span>Cena za urządzenie</span><b>${fmt(price)}</b></div>
+        <details class="dv-spec"><summary>Specyfikacja i zawartość zestawu</summary><dl>${[...p.key, ...p.spec, ['W zestawie', p.box], ['Dostawa', 'razem z kartą SIM, 1–2 dni robocze']].map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl></details>
+        <button class="lnk2 dv-shop" type="button" data-dv-shop>Pełna karta produktu w sklepie ↗</button>
+      </section>`;
   } else {
-    html = `<section class="ps"><p class="mlab">Krok 4 z 4</p>${back('dv-to-pay', 'Wstecz')}${head}</section>
+    html = `<section class="ps"><div class="dv-top">${back('dv-to-card', 'Wstecz')}<p class="mlab">Krok 2 z 2${ctx}</p></div>${head}</section>
       <section class="ps pvas pprot"><h3>Ochrona telefonu</h3><p class="mlab">Naprawa po zalaniu, upadku czy pęknięciu ekranu · możesz wybrać jedną albo pominąć ten krok</p>
         <div class="car"><button class="nav l" type="button" aria-label="Poprzednie" hidden><img src="assets/tv/arrow-left.svg" alt=""></button>
           <div class="track">${DEV_PROT.map(protCard).join('')}</div>
           <button class="nav r" type="button" aria-label="Następne" hidden><img src="assets/tv/arrow-right.svg" alt=""></button><div class="ind" hidden></div></div>
       </section>`;
   }
-  const keep = d.step === 'list' ? d.listTop || 0 : d.step === 'prot' ? $('p-body').scrollTop : 0;
+  /* same step (an option changed) keeps the scroll; a new step starts at the top */
+  const keep = d.step === 'list' ? d.listTop || 0 : d.step === d.shown ? $('p-body').scrollTop : 0;
+  const keepG = d.step === d.shown ? $('p-body').querySelector('.dv-gt')?.scrollLeft || 0 : 0;
+  d.shown = d.step;
   const keepX = $('p-body').querySelector('.pprot .track')?.scrollLeft || 0;
   $('p-body').innerHTML = html;
   $('p-body').scrollTop = keep;
@@ -2478,19 +2557,20 @@ function updateDevFoot(){
 function pickPhone(id){
   const d = ddraft, p = phoneById(id);
   if (d.phone !== id){ d.phone = id; d.color = p.colors[0][0]; d.mem = p.mem[0][0]; }
-  d.step = 'ver'; renderDevPanel('[name="dv-color"]:checked');
+  d.listTop = $('p-body').scrollTop; d.step = 'card'; renderDevPanel('#dv-to-list');
 }
 $('p-body').addEventListener('click', e => {
   if (!panelSvc?.dev) return;
   const d = ddraft, t = e.target;
-  const o = t.closest('[data-dv-open]'); if (o){ d.listTop = $('p-body').scrollTop; d.view = o.dataset.dvOpen; d.step = 'detail'; renderDevPanel('#dv-to-list'); return; }
   const pk = t.closest('[data-dv-pick]'); if (pk) return pickPhone(pk.dataset.dvPick);
+  const gn = t.closest('.dv-gn'); if (gn){ const g = gn.parentElement.querySelector('.dv-gt'), n = g.children.length, i = Math.round(g.scrollLeft / g.clientWidth);
+    g.scrollTo({left:((i + (gn.classList.contains('l') ? -1 : 1) + n) % n) * g.clientWidth, behavior:'smooth'}); return; }
+  if (t.closest('[data-dv-raty]')){ d.pay = '24'; renderDevPanel('[name="dv-pay"][value="24"]'); return; }
   const pr = t.closest('[data-dv-prot]'); if (pr){ d.prot = d.prot === pr.dataset.dvProt ? null : pr.dataset.dvProt; renderDevPanel(`[data-dv-prot="${pr.dataset.dvProt}"]`); return; }
   const nv = t.closest('.pprot .nav'); if (nv){ const tr = nv.parentElement.querySelector('.track'); tr.scrollBy({left:(nv.classList.contains('l') ? -1 : 1) * tr.clientWidth * .8, behavior:'smooth'}); return; }
   if (t.closest('[data-dv-shop]')) return toast('Pełna karta produktu otworzy się w sklepie, w nowej karcie – poza prototypem', false);
-  if (t.closest('#dv-to-list')){ d.step = 'list'; d.editing = false; renderDevPanel(d.view ? `[data-dv-open="${d.view}"]` : null); return; }
-  if (t.closest('#dv-to-ver')){ d.step = 'ver'; renderDevPanel(); return; }
-  if (t.closest('#dv-to-pay')){ d.step = 'pay'; renderDevPanel(); }
+  if (t.closest('#dv-to-list')){ d.step = 'list'; d.editing = false; renderDevPanel(d.phone ? `[data-dv-pick="${d.phone}"]` : null); return; }
+  if (t.closest('#dv-to-card')){ d.step = 'card'; renderDevPanel('#dv-to-list'); }
 });
 $('p-body').addEventListener('change', e => {
   if (!panelSvc?.dev) return;
