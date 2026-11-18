@@ -864,7 +864,23 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .voucher span:last-child{width:32px;height:32px;display:grid;place-items:center;background:var(--grey);border-radius:4px;font-size:20px}
 
 .bottom{position:fixed;left:0;right:0;bottom:0;background:var(--surface);box-shadow:0 -2px 8px rgba(0,0,0,.08);padding-block:14px calc(14px + env(safe-area-inset-bottom, 0px));z-index:20}
-.bottom .wrap{display:flex;justify-content:flex-end;gap:8px}
+.bottom .wrap{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.bottom .bt-r{display:flex;gap:8px}
+.btn-lnk{background:none;border:0;padding:11px 0;font-weight:700;font-size:16px;color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+@media (max-width:480px){.bottom .btn-l,.bottom .btn-p{padding:11px 14px}}
+/* fees modal (bottom bar "Szczegóły opłat") */
+.fees{width:560px;max-width:calc(100vw - 32px);max-height:calc(100dvh - 48px);padding:0;border:0;border-radius:8px;background:var(--surface);color:var(--ink);box-shadow:0 8px 32px rgba(0,0,0,.2);display:none;flex-direction:column}
+.fees[open]{display:flex}
+.fees::backdrop{background:rgba(0,0,0,.5)}
+.fees-h{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:2px solid #eee}
+.fees-h h2{flex:1;margin:0;font-size:20px;line-height:26px;font-weight:700}
+.fees-x{background:none;border:0;padding:4px;color:var(--ink);cursor:pointer;display:grid}
+.fees-x svg{width:24px;height:24px}
+.fees-b{overflow:auto;padding:8px 20px 20px}
+.fees .fine{color:var(--muted);font-size:11px;margin:8px 0 0}
+.after-b{padding:0 48px 0 24px;font-size:12px;line-height:18px;font-weight:500;color:#232323}
+.after-b p{margin:0 0 12px}.after-b p:last-child{margin:0}
+.after-b p b{font-weight:700}
 
 .scrim{position:fixed;inset:0;background:var(--scrim);z-index:40;opacity:0;transition:opacity .25s ease}
 .scrim.on{opacity:1}
@@ -1278,8 +1294,8 @@ Paczka L (55 zł/mies. netto) to:
 
   <div class="bottom gutter">
     <div class="wrap">
-      <button class="btn-l" type="button" id="back-lp">Wróć do sklepu</button>
-      <button class="btn-p" type="button">Przejdź dalej</button>
+      <button class="btn-lnk" type="button" id="back-lp">Wróć</button>
+      <span class="bt-r"><button class="btn-l" type="button" id="fees-open" aria-haspopup="dialog">Szczegóły opłat</button><button class="btn-p" type="button">Dalej</button></span>
     </div>
   </div>
 </div>
@@ -1298,6 +1314,11 @@ Paczka L (55 zł/mies. netto) to:
 </div>
 
 <!-- ================= client question (modal) ================= -->
+<dialog class="fees" id="fees" aria-labelledby="fees-h">
+  <div class="fees-h"><h2 id="fees-h">Szczegóły opłat</h2>
+    <button class="fees-x" type="button" id="fees-x" aria-label="Zamknij"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>
+  <div class="fees-b"><div class="pay" id="fees-pay"></div><p class="fine" id="fees-fine"></p></div>
+</dialog>
 <dialog class="pu" id="pu" aria-labelledby="pu-t">
   <div class="pu-h"><img class="pu-logo" src="assets/dev/payu-logo.png" alt="PayU"><span class="pu-0">0%</span>
     <button class="pu-x" type="button" id="pu-x" aria-label="Zamknij"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>
@@ -2056,23 +2077,39 @@ function renderSummary(){
     <p>Zgodę na e-fakturę i zgody marketingowe możesz zaznaczyć na kroku „Dane zamawiającego”.</p>`;
   /* payment timeline: start fee, then one group per period where the total changes */
   const line = (label, v, minus, key) => `<div class="ln ${minus ? 'minus' : ''} ${fresh.has(key) ? 'fresh' : ''}"><span>${label}</span><b class="num">${money(v, minus)}</b></div>`;
-  const group = (id, label, value, body, icon = 'pay-bullet.svg') => `<div class="pg"><div class="hd"><img src="assets/cart/${icon}" alt=""><span class="lb">${label}</span><b class="num">${value}</b>
-      ${body ? `<button class="tg" type="button" data-pg="${id}" aria-expanded="${payOpen.has(id)}" aria-label="Szczegóły: ${label}"><img src="assets/cart/arrow-down.svg" alt=""></button>` : ''}</div>
-    ${body && payOpen.has(id) ? body : ''}<div class="dv"></div></div>`;
+  /* open = which groups are expanded; fold = "Co po 24. miesiącu?" is a collapsible group too (fees modal) */
+  const timeline = (open, fold) => {
+    const group = (id, label, value, body, icon = 'pay-bullet.svg') => `<div class="pg"><div class="hd"><img src="assets/cart/${icon}" alt=""><span class="lb">${label}</span><b class="num">${value}</b>
+      ${body ? `<button class="tg" type="button" data-pg="${id}" aria-expanded="${open.has(id)}" aria-label="Szczegóły: ${label}"><img src="assets/cart/arrow-down.svg" alt=""></button>` : ''}</div>
+    ${body && open.has(id) ? body : ''}<div class="dv"></div></div>`;
+    const after = [state.period === '24' && AFTER_24.net, state.added.mob && AFTER_24.mob, state.added.tv && AFTER_24.tv].filter(Boolean);
+    return group('start', 'Opłata na start', fmt(o.reduce((a, r) => a + r.n, 0)), o.map(r => line(r.label, r.n, false, r.key)).join(''))
+      + total.map(([f, t, v]) => group(`p${f}`, periodName(f, t, state.period), fmt(v),
+          m.filter(r => !(r.minus && Math.abs(stepAt(r.steps, f)) < 0.005)).map(r => line(r.label, stepAt(r.steps, f), r.minus, r.key)).join(''))).join('')
+      + (!after.length ? '' : fold
+          ? group('after', 'Co po 24. miesiącu?', '', `<div class="after-b">${after.map(afterText).join('')}</div>`, 'assistance.svg')
+          : `<div class="pg"><div class="after"><img src="assets/cart/assistance.svg" alt=""><div><h4>Co po 24. miesiącu?</h4>${after.map(afterText).join('')}</div></div><div class="dv"></div></div>`)
+      + group('dost', 'Dostawa lub odbiór', '0,00–14,00 zł', '', 'delivery.svg');
+  };
   /* the first period starts open once; after that the user decides, even if everything is collapsed */
   if (payAuto){ payOpen.add(`p${total[0][0]}`); payAuto = false; }
-  const after = [state.period === '24' && AFTER_24.net, state.added.mob && AFTER_24.mob, state.added.tv && AFTER_24.tv].filter(Boolean);
-  $('pay').innerHTML =
-    group('start', 'Opłata na start', fmt(o.reduce((a, r) => a + r.n, 0)), o.map(r => line(r.label, r.n, false, r.key)).join(''))
-    + total.map(([f, t, v]) => group(`p${f}`, periodName(f, t, state.period), fmt(v),
-        m.filter(r => !(r.minus && Math.abs(stepAt(r.steps, f)) < 0.005)).map(r => line(r.label, stepAt(r.steps, f), r.minus, r.key)).join(''))).join('')
-    + (after.length ? `<div class="pg"><div class="after"><img src="assets/cart/assistance.svg" alt=""><div><h4>Co po 24. miesiącu?</h4>${after.map(afterText).join('')}</div></div><div class="dv"></div></div>` : '')
-    + group('dost', 'Dostawa lub odbiór', '0,00–14,00 zł', '', 'delivery.svg');
-  $('sum-fine').textContent = 'Ceny przykładowe, brutto. ' + (state.period === 'bez' ? 'Umowa bez okresu zobowiązania.' : 'Umowa na 24 miesiące.');
+  $('pay').innerHTML = timeline(payOpen, false);
+  if ($('fees').open) $('fees-pay').innerHTML = timeline(feesOpen, true);
+  $('sum-fine').textContent = $('fees-fine').textContent = 'Ceny przykładowe, brutto. ' + (state.period === 'bez' ? 'Umowa bez okresu zobowiązania.' : 'Umowa na 24 miesiące.');
   if (fresh.size){ const keep = fresh; setTimeout(() => { if (fresh === keep){ document.querySelectorAll('.ln.fresh').forEach(r => r.classList.remove('fresh')); fresh = new Set(); } }, 1800); }
 }
 const payOpen = new Set();
 let payAuto = true;
+/* fees modal from the bottom bar: the same summary, every section collapsed when it opens */
+const feesOpen = new Set();
+$('fees-open').addEventListener('click', () => { feesOpen.clear(); $('fees').showModal(); renderSummary(); $('fees-x').focus(); });
+$('fees-x').addEventListener('click', () => $('fees').close());
+$('fees').addEventListener('click', e => {
+  if (e.target === $('fees')) return $('fees').close();   /* click on the dimmed backdrop */
+  const b = e.target.closest('[data-pg]'); if (!b) return;
+  feesOpen.has(b.dataset.pg) ? feesOpen.delete(b.dataset.pg) : feesOpen.add(b.dataset.pg);
+  renderSummary(); $('fees-pay').querySelector(`[data-pg="${b.dataset.pg}"]`)?.focus();
+});
 const DISC_TEXT = {disc:'za łączenie usług domowych i mobilnych', mob:'za kolejne abonamenty komórkowe', cli:'dla klienta Orange na abonament komórkowy przez 24 mies.'};
 $('pay').addEventListener('click', e => {
   const b = e.target.closest('[data-pg]'); if (!b) return;
