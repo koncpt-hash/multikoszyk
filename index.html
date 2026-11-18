@@ -2059,7 +2059,8 @@ function renderSummary(){
   const group = (id, label, value, body, icon = 'pay-bullet.svg') => `<div class="pg"><div class="hd"><img src="assets/cart/${icon}" alt=""><span class="lb">${label}</span><b class="num">${value}</b>
       ${body ? `<button class="tg" type="button" data-pg="${id}" aria-expanded="${payOpen.has(id)}" aria-label="Szczegóły: ${label}"><img src="assets/cart/arrow-down.svg" alt=""></button>` : ''}</div>
     ${body && payOpen.has(id) ? body : ''}<div class="dv"></div></div>`;
-  if (!payOpen.size) payOpen.add(`p${total[0][0]}`);
+  /* the first period starts open once; after that the user decides, even if everything is collapsed */
+  if (payAuto){ payOpen.add(`p${total[0][0]}`); payAuto = false; }
   const after = [state.period === '24' && AFTER_24.net, state.added.mob && AFTER_24.mob, state.added.tv && AFTER_24.tv].filter(Boolean);
   $('pay').innerHTML =
     group('start', 'Opłata na start', fmt(o.reduce((a, r) => a + r.n, 0)), o.map(r => line(r.label, r.n, false, r.key)).join(''))
@@ -2071,6 +2072,7 @@ function renderSummary(){
   if (fresh.size){ const keep = fresh; setTimeout(() => { if (fresh === keep){ document.querySelectorAll('.ln.fresh').forEach(r => r.classList.remove('fresh')); fresh = new Set(); } }, 1800); }
 }
 const payOpen = new Set();
+let payAuto = true;
 const DISC_TEXT = {disc:'za łączenie usług domowych i mobilnych', mob:'za kolejne abonamenty komórkowe', cli:'dla klienta Orange na abonament komórkowy przez 24 mies.'};
 $('pay').addEventListener('click', e => {
   const b = e.target.closest('[data-pg]'); if (!b) return;
