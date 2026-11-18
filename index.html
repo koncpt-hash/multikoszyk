@@ -869,10 +869,16 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .btn-lnk{background:none;border:0;padding:11px 0;font-weight:700;font-size:16px;color:var(--ink);text-decoration:underline;text-underline-offset:3px}
 @media (max-width:480px){.bottom .btn-l,.bottom .btn-p{padding:11px 14px}}
 /* fees modal (bottom bar "Szczegóły opłat") */
-.fees{width:560px;max-width:calc(100vw - 32px);max-height:calc(100dvh - 48px);padding:0;border:0;border-radius:8px;background:var(--surface);color:var(--ink);box-shadow:0 8px 32px rgba(0,0,0,.2);display:none;flex-direction:column}
-.fees[open]{display:flex}
+/* fees bottom sheet: slides up from the bottom edge; on wide screens it stays a centred 720px sheet */
+.fees{position:fixed;inset:auto 0 0;margin:0 auto;width:100%;max-width:720px;max-height:85dvh;padding:0 0 env(safe-area-inset-bottom, 0px);border:0;border-radius:16px 16px 0 0;background:var(--surface);color:var(--ink);box-shadow:0 -8px 32px rgba(0,0,0,.2);display:none;flex-direction:column}
+.fees[open]{display:flex;animation:sheet-in .28s cubic-bezier(.2,.8,.2,1)}
+.fees.out{animation:sheet-out .22s ease-in forwards}
 .fees::backdrop{background:rgba(0,0,0,.5)}
-.fees-h{display:flex;align-items:center;gap:12px;padding:16px 20px;border-bottom:2px solid #eee}
+@keyframes sheet-in{from{transform:translateY(100%)}to{transform:none}}
+@keyframes sheet-out{from{transform:none}to{transform:translateY(100%)}}
+@media (prefers-reduced-motion:reduce){.fees[open],.fees.out{animation-duration:1ms}}
+.fees-grab{width:40px;height:4px;border-radius:2px;background:#ccc;margin:8px auto 0;flex:none}
+.fees-h{display:flex;align-items:center;gap:12px;padding:8px 20px 12px;border-bottom:2px solid #eee}
 .fees-h h2{flex:1;margin:0;font-size:20px;line-height:26px;font-weight:700}
 .fees-x{background:none;border:0;padding:4px;color:var(--ink);cursor:pointer;display:grid}
 .fees-x svg{width:24px;height:24px}
@@ -1315,6 +1321,7 @@ Paczka L (55 zł/mies. netto) to:
 
 <!-- ================= client question (modal) ================= -->
 <dialog class="fees" id="fees" aria-labelledby="fees-h">
+  <div class="fees-grab" aria-hidden="true"></div>
   <div class="fees-h"><h2 id="fees-h">Szczegóły opłat</h2>
     <button class="fees-x" type="button" id="fees-x" aria-label="Zamknij"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>
   <div class="fees-b"><div class="pay" id="fees-pay"></div><p class="fine" id="fees-fine"></p></div>
@@ -2103,9 +2110,16 @@ let payAuto = true;
 /* fees modal from the bottom bar: the same summary, every section collapsed when it opens */
 const feesOpen = new Set();
 $('fees-open').addEventListener('click', () => { feesOpen.clear(); $('fees').showModal(); renderSummary(); $('fees-x').focus(); });
-$('fees-x').addEventListener('click', () => $('fees').close());
+/* slide down first, then really close; Esc goes the same way */
+function closeFees(){
+  const f = $('fees'); if (!f.open || f.classList.contains('out')) return;
+  f.classList.add('out');
+  setTimeout(() => { f.classList.remove('out'); f.close(); }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 220);
+}
+$('fees-x').addEventListener('click', closeFees);
+$('fees').addEventListener('cancel', e => { e.preventDefault(); closeFees(); });
 $('fees').addEventListener('click', e => {
-  if (e.target === $('fees')) return $('fees').close();   /* click on the dimmed backdrop */
+  if (e.target === $('fees')) return closeFees();   /* click on the dimmed backdrop */
   const b = e.target.closest('[data-pg]'); if (!b) return;
   feesOpen.has(b.dataset.pg) ? feesOpen.delete(b.dataset.pg) : feesOpen.add(b.dataset.pg);
   renderSummary(); $('fees-pay').querySelector(`[data-pg="${b.dataset.pg}"]`)?.focus();
