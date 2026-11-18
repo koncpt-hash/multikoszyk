@@ -669,17 +669,21 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .dv-mem small{font-size:12px;color:#666}
 .dv-mem input:checked + span{border-color:#000;box-shadow:inset 0 0 0 1px #000}
 .dv-mem input:focus-visible + span{outline:3px solid var(--c-active);outline-offset:2px}
-.dv-raty{background:#f5f5f5;border-radius:4px;padding:15px 15px 15px 10px;display:flex;align-items:center;gap:12px}
-.dv-raty-l{display:flex;flex-direction:column;align-items:center;justify-content:center;width:72px;flex:none;text-align:center}
-.dv-raty-l b{background:#000;color:#fff;border-radius:4px;padding:3px 8px;font-size:14px;line-height:18px}
-.dv-raty-l span{font-size:11px;line-height:13px;margin-top:5px;color:#444}
-.dv-raty > i{width:1px;height:30px;background:#ccc;flex:none}
-.dv-raty-r{flex:1;display:flex;flex-direction:column;align-items:flex-end;gap:5px;text-align:right;font-size:12px;line-height:14px}
-.dv-raty-r p{margin:0;font-weight:700;font-size:24px;line-height:26px;letter-spacing:-.5px}
-.dv-raty-r p small{font-size:14px;letter-spacing:0;font-weight:700}
-.dv-raty-r .lnk2{font-size:16px}
-.dv-tot{display:flex;flex-direction:column;align-items:flex-end;gap:6px;padding:4px 0 8px}
-.dv-tot span{font-size:14px;line-height:16px}
+/* PayU installments box – 1:1 with Figma 6730:14889 */
+.dv-payu{display:flex;flex-direction:column;align-items:flex-end;gap:24px;padding-bottom:20px}
+.dv-raty{width:100%;background:#f5f5f5;border-radius:4px;padding:15px 15px 15px 10px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.dv-raty-l{display:flex;align-items:center;gap:5px;flex:none}
+.dv-raty-l img{width:71px;height:66px;object-fit:cover;display:block}
+.dv-raty-l i{display:block;width:1px;height:30px;background:#ccc}
+.dv-raty-r{display:flex;flex-direction:column;align-items:flex-end;justify-content:flex-end;gap:10px;text-align:right}
+.dv-raty-t{display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+.dv-raty-t span{font-size:12px;line-height:14px;color:#000}
+.dv-raty-t p{margin:0;display:flex;align-items:flex-end;gap:5px;white-space:nowrap}
+.dv-raty-t p b{font-size:14px;line-height:16px;letter-spacing:-.1px;padding-bottom:1px}
+.dv-raty-t p strong{font-size:24px;line-height:26px;letter-spacing:-.5px}
+.dv-raty-a{background:none;border:0;padding:0;font-weight:700;font-size:16px;line-height:18px;letter-spacing:-.1px;color:#000;text-decoration:underline;cursor:pointer}
+.dv-tot{display:flex;flex-direction:column;align-items:flex-end;gap:6px;text-align:right}
+.dv-tot span{font-size:14px;line-height:16px;color:#000}
 .dv-tot b{font-size:18px;line-height:20px;letter-spacing:-.2px}
 .mph-tx{flex:1;display:flex;flex-direction:column;min-width:0}
 .sdevs{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
@@ -2422,6 +2426,8 @@ const pCol = (p, name) => p.colors.find(c => c[0] === name) || p.colors[0];
 /* thumbnail: product photo when we have one for that color, drawn phone otherwise */
 const phonePic = (p, name) => { const c = pCol(p, name); return c[2] ? `<img class="ph-img" src="${c[2]}" alt="">` : phoneSvg(c[1]); };
 const opinie = n => `${n} ${n === 1 ? 'opinia' : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? 'opinie' : 'opinii'}`;
+/* price with a thousands space, as in Figma: 5 799,00 zł */
+const fmtK = n => fmt(n).replace(/(\d)(?=(\d{3})+,)/g, '$1 ');
 const rFmt = r => (Number.isInteger(r) ? r.toFixed(1) : String(r)).replace('.', ',');
 function devGallery(p, name){
   const c = pCol(p, name);
@@ -2518,11 +2524,12 @@ function renderDevPanel(focusSel){
       ${d.pay === 'once' ? '' : `<p class="dv-lab sm">Wpłata początkowa</p><div class="dv-chips" role="radiogroup" aria-label="Wpłata początkowa">${DEV_DOWN.map(v => `<label><input type="radio" name="dv-down" value="${v}" ${d.down === v ? 'checked' : ''}><span>${v ? fmt(v) : '0 zł'}</span></label>`).join('')}</div>`}
       </section>
       <section class="ps dv-opt">
-        <div class="dv-raty"><div class="dv-raty-l"><b>Raty 0%</b><span>na rachunku Orange</span></div><i aria-hidden="true"></i>
-          <div class="dv-raty-r">${d.pay === 'once'
-            ? `<span>Możesz kupić na raty</span><p><small>Raty od</small> ${fmt(from)}</p><button class="lnk2" type="button" data-dv-raty>Wybierz raty</button>`
-            : `<span>${d.pay} rat${d.down ? `, wpłata ${fmt(d.down)}` : ', wpłata 0 zł'}</span><p>${fmt(rate)}<small>/mies.</small></p><span>płacisz tyle, ile kosztuje telefon</span>`}</div></div>
-        <div class="dv-tot"><span>Cena za urządzenie</span><b>${fmt(price)}</b></div>
+        <div class="dv-payu">
+          <div class="dv-raty"><div class="dv-raty-l"><img src="assets/dev/payu-raty.png" alt="PayU Raty"><i aria-hidden="true"></i></div>
+            <div class="dv-raty-r"><div class="dv-raty-t"><span>Możesz kupić na raty</span><p><b>Raty od</b><strong>${fmtK(from)}</strong></p></div>
+              <button class="dv-raty-a" type="button" data-dv-raty>Sprawdź raty</button></div></div>
+          <div class="dv-tot"><span>Cena za urządzenie</span><b>${fmtK(price)}</b></div>
+        </div>
         <details class="dv-spec"><summary>Specyfikacja i zawartość zestawu</summary><dl>${[...p.key, ...p.spec, ['W zestawie', p.box], ['Dostawa', 'razem z kartą SIM, 1–2 dni robocze']].map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}</dl></details>
         <button class="lnk2 dv-shop" type="button" data-dv-shop>Pełna karta produktu w sklepie ↗</button>
       </section>`;
@@ -2566,7 +2573,7 @@ $('p-body').addEventListener('click', e => {
   const pk = t.closest('[data-dv-pick]'); if (pk) return pickPhone(pk.dataset.dvPick);
   const gn = t.closest('.dv-gn'); if (gn){ const g = gn.parentElement.querySelector('.dv-gt'), n = g.children.length, i = Math.round(g.scrollLeft / g.clientWidth);
     g.scrollTo({left:((i + (gn.classList.contains('l') ? -1 : 1) + n) % n) * g.clientWidth, behavior:'smooth'}); return; }
-  if (t.closest('[data-dv-raty]')){ d.pay = '24'; renderDevPanel('[name="dv-pay"][value="24"]'); return; }
+  if (t.closest('[data-dv-raty]')){ const f = $('p-body').querySelector('[name="dv-pay"]:checked'); f?.closest('.ps').scrollIntoView({block:'start', behavior:'smooth'}); f?.focus({preventScroll:true}); return; }
   const pr = t.closest('[data-dv-prot]'); if (pr){ d.prot = d.prot === pr.dataset.dvProt ? null : pr.dataset.dvProt; renderDevPanel(`[data-dv-prot="${pr.dataset.dvProt}"]`); return; }
   const nv = t.closest('.pprot .nav'); if (nv){ const tr = nv.parentElement.querySelector('.track'); tr.scrollBy({left:(nv.classList.contains('l') ? -1 : 1) * tr.clientWidth * .8, behavior:'smooth'}); return; }
   if (t.closest('[data-dv-shop]')) return toast('Pełna karta produktu otworzy się w sklepie, w nowej karcie – poza prototypem', false);
