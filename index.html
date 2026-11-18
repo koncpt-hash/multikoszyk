@@ -884,6 +884,7 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .fees-x svg{width:24px;height:24px}
 .fees-b{overflow:auto;padding:8px 20px 20px}
 .fees .fine{color:var(--muted);font-size:11px;margin:8px 0 0}
+.fees-ai{margin:12px 0 4px}
 .after-b{padding:0 48px 0 24px;font-size:12px;line-height:18px;font-weight:500;color:#232323}
 .after-b p{margin:0 0 12px}.after-b p:last-child{margin:0}
 .after-b p b{font-weight:700}
@@ -1324,7 +1325,7 @@ Paczka L (55 zł/mies. netto) to:
   <div class="fees-grab" aria-hidden="true"></div>
   <div class="fees-h"><h2 id="fees-h">Szczegóły opłat</h2>
     <button class="fees-x" type="button" id="fees-x" aria-label="Zamknij"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>
-  <div class="fees-b"><div class="pay" id="fees-pay"></div><p class="fine" id="fees-fine"></p></div>
+  <div class="fees-b"><div class="ai-sug fees-ai" id="fees-ai"></div><div class="pay" id="fees-pay"></div><p class="fine" id="fees-fine"></p></div>
 </dialog>
 <dialog class="pu" id="pu" aria-labelledby="pu-t">
   <div class="pu-h"><img class="pu-logo" src="assets/dev/payu-logo.png" alt="PayU"><span class="pu-0">0%</span>
@@ -2077,6 +2078,7 @@ function renderSummary(){
   const m = rows.map(r => ({...r, value:money(stepAt(r.steps, 1), r.minus),
     note:r.steps.slice(1).map(([f, , v]) => `od ${f}. mies. ${money(v, r.minus).replace(',00 zł', ' zł')}`).join(' · ')}));
   const total = addSteps(...rows.map(r => r.steps));
+  feesData = {o, rows, total};
   /* discounts already in the prices */
   const disc = [[5, 'za e-fakturę odbieraną co miesiąc w Mój Orange'], [5, 'za wyrażenie zgód marketingowych'],
     ...rows.filter(r => r.minus && r.steps.some(x => x[2] < 0)).map(r => [-Math.min(...r.steps.map(x => x[2])), DISC_TEXT[r.key.replace(/:.*/, '')]])];
@@ -2101,12 +2103,42 @@ function renderSummary(){
   /* the first period starts open once; after that the user decides, even if everything is collapsed */
   if (payAuto){ payOpen.add(`p${total[0][0]}`); payAuto = false; }
   $('pay').innerHTML = timeline(payOpen, false);
-  if ($('fees').open) $('fees-pay').innerHTML = timeline(feesOpen, true);
+  if ($('fees').open){ $('fees-pay').innerHTML = timeline(feesOpen, true); $('fees-ai').innerHTML = feesChips(); }
   $('sum-fine').textContent = $('fees-fine').textContent = 'Ceny przykładowe, brutto. ' + (state.period === 'bez' ? 'Umowa bez okresu zobowiązania.' : 'Umowa na 24 miesiące.');
   if (fresh.size){ const keep = fresh; setTimeout(() => { if (fresh === keep){ document.querySelectorAll('.ln.fresh').forEach(r => r.classList.remove('fresh')); fresh = new Set(); } }, 1800); }
 }
 const payOpen = new Set();
 let payAuto = true;
+/* the cart's fees, kept by renderSummary for the assistant's answers */
+let feesData = null;
+const feeRise = () => { const t = feesData.total; for (let i = 1; i < t.length; i++) if (t[i][2] > t[i - 1][2] + 0.005) return i; return -1; };
+/* suggested questions in the fees sheet, built from this cart */
+function feesChips(){
+  const i = feeRise(), qs = [];
+  if (i > 0) qs.push(`Dlaczego od ${feesData.total[i][0]}. miesiąca płacę więcej?`);
+  if (feesData.o.length) qs.push('Co składa się na opłatę na start?');
+  qs.push('Kiedy zapłacę najwięcej?');
+  return `<span class="ttl"><img src="assets/ai/sparkles.svg" alt="">Nie wszystko jasne? Zapytaj Asystenta AI</span>
+    <div class="ai-chips">${qs.map(q => `<button class="ai-chip ai-stroke" type="button" data-ai="${q}">${q}</button>`).join('')}</div>`;
+}
+/* answers for those questions, read from the same numbers as the table */
+function feesAnswer(q){
+  if (!feesData) return null;
+  const m = q.match(/od (\d+)\. miesiąca płacę więcej/);
+  if (m){
+    const t = feesData.total, i = t.findIndex(x => x[0] === +m[1]); if (i < 1) return null;
+    const f = t[i][0], p = t[i - 1][0];
+    const ch = feesData.rows.map(r => [r, stepAt(r.steps, p), stepAt(r.steps, f)]).filter(([, a, b]) => Math.abs(b - a) > 0.005);
+    const li = xs => xs.map(([r, a, b]) => `• ${r.label}: ${money(a, r.minus)} → ${money(b, r.minus)}`).join('\n');
+    const up = ch.filter(([, a, b]) => b > a), down = ch.filter(([, a, b]) => b < a);
+    return {text:`Od ${f}. miesiąca płacisz ${fmt(t[i][2])}/mies. zamiast ${fmt(t[i - 1][2])} – o ${fmt(t[i][2] - t[i - 1][2])} więcej.\nDrożeje, bo kończy się cena promocyjna:\n${li(up)}${down.length ? `\nCzęść podwyżki obniża:\n${li(down)}` : ''}\nTe kwoty widzisz też w tabeli „Szczegóły opłat”.`};
+  }
+  if (/opłat\S* na start/.test(q.toLowerCase())){
+    const o = feesData.o, sum = o.reduce((a, r) => a + r.n, 0);
+    return {text:`Opłatę na start, ${fmt(sum)}, płacisz raz – razem z pierwszym rachunkiem. Składa się z:\n${o.map(r => `• ${r.label}: ${r.value}`).join('\n')}\nPotem płacisz już tylko opłaty miesięczne.`};
+  }
+  return null;
+}
 /* fees modal from the bottom bar: the same summary, every section collapsed when it opens */
 const feesOpen = new Set();
 $('fees-open').addEventListener('click', () => { feesOpen.clear(); $('fees').showModal(); renderSummary(); $('fees-x').focus(); });
@@ -2120,6 +2152,7 @@ $('fees-x').addEventListener('click', closeFees);
 $('fees').addEventListener('cancel', e => { e.preventDefault(); closeFees(); });
 $('fees').addEventListener('click', e => {
   if (e.target === $('fees')) return closeFees();   /* click on the dimmed backdrop */
+  if (e.target.closest('[data-ai]')) return $('fees').close();
   const b = e.target.closest('[data-pg]'); if (!b) return;
   feesOpen.has(b.dataset.pg) ? feesOpen.delete(b.dataset.pg) : feesOpen.add(b.dataset.pg);
   renderSummary(); $('fees-pay').querySelector(`[data-pg="${b.dataset.pg}"]`)?.focus();
@@ -2836,6 +2869,7 @@ function aiAsk(text){
 }
 /* canned answers that read the live cart */
 function aiAnswer(t){
+  const fa = feesAnswer(t); if (fa) return fa;
   const q = t.toLowerCase(), sp = speedDef(state.speed, state.period);
   if (/esim|karta sim|karty sim|fizyczn/.test(q))
     return {text:'Obie działają tak samo: ten sam numer, zasięg i internet. Różnią się tylko formą.\n• Karta eSIM jest wbudowana w telefon. Aktywujesz ją kodem QR, który wyślemy e-mailem – nie czekasz na kuriera i nie zgubisz karty.\n• Fizyczna karta SIM to mała karta, którą wkładasz do telefonu. Dostarczymy ją razem z zamówieniem.\nKartę eSIM wybierz, jeśli Twój telefon ją obsługuje – sprawdzisz to w ustawieniach telefonu.'};
