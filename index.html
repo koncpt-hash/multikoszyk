@@ -397,6 +397,26 @@ button{font:inherit;color:inherit;cursor:pointer}
 @media (max-width:640px){.vas{width:min(300px,85vw)}.promo .vas{width:min(296px,85vw)}.promo .left h2{font-size:28px;line-height:32px}.car .nav{display:none}}
 
 /* ================= client modal + login (Soller 2.0) ================= */
+/* PayU installment plans modal (Figma ExNsuNdKTNdQEnLPvNO9Sd 333:34455) */
+.pu{width:336px;max-width:calc(100vw - 32px);padding:0;border:0;border-radius:4px;background:#fff;color:#2b2b2b;font-family:Poppins,'Helvetica Neue',Arial,sans-serif;box-shadow:0 8px 32px rgba(0,0,0,.2)}
+.pu::backdrop{background:rgba(0,0,0,.5)}
+.pu-h{display:flex;align-items:center;gap:12px;padding:18px 18px 18px 18px;border-bottom:1px solid #e6e6e6}
+.pu-logo{height:24px;width:auto;display:block}
+.pu-0{background:linear-gradient(135deg,#1e5a47,#0d2a24);color:#fff;font-weight:600;font-size:20px;line-height:24px;border-radius:5px;padding:2px 8px}
+.pu-x{margin-left:auto;background:none;border:0;padding:4px;color:#1d62b0;cursor:pointer;display:grid}
+.pu-x svg{width:22px;height:22px}
+.pu-b{padding:22px 18px 22px}
+.pu-l{margin:0;font-size:14px;line-height:20px;color:#444}
+.pu-v{margin:8px 0 22px;font-weight:600;font-size:24px;line-height:32px;color:#2b2b2b}
+.pu-tb{width:100%;border-collapse:collapse;font-size:13px;line-height:18px}
+.pu-tb th{font-weight:500;color:#444;padding:0 4px 12px;text-align:center;vertical-align:middle}
+.pu-tb td{padding:16px 4px;text-align:center;border-top:1px solid #e6e6e6;white-space:nowrap}
+.pu-tb tr:last-child td{border-bottom:1px solid #e6e6e6}
+.pu-tb td:nth-child(2){text-align:right}
+.pu-ln{display:flex;flex-wrap:wrap;justify-content:center;gap:18px 36px;margin-top:22px;text-align:center}
+.pu-ln a{color:#1d62b0;font-weight:500;font-size:13px;line-height:22px;text-decoration:none}
+.pu-ln a:hover{text-decoration:underline}
+.pu-ln a.w{flex-basis:100%;padding:0 24px}
 .cm-scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:60;display:grid;place-items:center;padding:16px}
 .cm{width:min(608px,100%);background:#fff;border-radius:8px;overflow:hidden;display:flex;flex-direction:column;color:#232323}
 .cm-h{display:flex;gap:8px;align-items:flex-start;padding:16px 20px}
@@ -959,6 +979,8 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 
 @media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important;animation:none!important}.av-load .ld i{width:100%}}
 </style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="proto gutter">
@@ -1273,6 +1295,13 @@ Paczka L (55 zł/mies. netto) to:
 </div>
 
 <!-- ================= client question (modal) ================= -->
+<dialog class="pu" id="pu" aria-labelledby="pu-t">
+  <div class="pu-h"><img class="pu-logo" src="assets/dev/payu-logo.png" alt="PayU"><span class="pu-0">0%</span>
+    <button class="pu-x" type="button" id="pu-x" aria-label="Zamknij"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button></div>
+  <div class="pu-b"><p class="pu-l" id="pu-t">Przykładowe plany spłat</p><p class="pu-v" id="pu-v"></p>
+    <table class="pu-tb"><thead><tr><th>Liczba rat</th><th>Miesięczna rata</th><th>RRSO</th><th>Do zapłaty</th></tr></thead><tbody id="pu-rows"></tbody></table>
+    <div class="pu-ln"><a href="#" data-pu-link>Regulamin</a><a href="#" data-pu-link>Koszt kredytu</a><a href="#" data-pu-link class="w">Pośrednik kredytowy i organizacje finansujące</a></div></div>
+</dialog>
 <div class="cm-scrim" id="cm" hidden>
   <div class="cm" role="dialog" aria-modal="true" aria-labelledby="cm-h">
     <div class="cm-h"><h2 id="cm-h">Zanim zaczniemy: czy jesteś klientem Orange?</h2>
@@ -2566,7 +2595,7 @@ $('p-body').addEventListener('click', e => {
   const pk = t.closest('[data-dv-pick]'); if (pk) return pickPhone(pk.dataset.dvPick);
   const gn = t.closest('.dv-gn'); if (gn){ const g = gn.parentElement.querySelector('.dv-gt'), n = g.children.length, i = Math.round(g.scrollLeft / g.clientWidth);
     g.scrollTo({left:((i + (gn.classList.contains('l') ? -1 : 1) + n) % n) * g.clientWidth, behavior:'smooth'}); return; }
-  if (t.closest('[data-dv-raty]')) return toast('Kalkulator rat PayU otworzy się w nowym oknie – poza prototypem', false);
+  if (t.closest('[data-dv-raty]')) return openPayu(phonePrice(d));
   const pr = t.closest('[data-dv-prot]'); if (pr){ d.prot = d.prot === pr.dataset.dvProt ? null : pr.dataset.dvProt; renderDevPanel(`[data-dv-prot="${pr.dataset.dvProt}"]`); return; }
   const nv = t.closest('.pprot .nav'); if (nv){ const tr = nv.parentElement.querySelector('.track'); tr.scrollBy({left:(nv.classList.contains('l') ? -1 : 1) * tr.clientWidth * .8, behavior:'smooth'}); return; }
   if (t.closest('[data-dv-shop]')) return toast('Pełna karta produktu otworzy się w sklepie, w nowej karcie – poza prototypem', false);
@@ -2590,6 +2619,18 @@ $('p-body').addEventListener('scroll', e => {
   const i = Math.round(g.scrollLeft / g.clientWidth);
   g.parentElement.querySelectorAll('.dv-dots i').forEach((x, k) => x.classList.toggle('on', k === i));
 }, true);
+/* PayU 0% plans for the device price; example counts as in the Figma modal */
+function openPayu(price){
+  $('pu-v').textContent = fmt(price);
+  $('pu-rows').innerHTML = [5, 10, 15].map(n => `<tr><td>${n}</td><td>${fmt(Math.ceil(price / n * 100) / 100)}</td><td>0,00%</td><td>${fmt(price)}</td></tr>`).join('');
+  $('pu').showModal(); $('pu-x').focus();
+}
+$('pu-x').addEventListener('click', () => $('pu').close());
+$('pu').addEventListener('click', e => {
+  if (e.target === $('pu')) $('pu').close();   /* click on the dimmed backdrop */
+  if (e.target.closest('[data-pu-link]')){ e.preventDefault(); toast('Dokumenty PayU otworzą się w nowej karcie – poza prototypem', false); }
+});
+$('pu').addEventListener('close', () => $('p-body').querySelector('[data-dv-raty]')?.focus({preventScroll:true}));
 function commitDev(){
   const d = ddraft;
   if (d.step !== 'prot'){ d.step = DEV_STEPS[DEV_STEPS.indexOf(d.step) + 1]; renderDevPanel(); $('p-body').scrollTop = 0; return; }
@@ -2681,7 +2722,7 @@ $('p-remove').addEventListener('click', () => panelSvc.dev ? removeDev() : panel
 $('p-close').addEventListener('click', closePanel);
 $('scrim').addEventListener('click', closePanel);
 document.addEventListener('keydown', e => {
-  if (!panelSvc) return;
+  if (!panelSvc || $('pu').open) return;
   if (e.key === 'Escape') closePanel();
   if (e.key === 'Tab'){
     const f = [...$('panel').querySelectorAll('button:not([disabled]):not([hidden]), input')];
