@@ -2516,13 +2516,6 @@ function renderDevPanel(focusSel){
         <div class="dv-sw2" role="radiogroup" aria-label="Kolor">${p.colors.map(([n, c]) => `<label title="${n}"><input type="radio" name="dv-color" value="${n}" ${d.color === n ? 'checked' : ''}><i style="background:${c}"></i><span class="sr">${n}</span></label>`).join('')}</div></section>
       <section class="ps dv-opt"><p class="dv-lab">Pamięć: <b>${d.mem >= 1024 ? d.mem / 1024 + ' TB' : d.mem + ' GB'}</b></p>
         <div class="dv-mem" role="radiogroup" aria-label="Pamięć">${p.mem.map(([g, pr]) => `<label><input type="radio" name="dv-mem" value="${g}" ${d.mem === g ? 'checked' : ''}><span><b>${g >= 1024 ? g / 1024 + ' TB' : g + ' GB'}</b><small>${fmt(pr)}</small></span></label>`).join('')}</div></section>
-      <section class="ps dv-opt"><p class="dv-lab">Forma płatności</p><div class="spd">
-        ${radio('dv-pay', '24', d.pay === '24', `<span class="nm sm">24 raty 0%</span><span class="sub">${fmt(Math.ceil((price - d.down) / 24 * 100) / 100)}/mies. na rachunku</span>`)}
-        ${radio('dv-pay', '36', d.pay === '36', `<span class="nm sm">36 rat 0%</span><span class="sub">${fmt(Math.ceil((price - d.down) / 36 * 100) / 100)}/mies. na rachunku</span>`)}
-        ${radio('dv-pay', 'once', d.pay === 'once', `<span class="nm sm">Jednorazowo</span><span class="sub">${fmt(price)} przy zamówieniu</span>`)}
-      </div>
-      ${d.pay === 'once' ? '' : `<p class="dv-lab sm">Wpłata początkowa</p><div class="dv-chips" role="radiogroup" aria-label="Wpłata początkowa">${DEV_DOWN.map(v => `<label><input type="radio" name="dv-down" value="${v}" ${d.down === v ? 'checked' : ''}><span>${v ? fmt(v) : '0 zł'}</span></label>`).join('')}</div>`}
-      </section>
       <section class="ps dv-opt">
         <div class="dv-payu">
           <div class="dv-raty"><div class="dv-raty-l"><img src="assets/dev/payu-raty.png" alt="PayU Raty"><i aria-hidden="true"></i></div>
@@ -2573,7 +2566,7 @@ $('p-body').addEventListener('click', e => {
   const pk = t.closest('[data-dv-pick]'); if (pk) return pickPhone(pk.dataset.dvPick);
   const gn = t.closest('.dv-gn'); if (gn){ const g = gn.parentElement.querySelector('.dv-gt'), n = g.children.length, i = Math.round(g.scrollLeft / g.clientWidth);
     g.scrollTo({left:((i + (gn.classList.contains('l') ? -1 : 1) + n) % n) * g.clientWidth, behavior:'smooth'}); return; }
-  if (t.closest('[data-dv-raty]')){ const f = $('p-body').querySelector('[name="dv-pay"]:checked'); f?.closest('.ps').scrollIntoView({block:'start', behavior:'smooth'}); f?.focus({preventScroll:true}); return; }
+  if (t.closest('[data-dv-raty]')) return toast('Kalkulator rat PayU otworzy się w nowym oknie – poza prototypem', false);
   const pr = t.closest('[data-dv-prot]'); if (pr){ d.prot = d.prot === pr.dataset.dvProt ? null : pr.dataset.dvProt; renderDevPanel(`[data-dv-prot="${pr.dataset.dvProt}"]`); return; }
   const nv = t.closest('.pprot .nav'); if (nv){ const tr = nv.parentElement.querySelector('.track'); tr.scrollBy({left:(nv.classList.contains('l') ? -1 : 1) * tr.clientWidth * .8, behavior:'smooth'}); return; }
   if (t.closest('[data-dv-shop]')) return toast('Pełna karta produktu otworzy się w sklepie, w nowej karcie – poza prototypem', false);
