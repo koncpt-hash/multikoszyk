@@ -2449,7 +2449,7 @@ function renderServices(){
       ${s.id === 'tv' ? `<div class="logos" aria-label="W pakietach">${TV_LOGOS.map(([f, a]) => `<span><img src="assets/cart/${f}" alt="${a}"></span>`).join('')}</div>` : ''}
     </article>`;
   };
-  const ORDER = isB2B ? ['pak', 'tv', 'dek', 'multi'] : ['tv', 'dek', 'mob', 'multi'], has = id => (state.added[id] || []).length > 0;
+  const ORDER = isB2B ? ['pak', 'tv', 'dek', 'multi', 'ct'] : ['tv', 'dek', 'mob', 'multi'], has = id => (state.added[id] || []).length > 0;
   const group = (title, sub, ids) => { ids = ids.filter(id => !has(id)); return ids.length ? `<div class="sec-head"><h3>${title}</h3>${sub ? `<p>${sub}</p>` : ''}</div>${ids.map(id => card(svcById(id))).join('')}` : ''; };
   const devs = state.devs || [];
   const devCard = devs.length ? `<section class="card" id="svc-devs" style="--tint:var(--t-dek)" aria-label="Urządzenia">
@@ -2458,7 +2458,7 @@ function renderServices(){
         ${feesHtml('devs', devRows(devs), '24', devOnce(devs))}${addDevTile('Dodaj kolejne urządzenie', 'Telefon na raty, bez abonamentu komórkowego')}</div></section>` : '';
   const devOffer = devs.length || isB2B ? '' : `<div class="sec-head"><h3>Dodaj urządzenie</h3><p>Kup telefon na raty – z abonamentem lub bez</p></div>${addDevTile('Dodaj urządzenie', 'Raty 0%, dostawa razem z zamówieniem')}`;
   const offers = isB2B
-    ? (has('pak') ? '' : card(svcById('pak'))) + group('Często kupowane razem', '', ['tv', 'dek']) + group('To może ci się przydać', '', ['multi'])
+    ? (has('pak') ? '' : card(svcById('pak'))) + group('Często kupowane razem', '', ['tv', 'dek']) + group('To może ci się przydać', '', ['multi', 'ct'])
     : group('Często kupowane razem', '', ['tv', 'dek'])
     + group('W zestawie taniej!', 'Dodaj usługi do światłowodu i zyskaj rabat!', ['mob'])
     + devOffer
