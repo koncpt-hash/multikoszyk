@@ -2776,6 +2776,8 @@ function openNetPanel(opener){
   requestAnimationFrame(() => { $('scrim').classList.add('on'); $('panel').classList.add('on'); });
   setTimeout(() => $('p-body').querySelector('input:checked')?.focus({preventScroll:true}), 50);
 }
+/* business cart: say whether a price is net or gross */
+const vatTag = () => isB2B ? (gross ? ' brutto' : ' + VAT') : '';
 function renderNetPanel(focusSel){
   if (draft.extra && draft.step !== 'cfg') return renderNet2Step();
   $('panel').querySelector('.p-foot').classList.remove('off');
@@ -2790,20 +2792,20 @@ function renderNetPanel(focusSel){
     <section class="ps"><h3>Prędkość</h3>
       <div class="spd">${speedsFor(draft.period).map(x => `<label class="sp-t"><input type="radio" name="np-speed" value="${x.id}" ${draft.speed === x.id ? 'checked' : ''}><span class="rb" aria-hidden="true"></span>
         <span class="nm">Światłowód ${x.name}</span>
-        <span class="stp">${x.steps.map(([f, t, v]) => `<span><span>${periodLabel(f, t, draft.period)}</span><b>${fmt(v)}/mies.</b></span>`).join('')}</span>
-        <span class="av">średnio ${zl(avgSteps(x.steps))}/mies. przez 24 mies.</span></label>`).join('')}</div>
+        <span class="stp">${x.steps.map(([f, t, v]) => `<span><span>${periodLabel(f, t, draft.period)}</span><b>${fmt(v)}/mies.${vatTag()}</b></span>`).join('')}</span>
+        <span class="av">średnio ${zl(avgSteps(x.steps))}/mies.${vatTag()} przez 24 mies.</span></label>`).join('')}</div>
       <button class="ai-chip ai-stroke" type="button" data-ai="Którą prędkość światłowodu wybrać?"><img src="assets/ai/sparkles.svg" alt="">Nie wiesz, którą wybrać? Zapytaj Asystenta AI</button>
     </section>
     <section class="ps"><h3>Modem</h3>
       <p class="ps-n">Modem podłączysz samodzielnie – łatwo, krok po kroku.</p>
       <div class="mdg">${MODEMS.map(m => `<label class="md-t"><input type="radio" name="np-modem" value="${m.id}" ${mdId === m.id ? 'checked' : ''}>
-        <span class="nm">${m.name}</span><span class="mt">${m.meta}</span><span class="pn">${fmt(modemPrice(m, draft.speed))}<small>/mies.</small></span></label>`).join('')}</div>
+        <span class="nm">${m.name}</span><span class="mt">${m.meta}</span><span class="pn">${fmt(modemPrice(m, draft.speed))}<small>/mies.${isB2B ? '<br>' + vatTag().trim() : ''}</small></span></label>`).join('')}</div>
     </section>
     <section class="ps"><h3>Instalacja</h3>
       <p class="ps-n"><img src="assets/tv/alert-info.svg" alt="">Technik zainstaluje przyłącze w lokalu lub w budynku – w cenie.</p>
       <p class="ps-sub">Może Ci się przydać</p>
       ${INSTALL.map(x => `<label class="tile cb"><input type="checkbox" name="np-inst" value="${x.id}" ${draft.inst.includes(x.id) ? 'checked' : ''}><span class="ind" aria-hidden="true"></span>
-        <span><span class="t">${x.name}</span><span class="d" style="display:block">${x.meta}</span></span><span class="p num">${fmt(x.price)}<small>jednorazowo</small></span></label>`).join('')}
+        <span><span class="t">${x.name}</span><span class="d" style="display:block">${x.meta}</span></span><span class="p num">${fmt(x.price)}<small>jednorazowo${vatTag()}</small></span></label>`).join('')}
     </section>`;
   $('p-body').scrollTop = top;
   if (focusSel) $('p-body').querySelector(focusSel)?.focus({preventScroll:true});
@@ -2814,7 +2816,7 @@ function updateNetFoot(){
   const st = addSteps(offerOf(draft.period)[draft.speed], flat(modemPrice(md, draft.speed)));
   const once = draft.inst.reduce((a, id) => a + INSTALL.find(x => x.id === id).price, 0);
   $('p-sum-l').textContent = 'Internet teraz';
-  $('p-sum-v').innerHTML = `${fmt(st[0][2])}/mies.${st.length > 1 ? `<small>od ${st[1][0]}. mies. ${fmt(st[1][2])}</small>` : ''}${once ? `<small>+${fmt(once)} jednorazowo</small>` : ''}`;
+  $('p-sum-v').innerHTML = `${fmt(st[0][2])}/mies.${vatTag()}${st.length > 1 ? `<small>od ${st[1][0]}. mies. ${fmt(st[1][2])}${vatTag()}</small>` : ''}${once ? `<small>+${fmt(once)} jednorazowo${vatTag()}</small>` : ''}`;
   $('p-add').disabled = false; $('p-add').textContent = draft.extra && !state.nets.some(n => n.id === draft.id) ? 'Dodaj do koszyka' : 'Zapisz';
 }
 $('p-body').addEventListener('change', e => {
