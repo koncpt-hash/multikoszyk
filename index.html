@@ -1092,6 +1092,18 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 @media (max-width:640px){.lpb .wo-big{height:auto;min-height:390px}.lpb .wo-big .sph{display:none}.lpb .wo-big .ih{padding:32px 20px}.lpb .wo-big h3{font-size:26px;line-height:30px}.lpb .wo-big h3 br{display:none}.lpb .wo-big .bgl{width:auto;inset:0;height:auto}.lpb .wo-big .bgl i{width:auto;height:auto;inset:0;background-position:70% center}}
 .lpb .bc{min-height:0;justify-content:space-between}.lpb .bc .h{min-height:0;gap:12px}
 .lpb .bc .img img{position:static;width:100%;height:100%}
+
+/* ================= B2B availability ================= */
+.avb-w{position:relative;max-width:1232px;margin:16px auto 0}
+.avb-cards{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;padding-top:34px;padding-bottom:16px;scrollbar-width:none}
+.avb-cards::-webkit-scrollbar{display:none}
+.avb-cards > .avd{flex:0 0 294px;scroll-snap-align:start}
+.avb-w .bnav{top:calc(50% + 17px)}
+.avd .pc .c small{display:inline;font-size:18px;color:var(--c-text-light)}
+.avd .avg2{font-size:12px;line-height:18px;font-weight:500;color:var(--c-text-light);text-align:center}
+.avd .avg2 b{color:var(--c-text)}
+.avd .cfg2{margin-top:8px;width:100%;background:var(--c-ghost);color:var(--c-text);border:0;border-radius:8px;padding:10px 12px;font-weight:700;font-size:16px;line-height:22px}
+@media (max-width:640px){.avb-cards{margin-inline:calc(50% - 50vw);padding-inline:16px;scroll-padding-inline:16px;gap:12px}.avb-cards > .avd{flex-basis:min(294px,82vw)}}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
@@ -1476,6 +1488,41 @@ Paczka L (55 zł/mies. netto) to:
   <div data-clone="lp-foot"></div>
 </div>
 
+<!-- ================= B2B availability ================= -->
+<div id="view-avb" class="lp lpb" hidden>
+  <div data-clone-b="lp-head"></div>
+  <section class="av-hero gutter" aria-labelledby="avb-h">
+    <img class="gs" src="assets/lp/av-gauss.svg" alt="">
+    <div class="in">
+      <div class="hd"><button class="bk" type="button" id="avb-back" aria-label="Wróć do strony z ofertą"><img src="assets/lp/av-arrow-left.svg" alt=""></button><h1 id="avb-h">Dostępne prędkości pod tym adresem</h1></div>
+      <div class="av-addr"><p>Adres firmy:<br><span id="avb-addr"></span></p><button class="btn-ter" type="button" id="avb-change">Zmień adres</button></div>
+    </div>
+  </section>
+  <section class="av-load gutter" id="avb-load" hidden role="status" aria-live="polite"><div class="ld" aria-hidden="true"><i></i></div><p>Szukamy ofert pod adresem Twojej firmy - jeszcze chwilka</p></section>
+  <section class="av-offers gutter" id="avb-offers" aria-label="Oferty pod adresem firmy">
+    <div class="top">
+      <div class="tgls">
+        <label class="tgl"><span class="t"><b>Usługi w pakiecie</b><span>Paczka S - <u>Zobacz, co zawiera</u></span></span><input type="checkbox" id="avb-pak"><span class="sw" aria-hidden="true"><i></i></span></label>
+        <label class="tgl"><span class="t"><b>Telewizja i Amazon Prime</b><span>230 kanałów z Extra TV <u>Szczegóły</u></span></span><input type="checkbox" id="avb-tv"><span class="sw" aria-hidden="true"><i></i></span></label>
+      </div>
+      <p class="lab">Czas trwania umowy</p>
+      <p class="hint">Telewizja i Amazon Prime są dostępne wyłącznie z umową na 24 miesiące.</p>
+      <div class="czas"><div class="opts">
+        <button type="button" data-bperiod="24" aria-pressed="true">24 miesiące</button>
+        <button type="button" data-bperiod="bez" aria-pressed="false">Bezterminowo</button>
+      </div></div>
+    </div>
+    <div class="avb-w">
+      <button class="bnav prev" type="button" aria-label="Poprzednie oferty" disabled>‹</button>
+      <div class="avb-cards" id="avb-cards"></div>
+      <button class="bnav next" type="button" aria-label="Następne oferty">›</button>
+    </div>
+    <div class="bdots" id="avb-dots" aria-hidden="true"></div>
+  </section>
+  <div data-clone-av="av-faq"></div>
+  <div data-clone="lp-foot"></div>
+</div>
+
 <!-- ================= cart ================= -->
 <div id="view-cart" hidden>
   <main class="page gutter">
@@ -1800,7 +1847,7 @@ const INSTALL = [
 /* ---------- views ---------- */
 let loadTimer = null;
 function show(view){
-  for (const v of ['lp','lpb','av','cart','tvp','login']) $('view-' + v).hidden = v !== view;
+  for (const v of ['lp','lpb','av','avb','cart','tvp','login']) $('view-' + v).hidden = v !== view;
   $('demo').hidden = $('reset').hidden = view !== 'cart';
   $('ai-fab').hidden = !['cart', 'tvp'].includes(view) || !$('ai-win').hidden;
   $('go-cart').hidden = view === 'cart';
@@ -1916,7 +1963,7 @@ function renderB2B(){
       <div class="prs">${st.map((s, i) => `<div class="pr"><div class="hrow">${o.od && !tv && i === 0 ? '<span class="od">od</span>' : ''}<span class="v">${bNum(s[2])}</span><span class="cur">zł/mies. + VAT</span></div><span class="fine">${bWhen(s)}</span>${o.ter && !tv ? '<span class="ter">Oferta ograniczona terytorialnie</span>' : ''}</div>`).join('')}</div>
       ${avg != null ? `<div class="avg"><div><b>${bNum(avg)} zł/mies. + VAT</b><span>Średnia cena przez 2 lata</span></div><i title="Średnia z 24 miesięcy umowy">i</i></div>` : ''}
       <div class="sp"></div>
-      <button class="cta" type="button" data-b-check>Sprawdź dostępność</button>
+      <button class="cta" type="button" data-b-check="${o.id}">Sprawdź dostępność</button>
       <button class="cta2" type="button" data-b-expert>Dokończ z Biznes Ekspertem</button>
     </div></article>`;
   }).join('');
@@ -1955,7 +2002,7 @@ $('b-street').addEventListener('change', e => syncSelect(e.target));
 $('b-show-offers').addEventListener('click', () => $('b-offers').scrollIntoView({behavior:'smooth'}));
 $('b-why-check').addEventListener('click', () => $('b-addr').scrollIntoView({behavior:'smooth', block:'center'}));
 $('view-lpb').addEventListener('click', e => {
-  if (e.target.closest('[data-b-check]')){ $('b-addr').scrollIntoView({behavior:'smooth', block:'center'}); return toast('Wpisz adres firmy – dalsza ścieżka B2B pojawi się w kolejnym kroku', false); }
+  const bc = e.target.closest('[data-b-check]'); if (bc) return checkB2B(bc.dataset.bCheck);
   if (e.target.closest('[data-b-expert]')) return toast('Biznes Ekspert oddzwoni do Ciebie – poza prototypem', false);
   if (e.target.closest('[data-b-soon]')) return toast('Ta ścieżka nie jest częścią prototypu', false);
 });
@@ -2037,6 +2084,99 @@ $('av-cards').addEventListener('click', e => {
 $('av-back').addEventListener('click', () => show('lp'));
 $('av-change').addEventListener('click', () => { show('lp'); $('addr').scrollIntoView({block:'center'}); });
 $('av-tv').checked = lp.tv; $('av-nfx').checked = lp.nfx;
+
+/* ---------- B2B availability: loader, then offers at the company address ---------- */
+document.querySelectorAll('[data-clone-b]').forEach(h => h.replaceWith(document.querySelector('#view-lpb .' + h.dataset.cloneB).cloneNode(true)));
+document.querySelectorAll('[data-clone-av]').forEach(h => h.replaceWith(document.querySelector('#view-av .' + h.dataset.cloneAv).cloneNode(true)));
+let loadTimerB = null;
+function bAddress(){
+  const v = id => $(id).value.trim();
+  if (!v('b-city')) return 'Warszawa, ul. Marszałkowska 126/134';
+  const no = v('b-no') + (v('b-flat') ? '/' + v('b-flat') : '');
+  return [v('b-city'), [v('b-street') && 'ul. ' + v('b-street'), no].filter(Boolean).join(' ')].filter(Boolean).join(', ');
+}
+function checkB2B(speedId){
+  lpb.speed = speedId;
+  clearTimeout(loadTimerB);
+  renderAvb(); show('avb');
+  const ld = $('avb-load').querySelector('i'); ld.style.animation = 'none'; void ld.offsetWidth; ld.style.animation = '';
+  $('avb-load').hidden = false; $('avb-offers').hidden = $('view-avb').querySelector('.av-faq').hidden = true;
+  loadTimerB = setTimeout(avbReady, 1500);
+}
+function avbReady(){
+  clearTimeout(loadTimerB);
+  $('avb-load').hidden = true; $('avb-offers').hidden = $('view-avb').querySelector('.av-faq').hidden = false;
+  /* bring the clicked speed into view */
+  const el = $('avb-cards'), card = el.querySelector(`[data-sp="${lpb.speed}"]`);
+  el.style.scrollBehavior = 'auto'; el.scrollLeft = card && card.offsetLeft + card.offsetWidth > el.clientWidth ? card.offsetLeft - 16 : 0; el.style.scrollBehavior = '';
+  avbNav();
+}
+function renderAvb(){
+  $('avb-addr').textContent = bAddress();
+  const tv = bTV(), pak = lpb.pak || tv, bez = lpb.period === 'bez';
+  $('avb-cards').innerHTML = B2B[lpb.period].map(o => {
+    const st = bSteps(o);
+    const avg = !bez && st.length > 1 ? st.reduce((a, [f, t, v]) => a + (t - f + 1) * v, 0) / 24 : null;
+    return `<article class="avd" data-sp="${o.id}" aria-label="Światłowód ${o.name}">
+      <div class="stk">${tv ? 'Extra TV za 30 zł/mies. przez rok' : o.badge}</div>
+      <div class="cb">
+        <div class="nm"><span>Światłowód</span><h3>${o.name}</h3>
+          ${pak ? `<span class="pls"><img src="assets/lp/av-plus-tiny.svg" alt="plus"></span><div class="tv"><span>Usługi w pakiecie</span><b>Paczka S</b></div>` : ''}
+          ${tv ? `<span class="pls"><img src="assets/lp/av-plus-tiny.svg" alt="plus"></span><div class="tv"><span>Telewizja i Amazon Prime</span><b>230 kanałów</b><img src="assets/lp/av-amazon-prime.svg" alt="Amazon Prime"></div>` : ''}</div>
+        <div class="prs">
+          ${st.map((x, k) => `${k ? '<div class="dv"></div>' : ''}<div class="pc">${o.od && !tv && !k ? '<span class="c" style="margin:0 4px 0 0">od</span>' : ''}<span class="v">${bNum(x[2])}</span><span class="c">zł/mies. + VAT</span><small>${bWhen(x)}</small></div>`).join('')}
+          ${avg != null ? `<p class="avg2">Średnio <b>${bNum(avg)} zł/mies. + VAT</b> przez 2 lata</p>` : ''}
+          <button class="rab" type="button" aria-expanded="false">Ceny zawierają rabaty<img src="assets/lp/av-plus-sm.svg" alt=""></button>
+          <p class="rabt" hidden>Ceny netto. Uwzględniają rabat za e‑fakturę i zgody marketingowe.</p>
+        </div>
+        <button class="cfg" type="button" data-bcfg="${o.id}">Konfiguruj</button>
+        <button class="cfg2" type="button" data-b-expert>Dokończ z Biznes Ekspertem</button>
+        <p class="lh">W ofercie dostaniesz:</p>
+        <ul class="inc">
+          <li>${bullet}<span>Światłowód <b>${o.name}</b></span>${plusBtn()}</li>
+          ${pak ? `<li>${bullet}<span><b>Paczka S</b>: wsparcie zdalne IT i CyberTarcza</span>${plusBtn('av-info')}</li>` : ''}
+          ${tv ? `<li>${bullet}<span>Telewizja <b>230 kanałów</b> i Amazon Prime</span>${plusBtn('av-info')}</li>` : ''}
+          <li>${bullet}<span>Modem <b>${MODEM[o.id]}</b></span>${plusBtn()}</li>
+          <li>${bullet}<span>Opieka <b>Biznes Eksperta</b></span>${plusBtn()}</li>
+        </ul>
+        <p class="lh">Dodatkowe opłaty:</p>
+        <ul class="fee">
+          <li>${bullet}<span><b>60 zł + VAT</b> jednorazowa aktywacja</span>${plusBtn()}</li>
+          <li>${bullet}<span><b>4,99 zł/mies. + VAT</b> za Modem ${MODEM[o.id]}</span></li>
+        </ul>
+      </div>
+    </article>`;
+  }).join('');
+  $('avb-pak').checked = pak; $('avb-pak').disabled = tv; $('avb-pak').closest('.tgl').classList.toggle('dis', tv);
+  $('avb-tv').checked = lpb.tv && !bez; $('avb-tv').disabled = bez; $('avb-tv').closest('.tgl').classList.toggle('dis', bez);
+  avbNav();
+}
+function avbNav(){
+  const el = $('avb-cards'), max = el.scrollWidth - el.clientWidth, w = $('view-avb');
+  w.querySelector('.bnav.prev').disabled = el.scrollLeft < 8;
+  w.querySelector('.bnav.next').disabled = el.scrollLeft > max - 8;
+  const pages = Math.max(1, Math.ceil(el.scrollWidth / el.clientWidth - .05));
+  const cur = max > 0 ? Math.round(el.scrollLeft / max * (pages - 1)) : 0;
+  $('avb-dots').innerHTML = pages > 1 ? Array.from({length:pages}, (_, i) => `<i class="${i === cur ? 'on' : ''}"></i>`).join('') : '';
+}
+$('avb-cards').addEventListener('scroll', avbNav, {passive:true});
+window.addEventListener('resize', () => { if (!$('view-avb').hidden) avbNav(); });
+$('view-avb').querySelectorAll('.bnav').forEach(b => b.addEventListener('click', () => {
+  const el = $('avb-cards'); el.scrollBy({left:(b.classList.contains('next') ? 1 : -1) * (el.clientWidth - 40)});
+}));
+$('avb-pak').addEventListener('change', e => { lpb.pak = e.target.checked; renderB2B(); renderAvb(); });
+$('avb-tv').addEventListener('change', e => { lpb.tv = e.target.checked; renderB2B(); renderAvb(); });
+['b-pak', 'b-tv'].forEach(id => $(id).addEventListener('change', renderAvb));
+document.querySelectorAll('[data-bperiod]').forEach(b => b.addEventListener('click', renderAvb));
+$('avb-cards').addEventListener('click', e => {
+  const r = e.target.closest('.rab');
+  if (r){ const on = r.getAttribute('aria-expanded') !== 'true'; r.setAttribute('aria-expanded', on); r.nextElementSibling.hidden = !on; return; }
+  if (e.target.closest('[data-bcfg]')) return toast('Koszyk B2B pojawi się w kolejnym kroku', false);
+  if (e.target.closest('[data-b-expert]')) return toast('Biznes Ekspert oddzwoni do Ciebie – poza prototypem', false);
+});
+$('avb-back').addEventListener('click', () => { show('lpb'); bNav(); });
+$('avb-change').addEventListener('click', () => { show('lpb'); bNav(); $('b-addr').scrollIntoView({block:'center'}); });
+renderAvb();
 
 /* ---------- TV packages screen ---------- */
 const TV_SECTIONS = [
