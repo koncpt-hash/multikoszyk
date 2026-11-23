@@ -931,21 +931,9 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .p-head h2{margin:0;font-size:20px;font-weight:700}
 .x{background:var(--surface);border:2px solid var(--ink);border-radius:4px;width:36px;height:36px;font-size:16px;line-height:1;flex:none;display:grid;place-items:center}
 .p-lead{padding:16px 20px 0;font-weight:700}
-.pkc{background:#fff;border:2px solid #eee;border-radius:8px;padding:20px;display:flex;flex-direction:column;gap:12px}
-.pkc.on{border-color:#ff7900}
-.pkc-t{display:flex;gap:16px;align-items:flex-start}
-.pkc-t > div{flex:1;min-width:0;display:flex;flex-direction:column;gap:12px}
-.pkc h3{margin:0;font-size:20px;line-height:26px;font-weight:700}
-.pkc-t p{font-size:15px;line-height:21px;color:#232323}
-.pkc-l{width:72px;height:72px;flex:none;border-radius:6px;background:#f4f4f4;display:grid;place-items:center;font-size:40px;font-weight:700;line-height:1}
-.pkc-more{align-self:flex-start;border:0;background:none;padding:0;font-weight:700;font-size:15px;color:#555;text-decoration:underline;text-underline-offset:3px}
-.pkc-list{margin:0;padding-left:18px;font-size:14px;line-height:20px;color:#444;display:flex;flex-direction:column;gap:6px}
-.pkc-dv{height:2px;background:#ddd;margin:4px 0}
-.pkc-u{color:#666;font-size:15px;line-height:21px}
-.pkc-p{font-weight:700;font-size:15px;line-height:21px;margin-top:-6px}
-.pkc-pick{margin-top:4px;height:44px;border:3px solid #000;border-radius:4px;background:#fff;font-weight:700;font-size:16px;color:#000}
-.pkc-pick:hover{background:#f4f4f4}
-.pkc-del{margin-top:4px;height:44px;border:0;background:none;font-weight:700;font-size:16px;color:#000;text-decoration:underline;text-underline-offset:3px}
+.tile .tl-u{display:block;margin-top:6px}
+.tl-more{display:block;margin-top:6px;border:0;background:none;padding:0;font-weight:700;font-size:13px;color:#555;text-decoration:underline;text-underline-offset:3px}
+.tl-list{margin:6px 0 0;padding-left:16px;font-size:13px;line-height:18px;color:#444;display:flex;flex-direction:column;gap:4px}
 .p-body{padding:12px 20px 20px;overflow:auto;display:flex;flex-direction:column;gap:12px;flex:1}
 .p-foot{border-top:1px solid var(--line-soft);padding:14px 20px calc(16px + env(safe-area-inset-bottom, 0px));display:flex;flex-direction:column;gap:12px}
 .p-sum{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
@@ -1832,9 +1820,9 @@ const ICONS = {
 const SERVICES = [
   {id:'pak', icon:'ct', tint:'--t-usl', title:'Paczki usług', desc:'Wsparcie IT i bezpieczeństwo dla Twojej firmy', mode:'single', b2b:true,
    lead:'Wybierz paczkę usług dla firmy', options:[
-    {id:'pakS', name:'Paczka S', letter:'S', meta:'CyberTarcza Stacjonarna Rozszerzona + Wsparcie Zdalne', price:10, per:'m',
+    {id:'pakS', name:'Paczka S', meta:'CyberTarcza Stacjonarna Rozszerzona + Wsparcie Zdalne', price:10, per:'m',
      more:['Wsparcie zdalne – specjaliści IT zdiagnozują i usuną usterkę na Twoim komputerze przez bezpłatną infolinię', 'CyberTarcza rozszerzona – ochrona przed zagrożeniami z sieci, bez instalowania i aktualizacji']},
-    {id:'pakL', name:'Paczka L', letter:'L', meta:'Rozszerzenie paczki S o trzy wybrane przez ciebie usługi dodatkowe', price:44, per:'m',
+    {id:'pakL', name:'Paczka L', meta:'Rozszerzenie paczki S o trzy wybrane przez ciebie usługi dodatkowe', price:44, per:'m',
      more:['Wszystko z Paczki S', 'Do wyboru 3 z usług: wsparcie rozszerzone (technik u Ciebie do 24 h), stały adres IP, gwarantowane naprawy internetu (SLA 8 h), Orange Office']}]},
   {id:'tv', icon:'tv', tint:'--t-tv', title:'Pakiety TV i streamingi', desc:'120+ kanałów, dekoder 4K i Amazon Prime w pakiecie', mode:'multi',
    lead:'Wybierz jeden lub kilka pakietów', options:[
@@ -2996,9 +2984,11 @@ function openPanel(id, opener){
   $('p-body').innerHTML = panelSvc.options.map(o => `
     <label class="tile ${type==='checkbox'?'cb':''}"><input type="${type}" name="opt" id="opt-${o.id}" value="${o.id}" ${pre.includes(o.id)?'checked':''}>
       <span class="ind" aria-hidden="true"></span>
-      <span><span class="t">${o.name}${o.tag ? `<span class="mtag">${o.tag}</span>` : ''}</span><span class="d" style="display:block">${o.meta}</span></span>
-      <span class="p num">${fmt(o.price)}<small>${o.per==='m'?'/mies.':'jednorazowo'}</small></span></label>`).join('');
-  if (id === 'pak') $('p-body').innerHTML = panelSvc.options.map(o => pakCard(o, pre.includes(o.id))).join('');
+      <span><span class="t">${o.name}${o.tag ? `<span class="mtag">${o.tag}</span>` : ''}</span><span class="d" style="display:block">${o.meta}</span>${o.more ? `<span class="d tl-u">${state.period === 'bez' ? 'Umowa bezterminowa' : 'Umowa na 24 mies.'}</span><button class="tl-more" type="button" aria-expanded="false" data-tl-more>Szczegóły</button><ul class="tl-list" hidden>${o.more.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}</span>
+      <span class="p num">${fmt(o.price)}<small>${o.per==='m'?'/mies.':'jednorazowo'}${isB2B ? (gross ? ' brutto' : ' + VAT') : ''}</small></span></label>`).join('');
+  $('p-body').querySelectorAll('[data-tl-more]').forEach(b => b.addEventListener('click', e => {
+    e.preventDefault(); const on = b.getAttribute('aria-expanded') !== 'true'; b.setAttribute('aria-expanded', on); b.nextElementSibling.hidden = !on;
+  }));
   $('p-body').querySelectorAll('input').forEach(i => i.addEventListener('change', updatePanelFoot));
   $('p-add').dataset.editing = editing ? '1' : '';
   $('p-remove').hidden = !editing; $('p-remove').textContent = 'Usuń z pakietu';
@@ -3007,33 +2997,6 @@ function openPanel(id, opener){
   requestAnimationFrame(() => { $('scrim').classList.add('on'); $('panel').classList.add('on'); });
   setTimeout(() => ($('p-body').querySelector('input') || $('p-close')).focus({preventScroll:true}), 50);
 }
-/* package cards in the Paczki usług sidebar: pick one with "Wybierz", drop it with "Usuń" */
-function pakCard(o, on){
-  return `<article class="pkc ${on ? 'on' : ''}" data-pk="${o.id}" aria-label="${o.name}">
-    <input type="radio" name="opt" value="${o.id}" ${on ? 'checked' : ''} hidden>
-    <div class="pkc-t"><div><h3>${o.name}</h3><p>${o.meta}</p></div><span class="pkc-l" aria-hidden="true">${o.letter}</span></div>
-    <button class="pkc-more" type="button" aria-expanded="false" data-pk-more>Szczegóły</button>
-    <ul class="pkc-list" hidden>${o.more.map(x => `<li>${x}</li>`).join('')}</ul>
-    <div class="pkc-dv"></div>
-    <p class="pkc-u">${state.period === 'bez' ? 'Umowa bezterminowa' : 'Umowa na 24 mies.'}</p>
-    <p class="pkc-p">${fmt(o.price)}/mies. ${gross ? 'brutto' : '+ VAT'}</p>
-    ${on ? `<button class="pkc-del" type="button" data-pk-del>Usuń</button>` : `<button class="pkc-pick" type="button" data-pk-pick>Wybierz</button>`}
-  </article>`;
-}
-$('p-body').addEventListener('click', e => {
-  if (panelSvc?.id !== 'pak') return;
-  const card = e.target.closest('.pkc'); if (!card) return;
-  const m = e.target.closest('[data-pk-more]');
-  if (m){ const on = m.getAttribute('aria-expanded') !== 'true'; m.setAttribute('aria-expanded', on); card.querySelector('.pkc-list').hidden = !on; return; }
-  const pick = e.target.closest('[data-pk-pick]'), del = e.target.closest('[data-pk-del]');
-  if (!pick && !del) return;
-  const open = [...$('p-body').querySelectorAll('[data-pk-more][aria-expanded="true"]')].map(b => b.closest('.pkc').dataset.pk);
-  const chosen = pick ? card.dataset.pk : null;
-  $('p-body').innerHTML = panelSvc.options.map(o => pakCard(o, o.id === chosen)).join('');
-  open.forEach(id => $('p-body').querySelector(`[data-pk="${id}"] [data-pk-more]`).click());
-  updatePanelFoot();
-  $('p-body').querySelector(`[data-pk="${card.dataset.pk}"] ${pick ? '[data-pk-del]' : '[data-pk-pick]'}`)?.focus();
-});
 function selectedInPanel(){ return [...$('p-body').querySelectorAll('input:checked')].map(i => i.value); }
 function updatePanelFoot(){
   const sel = selectedInPanel().map(id => panelSvc.options.find(o => o.id === id));
