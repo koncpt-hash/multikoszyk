@@ -1874,7 +1874,8 @@ const TV_LOGOS = [['lg-prime.svg', 'Amazon Prime'], ['lg-canal.png', 'CANAL+ Ser
 /* installation add-ons live in the internet sidebar */
 const INSTALL = [
   {id:'asysta', name:'Asysta instalacyjna', meta:'Technik podłączy i skonfiguruje modem i dekoder', price:0},
-  {id:'siec', name:'Wykonanie sieci domowej', meta:'Okablowanie i punkty Wi‑Fi w domu', price:149}];
+  {id:'siec', name:'Wykonanie sieci domowej', meta:'Okablowanie i punkty Wi‑Fi w domu', price:149},
+  {id:'wym', name:'Asysta wymiany urządzeń', meta:'Technik wymieni dotychczasowe urządzenia na nowe i przeniesie ich ustawienia', price:0, b2b:true}];
 
 /* ---------- views ---------- */
 let loadTimer = null;
@@ -2804,7 +2805,7 @@ function renderNetPanel(focusSel){
     <section class="ps"><h3>Instalacja</h3>
       <p class="ps-n"><img src="assets/tv/alert-info.svg" alt="">Technik zainstaluje przyłącze w lokalu lub w budynku – w cenie.</p>
       <p class="ps-sub">Może Ci się przydać</p>
-      ${INSTALL.map(x => `<label class="tile cb"><input type="checkbox" name="np-inst" value="${x.id}" ${draft.inst.includes(x.id) ? 'checked' : ''}><span class="ind" aria-hidden="true"></span>
+      ${INSTALL.filter(x => !x.b2b || isB2B).map(x => `<label class="tile cb"><input type="checkbox" name="np-inst" value="${x.id}" ${draft.inst.includes(x.id) ? 'checked' : ''}><span class="ind" aria-hidden="true"></span>
         <span><span class="t">${x.name}</span><span class="d" style="display:block">${x.meta}</span></span><span class="p num">${fmt(x.price)}<small>jednorazowo${vatTag()}</small></span></label>`).join('')}
     </section>`;
   $('p-body').scrollTop = top;
