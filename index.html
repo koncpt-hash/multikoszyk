@@ -855,6 +855,11 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .card-b .foot-b{display:flex;justify-content:flex-start}
 
 .side{display:flex;flex-direction:column;gap:16px;position:sticky;top:16px}
+.vat-sw{display:flex;background:var(--surface);border:2px solid var(--line-soft);border-radius:8px;padding:4px;gap:4px}
+.vat-sw[hidden]{display:none}
+.vat-sw button{flex:1;border:0;border-radius:6px;background:transparent;padding:10px 12px;font-weight:700;font-size:14px;line-height:20px;color:#232323}
+.vat-sw button[aria-pressed="true"]{background:#232323;color:#fff}
+.vat-sw button:focus-visible{outline:3px solid #f15e00;outline-offset:2px}
 .sum{background:var(--surface);border:2px solid var(--line-soft);border-radius:8px;padding:20px}
 .sum h2{font-size:20px;margin:0 0 12px;font-weight:700}
 .disc-box{border:2px solid #527edb;border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
@@ -1531,7 +1536,7 @@ Paczka L (55 zł/mies. netto) to:
         <div>
           <h1 class="ph1">Konfiguruj swój pakiet</h1>
           <div class="steps">Krok 1 z 3: Konfiguracja &nbsp;→&nbsp; Twoje dane &nbsp;→&nbsp; Podsumowanie i zamówienie</div>
-          <p class="cli-note" id="b2b-note" hidden><img src="assets/tv/alert-info.svg" alt=""><span><b>Oferta dla firm.</b> Wszystkie ceny w koszyku są cenami netto – do kwot doliczymy 23% VAT.</span></p>
+          <p class="cli-note" id="b2b-note" hidden><img src="assets/tv/alert-info.svg" alt=""><span><b>Oferta dla firm.</b> <span id="b2b-vat">Wszystkie ceny w koszyku są cenami netto – do kwot doliczymy 23% VAT.</span></span></p>
           <p class="cli-note" id="cli-note" hidden><img src="assets/tv/alert-info.svg" alt=""><span><b>Jesteś zalogowany jako klient Orange.</b> Oznaczyliśmy rabaty i dodatki przygotowane dla Ciebie.</span></p>
         </div>
         <button class="btn-s" type="button">Wyczyść koszyk</button>
@@ -1551,6 +1556,10 @@ Paczka L (55 zł/mies. netto) to:
         </div>
 
         <div class="side">
+          <div class="vat-sw" id="vat-sw" role="group" aria-label="Pokaż ceny" hidden>
+            <button type="button" data-vat="net" aria-pressed="true">Cena netto</button>
+            <button type="button" data-vat="gross" aria-pressed="false">Cena brutto</button>
+          </div>
           <aside class="sum" id="summary" aria-labelledby="sum-h" aria-live="polite">
             <h2 id="sum-h">Podsumowanie opłat</h2>
             <div class="disc-box" id="disc-box"></div>
@@ -1672,7 +1681,11 @@ Paczka L (55 zł/mies. netto) to:
 
 <script>
 const $ = id => document.getElementById(id);
-const fmt = n => new Intl.NumberFormat('pl-PL',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n) + ' zł';
+const fmt0 = n => new Intl.NumberFormat('pl-PL',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n) + ' zł';
+/* B2B cart can show prices with VAT: every amount in the cart goes through fmt */
+let isB2B = false, gross = false, inCart = false;
+const VAT = 0.23;
+const fmt = n => fmt0(isB2B && gross && inCart ? Math.round(n * (1 + VAT) * 100) / 100 : n);
 /* TV packages can be on a 24-month or an open-ended contract */
 const plansOf = o => [o.price != null && '24', o.priceBez != null && 'bez'].filter(Boolean);
 const tvPlan = o => (state.tvPlan || {})[o.id] || plansOf(o)[0];
@@ -1707,7 +1720,6 @@ const TV_STEPS = [[1,12,30],[13,24,45]];
 const ONLY24 = ['tvap', 'nfx'];
 const HORIZON = 24;
 /* B2B mode: the same cart, fed with the business offer (net prices) */
-let isB2B = false;
 const B2B_DESC = {'300':'Dla małego biura: poczta, faktury, praca w chmurze', '600':'Dla kilku stanowisk: wideokonferencje i praca w chmurze',
   '1g':'Dla firmy z wieloma urządzeniami i dużymi plikami', '2g':'Dla wymagających: serwery, backup, wiele stanowisk', '8g':'Najszybszy światłowód dla firm'};
 const offerOf = period => isB2B ? Object.fromEntries(B2B[period].map(o => [o.id, o.steps.map(([f, t, v]) => [f, t ?? HORIZON, v])])) : OFFER[period];
@@ -1859,6 +1871,7 @@ const INSTALL = [
 let loadTimer = null;
 function show(view){
   for (const v of ['lp','lpb','av','avb','cart','tvp','login']) $('view-' + v).hidden = v !== view;
+  inCart = view === 'cart' || view === 'tvp';
   $('demo').hidden = view !== 'cart' || isB2B;
   $('reset').hidden = view !== 'cart';
   $('ai-fab').hidden = !['cart', 'tvp'].includes(view) || !$('ai-win').hidden;
@@ -1964,7 +1977,7 @@ const lpb = {pak:false, tv:false, period:'24'};
 const bTV = () => lpb.tv && lpb.period === '24';
 const bSteps = o => bTV() ? o.tv : o.steps.map(([f, t, v]) => [f, t, v && lpb.pak ? v + PAK_S : v]);
 const bWhen = ([f, t]) => lpb.period === 'bez' && f === 1 && t === 1 ? 'w pierwszym miesiącu' : `z rabatami, od ${f}.${t ? ` do ${t}.` : ''} mies.`;
-const bNum = v => fmt(v).replace(' zł', '').replace(/,00$/, '');
+const bNum = v => fmt0(v).replace(' zł', '').replace(/,00$/, '');
 function renderB2B(){
   const tv = bTV(), pak = lpb.pak || tv;
   $('b-tiles').innerHTML = B2B[lpb.period].map(o => {
@@ -2354,7 +2367,7 @@ let undoState = null;
 let panelSvc = null, lastFocus = null;
 
 function startCart(){
-  cartStarted = true;
+  cartStarted = true; inCart = true;
   state = emptyState();
   const tv = [];
   if (isB2B ? bTV() : lpTV()) tv.push('tvap');
@@ -2577,7 +2590,7 @@ function renderSummary(){
   if (payAuto){ payOpen.add(`p${total[0][0]}`); payAuto = false; }
   $('pay').innerHTML = timeline(payOpen, false);
   if ($('fees').open){ $('fees-pay').innerHTML = timeline(feesOpen, true); $('fees-ai').innerHTML = feesChips(); }
-  $('sum-fine').textContent = $('fees-fine').textContent = (isB2B ? 'Ceny przykładowe, netto – doliczymy 23% VAT. ' : 'Ceny przykładowe, brutto. ') + (state.period === 'bez' ? 'Umowa bez okresu zobowiązania.' : 'Umowa na 24 miesiące.');
+  $('sum-fine').textContent = $('fees-fine').textContent = (isB2B ? (gross ? 'Ceny przykładowe, brutto – z 23% VAT. ' : 'Ceny przykładowe, netto – doliczymy 23% VAT. ') : 'Ceny przykładowe, brutto. ') + (state.period === 'bez' ? 'Umowa bez okresu zobowiązania.' : 'Umowa na 24 miesiące.');
   if (fresh.size){ const keep = fresh; setTimeout(() => { if (fresh === keep){ document.querySelectorAll('.ln.fresh').forEach(r => r.classList.remove('fresh')); fresh = new Set(); } }, 1800); }
 }
 const payOpen = new Set();
@@ -2621,6 +2634,10 @@ function closeFees(){
   setTimeout(() => { f.classList.remove('out'); f.close(); }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 220);
 }
 $('fees-x').addEventListener('click', closeFees);
+$('vat-sw').addEventListener('click', e => {
+  const b = e.target.closest('[data-vat]'); if (!b || (b.dataset.vat === 'gross') === gross) return;
+  gross = b.dataset.vat === 'gross'; fresh = new Set(); renderSpeeds(); renderAll();
+});
 $('fees').addEventListener('cancel', e => { e.preventDefault(); closeFees(); });
 $('fees').addEventListener('click', e => {
   if (e.target === $('fees')) return closeFees();   /* click on the dimmed backdrop */
@@ -2635,7 +2652,9 @@ $('pay').addEventListener('click', e => {
   payOpen.has(b.dataset.pg) ? payOpen.delete(b.dataset.pg) : payOpen.add(b.dataset.pg);
   renderSummary(); $('pay').querySelector(`[data-pg="${b.dataset.pg}"]`)?.focus();
 });
-function renderAll(){ $('cli-note').hidden = !isClient || isB2B; $('b2b-note').hidden = !isB2B; renderServices(); renderSummary(); }
+function renderAll(){ $('cli-note').hidden = !isClient || isB2B; $('b2b-note').hidden = $('vat-sw').hidden = !isB2B;
+  $('b2b-vat').textContent = gross ? 'Wszystkie ceny w koszyku są cenami brutto – zawierają 23% VAT.' : 'Wszystkie ceny w koszyku są cenami netto – do kwot doliczymy 23% VAT.';
+  $('vat-sw').querySelectorAll('[data-vat]').forEach(b => b.setAttribute('aria-pressed', (b.dataset.vat === 'gross') === gross)); renderServices(); renderSummary(); }
 
 /* panel */
 /* internet sidebar: contract (only for open-ended entries), speed, modem and installation in one place */
@@ -3373,7 +3392,7 @@ $('go-cart').addEventListener('click', () => { avReady(); if (!cartStarted || is
 $('go-lp').addEventListener('click', () => { isClient = false; demoRun++; $('cursor').classList.remove('on'); avReady(); show('lp'); });
 $('go-lp-b2b').addEventListener('click', () => { show('lpb'); bNav(); });
 /* business cart: same cart, business offer; the TV packages screen is skipped */
-function goCartB2B(){ isB2B = true; isClient = false; avbReady(); startCart(); show('cart'); announceCart(); }
+function goCartB2B(){ isB2B = true; gross = false; isClient = false; avbReady(); startCart(); show('cart'); announceCart(); }
 $('go-cart-b2b').addEventListener('click', () => { if (!cartStarted || !isB2B){ lpb.speed = lpb.speed || '1g'; goCartB2B(); } else show('cart'); });
 
 /* ---------- AI assistant: answers in the cart's context and can change it after 'Zastosuj' ---------- */
