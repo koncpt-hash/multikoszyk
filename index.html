@@ -569,6 +569,10 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .sp-t .nm.sm{font-size:16px;line-height:22px}
 .sp-t .sub{font-size:13px;color:#444}
 .mline{align-items:flex-start;gap:12px;flex-wrap:wrap}
+.mp-sum{display:flex;gap:12px;align-items:center;background:#f5f5f5;border-radius:8px;padding:10px 12px}
+.mp-sum img{width:32px;height:32px;flex:none}
+.mp-sum b{display:block;font-size:15px;line-height:20px}
+.mp-sum span{font-size:13px;color:#666}
 .mline .mdev{flex-basis:100%;display:flex;flex-wrap:wrap;gap:8px}
 /* security add-ons inside the mobile number panel: the TV VAS card, with a shorter picture */
 .pvas .car .track{padding-top:34px;margin-top:0;padding-bottom:4px}
@@ -2007,7 +2011,7 @@ function renderServices(){
   }));
   $('services').querySelectorAll('[data-dev-vas]').forEach(b => b.addEventListener('click', () => { openDevPanel(b, b.dataset.devVas); ddraft.step = 'prot'; renderDevPanel(); }));
   $('services').querySelectorAll('[data-line-dev]').forEach(b => b.addEventListener('click', () => openDevPanel(b, b.dataset.lineDev)));
-  $('services').querySelectorAll('[data-line-vas]').forEach(b => b.addEventListener('click', () => { openMobPanel(b, b.dataset.lineVas); setTimeout(() => $('p-body').querySelector('.pvas')?.scrollIntoView({block:'start', behavior:'smooth'}), 350); }));
+  $('services').querySelectorAll('[data-line-vas]').forEach(b => b.addEventListener('click', () => { openMobPanel(b, b.dataset.lineVas, 'vas'); }));
   $('services').querySelectorAll('[data-line-del]').forEach(b => b.addEventListener('click', () => removeLine(b.dataset.lineDel)));
 }
 
@@ -2332,11 +2336,12 @@ $('p-body').addEventListener('change', e => {
 });
 /* mobile sidebar adds or edits one number: process on top, then plan and SIM type */
 let mdraft = null;
-function openMobPanel(opener, lineId){
+function openMobPanel(opener, lineId, step = 'conf'){
   $('panel').querySelector('.p-foot').classList.remove('off');
   panelSvc = {id:'mob', mob:true}; lastFocus = opener || document.activeElement;
   const cur = state.lines.find(l => l.id === lineId), last = state.lines[state.lines.length - 1];
   mdraft = cur ? {...cur, vas:[...(cur.vas || [])]} : {id:`l${Date.now()}`, proc:'new', number:newNumber(), plan:last?.plan || 'm', sim:last?.sim || 'esim', vas:[]};
+  mdraft.step = step;
   $('panel').style.setProperty('--tint', 'var(--t-mob)');
   $('p-title').textContent = cur ? `Numer ${state.lines.indexOf(cur) + 1}` : state.lines.length ? 'Kolejny numer' : 'Abonament komórkowy';
   $('p-lead').textContent = '';
@@ -2350,8 +2355,14 @@ function openMobPanel(opener, lineId){
 function renderMobPanel(focusSel){
   const top = $('p-body').scrollTop, keepX = $('p-body').querySelector('.pvas .track')?.scrollLeft || 0;
   const radio = (name, v, on, body) => `<label class="sp-t"><input type="radio" name="${name}" value="${v}" ${on ? 'checked' : ''}><span class="rb" aria-hidden="true"></span>${body}</label>`;
-  $('p-body').innerHTML = `
-    <section class="ps"><h3>Numer telefonu</h3>
+  const toNum = mdraft.proc === 'new' ? `+48 ${mdraft.number}` : 'przenoszony numer';
+  if (mdraft.step === 'vas'){
+    const plan = svcById('mob').options.find(o => o.id === mdraft.plan);
+    $('p-body').innerHTML = `<section class="ps"><div class="dv-top"><button class="dv-back" type="button" id="mp-back">← Wstecz</button><p class="mlab">Krok 2 z 2</p></div>
+        <div class="mp-sum"><img src="assets/cart/ic-sim.svg" alt=""><div><b>${plan.name} ${plan.meta}</b><span>${toNum} · ${SIM_TYPE[mdraft.sim]}</span></div></div></section>
+      ${mobVasSection()}`;
+  } else $('p-body').innerHTML = `
+    <section class="ps"><p class="mlab">Krok 1 z 2</p><h3>Numer telefonu</h3>
       <div class="seg2b" role="radiogroup" aria-label="Numer telefonu">${Object.entries(MOB_PROC).map(([v, l]) => `<label><input type="radio" name="mp-proc" value="${v}" ${mdraft.proc === v ? 'checked' : ''}><span>${l}</span></label>`).join('')}</div>
       ${mdraft.proc === 'port' ? '<p class="ps-n"><img src="assets/tv/alert-info.svg" alt="">Numer przeniesiemy bez przerwy w działaniu. Dane do przeniesienia podasz w kolejnym kroku.</p>' : ''}
     </section>
@@ -2374,13 +2385,12 @@ function renderMobPanel(focusSel){
         ${radio('mp-sim', 'sim', mdraft.sim === 'sim', '<span class="nm sm">Fizyczna karta SIM</span><span class="sub">Dostarczymy ją razem z zamówieniem</span>')}
       </div>
       <button class="ai-chip ai-stroke" type="button" data-ai="Czym różni się karta eSIM od fizycznej karty SIM?"><img src="assets/ai/sparkles.svg" alt="">Czym różni się karta eSIM od fizycznej karty SIM?</button>
-    </section>
-    ${mobVasSection()}`;
-  $('p-body').scrollTop = top;
+    </section>`;
+  $('p-body').scrollTop = mdraft.step === mdraft.shown ? top : 0;
+  mdraft.shown = mdraft.step;
   const car = $('p-body').querySelector('.pvas .car');
   /* measured after the panel is shown, or the carousel thinks it has no overflow and centres itself */
   if (car) setTimeout(() => { car.querySelector('.track').scrollLeft = keepX; syncCar(car); });
-  const gt = $('p-body').querySelector('.dv-gt'); if (gt && keepG) gt.scrollLeft = keepG;
   if (focusSel) $('p-body').querySelector(focusSel)?.focus({preventScroll:true});
   updateMobFoot();
 }
@@ -2438,13 +2448,14 @@ function updateMobFoot(){
   $('p-sum-l').textContent = (extra ? 'Ten numer z rabatem za kolejny' : 'Ten numer') + (vas.length ? ` ${extra ? "i" : "z"} ${vas.length === 1 ? "usługą" : "usługami"}` : "");
   $('p-sum-v').innerHTML = `+${fmt(st[0][2])}/mies.${st.slice(1).map(([f, , v]) => `<small>od ${f}. mies. +${fmt(v)}/mies.</small>`).join("")}`;
   $('p-add').disabled = false;
-  $('p-add').textContent = $('p-add').dataset.editing ? 'Zapisz' : 'Dodaj do koszyka';
+  $('p-add').textContent = mdraft.step === 'conf' ? 'Dalej' : $('p-add').dataset.editing ? 'Zapisz' : 'Dodaj do koszyka';
   $('p-remove').textContent = 'Usuń numer';
 }
 /* number picker like Play: four proposals, reroll, confirm or cancel */
 const numberSet = keep => [keep, newNumber(), newNumber(), newNumber()];
 $('p-body').addEventListener('click', e => {
   if (!panelSvc?.mob) return;
+  if (e.target.closest('#mp-back')){ mdraft.step = 'conf'; return renderMobPanel('[name="mp-plan"]:checked'); }
   const b = e.target.closest('#mp-change, #mp-more, #mp-ok, #mp-cancel'); if (!b) return;
   if (b.id === 'mp-change') mdraft.pick = {options:numberSet(mdraft.number), sel:mdraft.number};
   if (b.id === 'mp-more') mdraft.pick = {options:numberSet(newNumber()), sel:null};
@@ -2679,6 +2690,7 @@ function renderDevPanel(focusSel){
   $('p-body').scrollTop = keep;
   const car = $('p-body').querySelector('.pprot .car');
   if (car) setTimeout(() => { car.querySelector('.track').scrollLeft = keepX; syncCar(car); });
+  const gt = $('p-body').querySelector('.dv-gt'); if (gt && keepG) gt.scrollLeft = keepG;
   if (focusSel) $('p-body').querySelector(focusSel)?.focus({preventScroll:true});
   updateDevFoot();
 }
@@ -2770,9 +2782,10 @@ function closePanel(){
 function commit(){
   if (panelSvc?.dev) return commitDev();
   const sel = selectedInPanel(); const s = panelSvc;
+  if (s.mob && mdraft.step === 'conf'){ delete mdraft.pick; mdraft.step = 'vas'; renderMobPanel(); $('p-body').querySelector('.dv-back')?.focus({preventScroll:true}); return; }
   if (s.mob){
     undoState = JSON.parse(JSON.stringify(state));
-    delete mdraft.pick;
+    delete mdraft.pick; delete mdraft.step; delete mdraft.shown;
     const i = state.lines.findIndex(l => l.id === mdraft.id), plan = svcById('mob').options.find(o => o.id === mdraft.plan);
     if (i < 0) state.lines.push({...mdraft}); else state.lines[i] = {...mdraft};
     syncMob();
