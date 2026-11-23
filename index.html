@@ -2788,11 +2788,11 @@ function renderNetPanel(focusSel){
       ${draft.period === '24' ? '<p class="ps-n">Na 24 mies. płacisz mniej i możesz dodać telewizję z Amazon Prime oraz Netflix.</p>' : ''}
       ${draft.note ? `<p class="ps-w" role="status">${draft.note}</p>` : ''}</section>` : ''}
     <section class="ps"><h3>Prędkość</h3>
-      <button class="ai-chip ai-stroke" type="button" data-ai="Którą prędkość światłowodu wybrać?"><img src="assets/ai/sparkles.svg" alt="">Nie wiesz, którą wybrać? Zapytaj Asystenta AI</button>
       <div class="spd">${speedsFor(draft.period).map(x => `<label class="sp-t"><input type="radio" name="np-speed" value="${x.id}" ${draft.speed === x.id ? 'checked' : ''}><span class="rb" aria-hidden="true"></span>
         <span class="nm">Światłowód ${x.name}</span>
         <span class="stp">${x.steps.map(([f, t, v]) => `<span><span>${periodLabel(f, t, draft.period)}</span><b>${fmt(v)}/mies.</b></span>`).join('')}</span>
         <span class="av">średnio ${zl(avgSteps(x.steps))}/mies. przez 24 mies.</span></label>`).join('')}</div>
+      <button class="ai-chip ai-stroke" type="button" data-ai="Którą prędkość światłowodu wybrać?"><img src="assets/ai/sparkles.svg" alt="">Nie wiesz, którą wybrać? Zapytaj Asystenta AI</button>
     </section>
     <section class="ps"><h3>Modem</h3>
       <p class="ps-n">Modem podłączysz samodzielnie – łatwo, krok po kroku.</p>
