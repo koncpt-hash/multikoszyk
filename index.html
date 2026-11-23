@@ -585,6 +585,30 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .pvas .vas .add:disabled{border-color:#ccc;color:#666;background:#f5f5f5}
 .pvas .ps-n b{white-space:nowrap}
 .pprot .vas .hl{background:#b5e8f7}
+/* accessory cards (Figma 6735:16572) – same card frame as the add-ons, product photo on white */
+.pacc .car .track{padding-top:0;margin-top:0}
+.pvas .acc .im.acc-im{height:160px;background:#fff;display:grid;place-items:center}
+.pvas .acc .im.acc-im > img{position:static;width:148px;height:148px;object-fit:contain}
+.acc .ct h3{font-size:16px;line-height:22px}
+.acc .ct .ar{border:0;cursor:pointer}
+.acc-cl{display:flex;flex-direction:column;gap:4px}
+.acc-cl p{margin:0;font-weight:500;font-size:14px;line-height:20px;color:#444}
+.acc-cl p b{font-weight:700}
+.acc .plans{flex:none}
+.acc .add{margin-top:auto}
+.acc-s{font-weight:500;font-size:14px;line-height:20px;color:#444}
+.acc-s b{font-weight:700}
+.acc-pu{display:flex;gap:8px;align-items:center}
+.acc-pu img{width:40px;height:40px;object-fit:contain;flex:none}
+.acc-pu span{font-weight:500;font-size:14px;line-height:20px;color:#232323}
+.acc-pu p{margin:0;display:flex;align-items:baseline;gap:6px;font-weight:700;font-size:20px;line-height:26px;color:#444}
+.acc-pu p small{font-size:12px;line-height:18px}
+.acc-chk{width:100%;background:var(--c-ghost);border:0;border-radius:4px;padding:6px 16px;font-weight:700;font-size:14px;line-height:20px;color:#232323;cursor:pointer}
+.acc-pr{display:flex;flex-direction:column;flex:1;justify-content:flex-end}
+.acc-pr span{font-weight:500;font-size:14px;line-height:20px;color:#232323}
+.acc-pr b{font-size:20px;line-height:26px;color:#444}
+.acc-th{background:#fff;border:1px solid #eee}
+.mvl .acc-th img{width:28px;height:28px;object-fit:contain}
 /* device panel: phone list, short product card, steps */
 .dv-back{align-self:flex-start;background:none;border:0;padding:0;font-weight:700;font-size:14px;color:#232323;text-decoration:underline}
 .dv-chips{display:flex;flex-wrap:wrap;gap:8px}
@@ -1495,15 +1519,18 @@ function phoneRow(h){
 const vasItem = (ic, name, sub, del, aria) => `<li><span class="mvl-ic"><img src="assets/vas/${ic}" alt=""></span><span class="mvl-tx"><b>${name}</b><small>${sub}</small></span><button class="lnk3" type="button" ${del} aria-label="Usuń ${aria}">Usuń</button></li>`;
 const protItem = h => { const o = protById(h.dev.prot);
   return vasItem(o.icon, o.name, `do ${phoneById(h.dev.phone).name} · ${stepsText(o.steps)} · ${o.plan === '24' ? 'umowa na 24 mies.' : 'bezterminowo'}`, `data-prot-del="${h.id}"`, o.name); };
+/* accessories bought with a phone: own list under the phone, with "Zmień" back to step 2 */
+const accList = h => (h.dev.acc || []).length ? `<div class="mx-h">Akcesoria<button class="lnk3" type="button" data-dev-acc="${h.id}" aria-label="Zmień akcesoria do ${devName(h.dev)}">Zmień</button></div><ul class="mvl">${h.dev.acc.map(x => { const a = accById(x.id);
+    return `<li><span class="mvl-ic acc-th"><img src="assets/acc/${a.img}" alt=""></span><span class="mvl-tx"><b>${a.short}</b><small>${accSub(x)}</small></span><button class="lnk3" type="button" data-acc-del="${h.id}:${x.id}" aria-label="Usuń ${a.short}">Usuń</button></li>`; }).join('')}</ul>` : '';
 /* a device bought without a mobile plan: phone, then its add-ons (protection) like under a number */
 function sdevRow(h){
   const vas = h.dev.prot
     ? `<div class="mx-h">Usługi dodatkowe<button class="lnk3" type="button" data-dev-vas="${h.id}" aria-label="Zmień usługi dodatkowe do ${devName(h.dev)}">Zmień</button></div><ul class="mvl">${protItem(h)}</ul>`
     : `<div class="mdev"><button class="btn-s" type="button" data-dev-vas="${h.id}" aria-label="Usługi dodatkowe do ${devName(h.dev)}">+ Usługi dodatkowe</button></div>`;
-  return `<div class="sdev">${phoneRow(h)}${vas}</div>`;
+  return `<div class="sdev">${phoneRow(h)}${accList(h)}${vas}</div>`;
 }
 function lineExtras(l){
-  const phone = l.dev ? `<div class="mx-h">Urządzenie</div>${phoneRow(l)}` : '';
+  const phone = l.dev ? `<div class="mx-h">Urządzenie</div>${phoneRow(l)}${accList(l)}` : '';
   const items = (l.vas || []).map(id => { const v = vasDef(id);
       return vasItem(v.icon, v.name, `${stepsText(v.steps)} · ${v.plan === '24' ? 'umowa na 24 mies.' : 'bezterminowo'}`, `data-vas-del="${l.id}:${id}"`, v.name); });
   /* phone protection bought with the device is listed with the other add-ons of this number */
@@ -2009,6 +2036,12 @@ function renderServices(){
     undoState = JSON.parse(JSON.stringify(state)); dropDev(b.dataset.devDel); fresh = new Set(); renderAll();
     toast(`Usunięto: ${name}`);
   }));
+  $('services').querySelectorAll('[data-acc-del]').forEach(b => b.addEventListener('click', () => {
+    const [hid, aid] = b.dataset.accDel.split(':'), h = devHolder(hid), name = accById(aid).short;
+    undoState = JSON.parse(JSON.stringify(state)); h.dev.acc = h.dev.acc.filter(x => x.id !== aid); fresh = new Set(); renderAll();
+    toast(`Usunięto: ${name}`);
+  }));
+  $('services').querySelectorAll('[data-dev-acc]').forEach(b => b.addEventListener('click', () => { openDevPanel(b, b.dataset.devAcc); ddraft.step = 'prot'; renderDevPanel(); setTimeout(() => $('p-body').querySelector('.pacc')?.scrollIntoView({block:'start', behavior:'smooth'}), 350); }));
   $('services').querySelectorAll('[data-dev-vas]').forEach(b => b.addEventListener('click', () => { openDevPanel(b, b.dataset.devVas); ddraft.step = 'prot'; renderDevPanel(); }));
   $('services').querySelectorAll('[data-line-dev]').forEach(b => b.addEventListener('click', () => openDevPanel(b, b.dataset.lineDev)));
   $('services').querySelectorAll('[data-line-vas]').forEach(b => b.addEventListener('click', () => { openMobPanel(b, b.dataset.lineVas, 'vas'); }));
@@ -2555,6 +2588,15 @@ const DEV_PROT = [
   {id:'prem1', name:'Ochrona Smartfona Premium', ds:'1 naprawa na rok – bez limitu kosztów', plan:'bez', steps:[[1,1,0],[2,24,20]], icon:'smart-care.svg'},
   {id:'std', name:'Ochrona Smartfona', ds:'Naprawa urządzenia do limitu 1200 zł', plan:'24', steps:[[1,1,0],[2,24,17]], icon:'smartphone-happy.svg'}];
 const protById = id => DEV_PROT.find(p => p.id === id);
+/* phone accessories (Figma 6735:16572 "upsell device card – preSoller"); prices are example values */
+const ACC = [
+  {id:'chg', name:'Komplet szybka ładowarka sieciowa Samsung USB-C 45 W w technologii GaN z kablem USB-C', short:'Ładowarka 45 W z kablem USB-C', img:'charger.png', price:259.90, colors:[['Czarny', '#1d1d1f'], ['Biały', '#f2f2f2']]},
+  {id:'gls', name:'Szkło ochronne Force Glass Original', short:'Szkło ochronne Force Glass', img:'glass.png', price:99.90, fit:true},
+  {id:'bud', name:'Samsung Galaxy Buds4', short:'Galaxy Buds4', img:'buds.png', price:849, rates:20, colors:[['Grafitowy', '#3b3d42'], ['Biały', '#f2f2f2']]}];
+const accById = id => ACC.find(a => a.id === id);
+const accRate = a => Math.ceil(a.price / a.rates * 100) / 100;
+const accName = (a, phone) => a.fit && phone ? `${a.name} do ${phoneById(phone).name}` : a.name;
+const accSub = x => { const a = accById(x.id); return [x.color, x.pay === 'rate' ? `${a.rates} rat × ${fmt(accRate(a))}` : `${fmt(a.price)} jednorazowo`].filter(Boolean).join(' · '); };
 const phonePrice = d => phoneById(d.phone).mem.find(m => m[0] === d.mem)[1];
 const devRate = d => d.pay === 'once' ? 0 : Math.ceil((phonePrice(d) - d.down) / +d.pay * 100) / 100;
 const devStart = d => d.pay === 'once' ? phonePrice(d) : d.down;
@@ -2562,9 +2604,12 @@ const minRate = p => Math.ceil(p.mem[0][1] / 24 * 100) / 100;
 const devName = d => `${phoneById(d.phone).name} ${d.mem} GB`;
 const devRows = lines => lines.filter(l => l.dev).flatMap(l => { const d = l.dev, rows = [];
   if (d.pay !== 'once') rows.push({key:`dev:${l.id}`, label:`Rata za ${devName(d)}${l.proc ? ` (${lineName(l)})` : ''}`, steps:[[1, Math.min(+d.pay, HORIZON), devRate(d)]]});
+  for (const x of d.acc || []) if (x.pay === 'rate'){ const a = accById(x.id); rows.push({key:`acc:${l.id}:${x.id}`, label:`Rata za ${a.short}${l.proc ? ` (${lineName(l)})` : ''}`, steps:[[1, Math.min(a.rates, HORIZON), accRate(a)]]}); }
   if (d.prot) rows.push({key:`prot:${l.id}`, label:`${protById(d.prot).name}${l.proc ? ` (${lineName(l)})` : ''}`, steps:protById(d.prot).steps});
   return rows; });
-const devOnce = lines => lines.filter(l => l.dev && devStart(l.dev) > 0).map(l => ({key:`devs:${l.id}`, label:`${l.dev.pay === 'once' ? 'Zakup' : 'Wpłata początkowa za'} ${devName(l.dev)}`, n:devStart(l.dev), value:fmt(devStart(l.dev))}));
+const devOnce = lines => lines.filter(l => l.dev).flatMap(l => [
+  ...(devStart(l.dev) > 0 ? [{key:`devs:${l.id}`, label:`${l.dev.pay === 'once' ? 'Zakup' : 'Wpłata początkowa za'} ${devName(l.dev)}`, n:devStart(l.dev), value:fmt(devStart(l.dev))}] : []),
+  ...(l.dev.acc || []).filter(x => x.pay === 'once').map(x => { const a = accById(x.id); return {key:`acco:${l.id}:${x.id}`, label:`Zakup: ${a.short}${l.proc ? ` (${lineName(l)})` : ''}`, n:a.price, value:fmt(a.price)}; })]);
 const phoneSvg = (c, back = false) => `<svg viewBox="0 0 120 220" aria-hidden="true"><rect x="12" y="4" width="96" height="212" rx="18" fill="${c}" stroke="rgba(0,0,0,.22)" stroke-width="2"/>${back
   ? `<rect x="22" y="16" width="44" height="50" rx="12" fill="rgba(0,0,0,.14)"/><circle cx="35" cy="30" r="8" fill="#1d1d1f" stroke="rgba(255,255,255,.35)" stroke-width="2"/><circle cx="35" cy="52" r="8" fill="#1d1d1f" stroke="rgba(255,255,255,.35)" stroke-width="2"/><circle cx="55" cy="41" r="3" fill="#eee"/>`
   : `<rect x="18" y="10" width="84" height="200" rx="13" fill="#1c2333"/><path d="M18 120 L102 40 L102 90 L18 170Z" fill="rgba(255,255,255,.06)"/><rect x="48" y="16" width="24" height="7" rx="3.5" fill="#000"/>`}</svg>`;
@@ -2606,6 +2651,26 @@ function protCard(o){
     </div>
   </article>`;
 }
+function accCard(a){
+  const d = ddraft, on = d.acc.includes(a.id), o = d.accOpt[a.id] || (d.accOpt[a.id] = {color:a.colors?.[0][0] || null, pay:a.rates ? 'rate' : 'once'});
+  const pl = (v, t, sub) => `<label class="pl"><input type="radio" name="acc-pay-${a.id}" value="${v}" ${o.pay === v ? 'checked' : ''}><span class="rb" aria-hidden="true"></span><span class="tx"><b>${t}</b><span class="acc-s">${sub}</span></span></label>`;
+  return `<article class="vas acc ${on ? 'on' : ''}" aria-label="${a.name}">
+    <div class="card2">
+      <div class="im acc-im"><img src="assets/acc/${a.img}" alt=""></div>
+      <div class="ct">
+        <div class="h"><h3>${accName(a, d.phone)}</h3><button class="ar" type="button" data-acc-info aria-label="Szczegóły: ${a.name}"><img src="assets/tv/arrow-right.svg" alt=""></button></div>
+        ${a.colors ? `<div class="acc-cl"><p>Kolor <b>${o.color}</b></p><div class="dv-sw2" role="radiogroup" aria-label="Kolor: ${a.short}">${a.colors.map(([n, c]) => `<label title="${n}"><input type="radio" name="acc-col-${a.id}" value="${n}" ${o.color === n ? 'checked' : ''}><i style="background:${c}"></i><span class="sr">${n}</span></label>`).join('')}</div></div>` : ''}
+        <hr>
+        ${a.rates
+          ? `<div class="plans">${pl('rate', 'Płatne w ratach 0%', `<b>${fmt(accRate(a))}</b> x ${a.rates} mies.`)}${pl('once', 'Płatne jednorazowo', `<b>${fmt(a.price)}</b>`)}</div>`
+          : `<div class="acc-pu"><img src="assets/dev/payu-raty.png" alt="PayU Raty"><div><span>Możesz zapłacić na raty</span><p><small>15 rat 0%</small>${fmt(Math.ceil(a.price / 15 * 100) / 100)}</p></div></div>
+             <button class="acc-chk" type="button" data-acc-payu="${a.id}">Sprawdź raty PayU</button>
+             <div class="acc-pr"><span>Płatne jednorazowo</span><b>${fmt(a.price)}</b></div>`}
+        <button class="add" type="button" data-acc="${a.id}" aria-pressed="${on}">${on ? 'Dodano – usuń' : 'Dodaj'}<img src="assets/tv/plus.svg" alt=""></button>
+      </div>
+    </div>
+  </article>`;
+}
 let ddraft = null;
 const devHolder = id => state.lines.find(x => x.id === id) || state.devs.find(x => x.id === id);
 function openDevPanel(opener, lineId){
@@ -2615,6 +2680,8 @@ function openDevPanel(opener, lineId){
   lineId = l.id;
   panelSvc = {id:'dev', dev:true}; lastFocus = opener || document.activeElement;
   ddraft = l.dev ? {...l.dev, lineId, step:'card', brand:'Wszystkie', editing:true} : {lineId, step:'list', brand:'Wszystkie', phone:null, color:null, mem:null, pay:'24', down:0, prot:null};
+  ddraft.acc = (l.dev?.acc || []).map(x => x.id);
+  ddraft.accOpt = Object.fromEntries((l.dev?.acc || []).map(x => [x.id, {color:x.color, pay:x.pay}]));
   $('panel').style.setProperty('--tint', 'var(--t-mob)');
   $('p-title').textContent = state.lines.includes(l) ? `Urządzenie do numeru ${state.lines.indexOf(l) + 1}` : l.dev ? 'Urządzenie' : state.devs.length ? 'Kolejne urządzenie' : 'Dodaj urządzenie';
   $('p-lead').textContent = '';
@@ -2679,17 +2746,21 @@ function renderDevPanel(focusSel){
         <div class="car"><button class="nav l" type="button" aria-label="Poprzednie" hidden><img src="assets/tv/arrow-left.svg" alt=""></button>
           <div class="track">${DEV_PROT.map(protCard).join('')}</div>
           <button class="nav r" type="button" aria-label="Następne" hidden><img src="assets/tv/arrow-right.svg" alt=""></button><div class="ind" hidden></div></div>
+      </section>
+      <section class="ps pvas pacc"><h3>Akcesoria</h3><p class="mlab">Pasują do ${p.name} · dostarczymy je razem z telefonem</p>
+        <div class="car"><button class="nav l" type="button" aria-label="Poprzednie akcesoria" hidden><img src="assets/tv/arrow-left.svg" alt=""></button>
+          <div class="track">${ACC.map(accCard).join('')}</div>
+          <button class="nav r" type="button" aria-label="Następne akcesoria" hidden><img src="assets/tv/arrow-right.svg" alt=""></button><div class="ind" hidden></div></div>
       </section>`;
   }
   /* same step (an option changed) keeps the scroll; a new step starts at the top */
   const keep = d.step === 'list' ? d.listTop || 0 : d.step === d.shown ? $('p-body').scrollTop : 0;
   const keepG = d.step === d.shown ? $('p-body').querySelector('.dv-gt')?.scrollLeft || 0 : 0;
   d.shown = d.step;
-  const keepX = $('p-body').querySelector('.pprot .track')?.scrollLeft || 0;
+  const keepX = [...$('p-body').querySelectorAll('.pvas .track')].map(t => t.scrollLeft);
   $('p-body').innerHTML = html;
   $('p-body').scrollTop = keep;
-  const car = $('p-body').querySelector('.pprot .car');
-  if (car) setTimeout(() => { car.querySelector('.track').scrollLeft = keepX; syncCar(car); });
+  $('p-body').querySelectorAll('.pvas .car').forEach((car, i) => setTimeout(() => { car.querySelector('.track').scrollLeft = keepX[i] || 0; syncCar(car); }));
   const gt = $('p-body').querySelector('.dv-gt'); if (gt && keepG) gt.scrollLeft = keepG;
   if (focusSel) $('p-body').querySelector(focusSel)?.focus({preventScroll:true});
   updateDevFoot();
@@ -2697,9 +2768,12 @@ function renderDevPanel(focusSel){
 function updateDevFoot(){
   const d = ddraft; if (!d.phone || !d.mem) return;
   const prot = d.prot ? protById(d.prot).steps : null, rate = devRate(d);
-  const st = addSteps(rate ? [[1, Math.min(+d.pay || 24, HORIZON), rate]] : [[1, HORIZON, 0]], ...(prot ? [prot] : []));
-  $('p-sum-l').textContent = d.prot ? 'Telefon z ochroną' : 'Telefon';
-  $('p-sum-v').innerHTML = `+${fmt(st[0][2])}/mies.${st.slice(1).map(([f, , v]) => `<small>od ${f}. mies. +${fmt(v)}/mies.</small>`).join('')}${devStart(d) ? `<small>${d.pay === 'once' ? 'zakup' : 'wpłata'} ${fmt(devStart(d))} na start</small>` : ''}`;
+  const acc = (d.acc || []).map(id => [accById(id), d.accOpt[id]]);
+  const accR = acc.filter(([, o]) => o.pay === 'rate').map(([a]) => [[1, Math.min(a.rates, HORIZON), accRate(a)]]);
+  const accO = acc.filter(([, o]) => o.pay === 'once').reduce((s, [a]) => s + a.price, 0);
+  const st = addSteps(rate ? [[1, Math.min(+d.pay || 24, HORIZON), rate]] : [[1, HORIZON, 0]], ...(prot ? [prot] : []), ...accR);
+  $('p-sum-l').textContent = 'Telefon' + (d.prot && acc.length ? ' z ochroną i akcesoriami' : d.prot ? ' z ochroną' : acc.length ? ' z akcesoriami' : '');
+  $('p-sum-v').innerHTML = `+${fmt(st[0][2])}/mies.${st.slice(1).map(([f, , v]) => `<small>od ${f}. mies. +${fmt(v)}/mies.</small>`).join('')}${devStart(d) ? `<small>${d.pay === 'once' ? 'zakup' : 'wpłata'} ${fmt(devStart(d))} na start</small>` : ''}${accO ? `<small>akcesoria ${fmt(accO)} jednorazowo</small>` : ''}`;
   $('p-add').disabled = false;
   $('p-add').textContent = d.step === 'prot' ? (d.editing ? 'Zapisz' : 'Dodaj do koszyka') : 'Dalej';
 }
@@ -2716,7 +2790,10 @@ $('p-body').addEventListener('click', e => {
     g.scrollTo({left:((i + (gn.classList.contains('l') ? -1 : 1) + n) % n) * g.clientWidth, behavior:'smooth'}); return; }
   if (t.closest('[data-dv-raty]')) return openPayu(phonePrice(d));
   const pr = t.closest('[data-dv-prot]'); if (pr){ d.prot = d.prot === pr.dataset.dvProt ? null : pr.dataset.dvProt; renderDevPanel(`[data-dv-prot="${pr.dataset.dvProt}"]`); return; }
-  const nv = t.closest('.pprot .nav'); if (nv){ const tr = nv.parentElement.querySelector('.track'); tr.scrollBy({left:(nv.classList.contains('l') ? -1 : 1) * tr.clientWidth * .8, behavior:'smooth'}); return; }
+  const ac = t.closest('[data-acc]'); if (ac){ const id = ac.dataset.acc; d.acc = d.acc.includes(id) ? d.acc.filter(x => x !== id) : [...d.acc, id]; renderDevPanel(`[data-acc="${id}"]`); return; }
+  const apu = t.closest('[data-acc-payu]'); if (apu) return openPayu(accById(apu.dataset.accPayu).price);
+  if (t.closest('[data-acc-info]')) return toast('Karta akcesorium otworzy się w sklepie, w nowej karcie – poza prototypem', false);
+  const nv = t.closest('.pvas .nav'); if (nv){ const tr = nv.parentElement.querySelector('.track'); tr.scrollBy({left:(nv.classList.contains('l') ? -1 : 1) * tr.clientWidth * .8, behavior:'smooth'}); return; }
   if (t.closest('[data-dv-shop]')) return toast('Pełna karta produktu otworzy się w sklepie, w nowej karcie – poza prototypem', false);
   if (t.closest('#dv-to-list')){ d.step = 'list'; d.editing = false; renderDevPanel(d.phone ? `[data-dv-pick="${d.phone}"]` : null); return; }
   if (t.closest('#dv-to-card')){ d.step = 'card'; renderDevPanel('#dv-to-list'); }
@@ -2729,6 +2806,8 @@ $('p-body').addEventListener('change', e => {
   else if (t.name === 'dv-mem') d.mem = +t.value;
   else if (t.name === 'dv-pay') d.pay = t.value;
   else if (t.name === 'dv-down') d.down = +t.value;
+  else if (t.name.startsWith('acc-col-')) d.accOpt[t.name.slice(8)].color = t.value;
+  else if (t.name.startsWith('acc-pay-')) d.accOpt[t.name.slice(8)].pay = t.value;
   else return;
   renderDevPanel(`[name="${t.name}"][value="${t.value}"]`);
 });
@@ -2756,10 +2835,11 @@ function commitDev(){
   undoState = JSON.parse(JSON.stringify(state));
   let l = devHolder(d.lineId); if (!l){ l = {id:d.lineId}; state.devs.push(l); }
   const had = !!l.dev, isLine = state.lines.includes(l);
-  l.dev = {phone:d.phone, color:d.color, mem:d.mem, pay:d.pay, down:d.pay === 'once' ? 0 : d.down, prot:d.prot};
-  fresh = new Set([`dev:${l.id}`, `prot:${l.id}`, `devs:${l.id}`]);
+  l.dev = {phone:d.phone, color:d.color, mem:d.mem, pay:d.pay, down:d.pay === 'once' ? 0 : d.down, prot:d.prot,
+    acc:d.acc.map(id => ({id, color:d.accOpt[id].color, pay:d.accOpt[id].pay}))};
+  fresh = new Set([`dev:${l.id}`, `prot:${l.id}`, `devs:${l.id}`, ...d.acc.flatMap(id => [`acc:${l.id}:${id}`, `acco:${l.id}:${id}`])]);
   closePanel(); renderAll();
-  toast(`${had ? 'Zmieniono' : 'Dodano'}: ${devName(l.dev)}${d.prot ? ' z ochroną' : ''}${isLine ? ` do numeru ${state.lines.indexOf(l) + 1}` : ''}`);
+  toast(`${had ? 'Zmieniono' : 'Dodano'}: ${devName(l.dev)}${d.prot ? ' z ochroną' : ''}${d.acc.length ? ` i ${d.acc.length === 1 ? 'akcesorium' : 'akcesoriami'}` : ''}${isLine ? ` do numeru ${state.lines.indexOf(l) + 1}` : ''}`);
   if (!isLine && !had) document.getElementById('svc-devs')?.scrollIntoView({block:'center', behavior:'smooth'});
 }
 /* a number keeps its line without the phone; a standalone device goes away completely */
