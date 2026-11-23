@@ -1531,6 +1531,7 @@ Paczka L (55 zł/mies. netto) to:
         <div>
           <h1 class="ph1">Konfiguruj swój pakiet</h1>
           <div class="steps">Krok 1 z 3: Konfiguracja &nbsp;→&nbsp; Twoje dane &nbsp;→&nbsp; Podsumowanie i zamówienie</div>
+          <p class="cli-note" id="b2b-note" hidden><img src="assets/tv/alert-info.svg" alt=""><span><b>Oferta dla firm.</b> Wszystkie ceny w koszyku są cenami netto – do kwot doliczymy 23% VAT.</span></p>
           <p class="cli-note" id="cli-note" hidden><img src="assets/tv/alert-info.svg" alt=""><span><b>Jesteś zalogowany jako klient Orange.</b> Oznaczyliśmy rabaty i dodatki przygotowane dla Ciebie.</span></p>
         </div>
         <button class="btn-s" type="button">Wyczyść koszyk</button>
@@ -1705,10 +1706,16 @@ const OFFER = {
 const TV_STEPS = [[1,12,30],[13,24,45]];
 const ONLY24 = ['tvap', 'nfx'];
 const HORIZON = 24;
-const speedDef = (id, period) => ({id, ...SPEED_DEFS[id], steps:OFFER[period][id]});
-const speedsFor = period => Object.keys(OFFER[period]).map(id => speedDef(id, period));
+/* B2B mode: the same cart, fed with the business offer (net prices) */
+let isB2B = false;
+const B2B_DESC = {'300':'Dla małego biura: poczta, faktury, praca w chmurze', '600':'Dla kilku stanowisk: wideokonferencje i praca w chmurze',
+  '1g':'Dla firmy z wieloma urządzeniami i dużymi plikami', '2g':'Dla wymagających: serwery, backup, wiele stanowisk', '8g':'Najszybszy światłowód dla firm'};
+const offerOf = period => isB2B ? Object.fromEntries(B2B[period].map(o => [o.id, o.steps.map(([f, t, v]) => [f, t ?? HORIZON, v])])) : OFFER[period];
+const speedDef = (id, period) => ({id, ...SPEED_DEFS[id], ...(isB2B ? {desc:B2B_DESC[id]} : {}), steps:offerOf(period)[id]});
+const actFee = () => isB2B ? 60 : 99;
+const speedsFor = period => Object.keys(offerOf(period)).map(id => speedDef(id, period));
 /* when the contract changes, keep the closest speed the other offer has */
-const nearestSpeed = (id, period) => OFFER[period][id] ? id : ({'300':'600', '8g':'2g'})[id];
+const nearestSpeed = (id, period) => offerOf(period)[id] ? id : ({'300':'600', '8g':'2g'})[id];
 const flat = n => [[1, HORIZON, n]];
 const stepAt = (steps, m) => (steps.find(x => m >= x[0] && m <= x[1]) || steps[steps.length - 1])[2];
 const mergeSteps = steps => steps.reduce((a, x) => { const l = a[a.length - 1]; if (l && Math.abs(l[2] - x[2]) < 0.005) l[1] = x[1]; else a.push([...x]); return a; }, []);
@@ -1796,6 +1803,10 @@ const ICONS = {
   multi:'<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="3" y="6" width="22" height="15" rx="1"/><rect x="15" y="17" width="22" height="15" rx="1" fill="#fff"/><path d="M22 36h8"/></svg>'
 };
 const SERVICES = [
+  {id:'pak', icon:'ct', tint:'--t-usl', title:'Usługi w pakiecie', desc:'Wsparcie IT i bezpieczeństwo dla Twojej firmy', mode:'single', b2b:true,
+   lead:'Wybierz paczkę usług dla firmy', options:[
+    {id:'pakS', name:'Paczka S', meta:'Wsparcie zdalne IT i CyberTarcza rozszerzona', price:10, per:'m'},
+    {id:'pakL', name:'Paczka L', meta:'Paczka S + technik na miejscu do 24 h, stały adres IP, naprawy łącza w 8 h (SLA) i Orange Office', price:55, per:'m'}]},
   {id:'tv', icon:'tv', tint:'--t-tv', title:'Pakiety TV i streamingi', desc:'120+ kanałów, dekoder 4K i Amazon Prime w pakiecie', mode:'multi',
    lead:'Wybierz jeden lub kilka pakietów', options:[
     /* price = umowa na 24 mies., priceBez = umowa bezterminowa; group = można mieć tylko 1 pakiet z grupy */
@@ -1848,9 +1859,11 @@ const INSTALL = [
 let loadTimer = null;
 function show(view){
   for (const v of ['lp','lpb','av','avb','cart','tvp','login']) $('view-' + v).hidden = v !== view;
-  $('demo').hidden = $('reset').hidden = view !== 'cart';
+  $('demo').hidden = view !== 'cart' || isB2B;
+  $('reset').hidden = view !== 'cart';
   $('ai-fab').hidden = !['cart', 'tvp'].includes(view) || !$('ai-win').hidden;
-  $('go-cart').hidden = view === 'cart';
+  $('go-cart').hidden = view === 'cart' && !isB2B;
+  $('go-cart-b2b').hidden = view === 'cart' && isB2B;
   if (panelSvc) closePanel();
   window.scrollTo(0, 0);
 }
@@ -2181,7 +2194,7 @@ document.querySelectorAll('[data-bperiod]').forEach(b => b.addEventListener('cli
 $('avb-cards').addEventListener('click', e => {
   const r = e.target.closest('.rab');
   if (r){ const on = r.getAttribute('aria-expanded') !== 'true'; r.setAttribute('aria-expanded', on); r.nextElementSibling.hidden = !on; avbAlign(); return; }
-  if (e.target.closest('[data-bcfg]')) return toast('Koszyk B2B pojawi się w kolejnym kroku', false);
+  const cf = e.target.closest('[data-bcfg]'); if (cf){ lpb.speed = cf.dataset.bcfg; return goCartB2B(); }
   if (e.target.closest('[data-b-expert]')) return toast('Biznes Ekspert oddzwoni do Ciebie – poza prototypem', false);
 });
 $('avb-back').addEventListener('click', () => { show('lpb'); bNav(); });
@@ -2285,7 +2298,7 @@ let isClient = false, cmOpener = null;
 /* personalised extras for logged-in clients – copy to be refined */
 const CLIENT_MOB_DISCOUNT = 10;
 const PERSONAL = {
-  net: () => { const x = OFFER[state.period][state.speed][0]; return x[2] === 0 ? [`Abonament 0 zł ${firstFor(x)}`] : []; },
+  net: () => { const x = offerOf(state.period)[state.speed][0]; return x[2] === 0 ? [`Abonament 0 zł ${firstFor(x)}`] : []; },
   mob: ['Aktywacja za 0 zł', 'Dodatkowy pakiet 100 GB przez 24 mies.', 'Rabat za łączenie usług mobilnych 20 zł', 'Rabat 10 zł przez 24 mies.'],
   tv:  ['Dla Ciebie: aktywacja pakietów TV za 0 zł']
 };
@@ -2300,7 +2313,7 @@ function closeClientModal(){ $('cm').hidden = true; cmOpener?.focus({preventScro
 /* half of the entries from 'Konfiguruj' see the TV packages screen before the cart */
 const TVP_FIRST_CHANCE = 0.5;
 function goCart(client){
-  isClient = client; startCart();
+  isB2B = false; isClient = client; startCart();
   if (Math.random() < TVP_FIRST_CHANCE) return openTvp(true);
   show('cart'); announceCart();
 }
@@ -2334,7 +2347,7 @@ document.addEventListener('click', e => { const d = e.target.closest('[data-soon
 document.querySelectorAll('#view-login [data-soon]').forEach(b => b.addEventListener('click', () => toast('Ta ścieżka nie jest częścią prototypu', false)));
 
 /* ---------- cart ---------- */
-const emptyState = () => ({speed:nearestSpeed(lp.speed, lp.period), period:lp.period, origPeriod:lp.period, modem:null, inst:[], nets:[], lines:[], devs:[], added:{}, qty:{}, tvPlan:{}});
+const emptyState = () => ({...(isB2B ? {speed:lpb.speed || '1g', period:lpb.period, origPeriod:lpb.period} : {speed:nearestSpeed(lp.speed, lp.period), period:lp.period, origPeriod:lp.period}), modem:null, inst:[], nets:[], lines:[], devs:[], added:{}, qty:{}, tvPlan:{}});
 let state = emptyState();
 let fresh = new Set();
 let undoState = null;
@@ -2344,17 +2357,19 @@ function startCart(){
   cartStarted = true;
   state = emptyState();
   const tv = [];
-  if (lpTV()) tv.push('tvap');
-  if (lp.nfx && lp.period === '24') tv.push('nfx');
+  if (isB2B ? bTV() : lpTV()) tv.push('tvap');
+  if (!isB2B && lp.nfx && lp.period === '24') tv.push('nfx');
   if (tv.length) state.added.tv = tv;
+  const pak = isB2B && (lpb.pak || bTV()) ? ['pak:pakS'] : [];
+  if (pak.length) state.added.pak = ['pakS'];
   const mob = [];
-  if (lp.mob){ const id = `l${Date.now()}`; state.lines.push({id, proc:'new', number:newNumber(), plan:LP_MOB, sim:'esim'}); syncMob(); mob.push(`mob:${id}`, 'disc'); }
-  fresh = new Set(['net', ...tv.map(id => `tv:${id}`), ...mob]);
+  if (!isB2B && lp.mob){ const id = `l${Date.now()}`; state.lines.push({id, proc:'new', number:newNumber(), plan:LP_MOB, sim:'esim'}); syncMob(); mob.push(`mob:${id}`, 'disc'); }
+  fresh = new Set(['net', ...tv.map(id => `tv:${id}`), ...pak, ...mob]);
   quietRender = true; renderSpeeds(); renderAll(); quietRender = false;
 }
 function announceCart(){
   const sp = speedDef(state.speed, state.period);
-  const extra = (state.added.tv || []).map(id => svcById('tv').options.find(o => o.id === id).name);
+  const extra = ['pak', 'tv'].flatMap(k => (state.added[k] || []).map(id => svcById(k).options.find(o => o.id === id).name));
   if (state.lines.length) extra.push(`Abonament komórkowy ${svcById('mob').options.find(o => o.id === state.lines[0].plan).name}`);
   undoState = null;
   toast(`W koszyku: Światłowód ${sp.name}${extra.length ? ' + ' + extra.join(', ') : ''}`, false);
@@ -2366,14 +2381,14 @@ function renderSpeeds(){
   $('speeds').innerHTML = `
     <div class="net-box">
       <dl class="nrows">
-        <div><dt>Prędkość</dt><dd>Światłowód ${sp.name}<small>${stepsText(sp.steps)}</small><small class="addr">${avAddress()}</small></dd><button class="btn-s" type="button" id="net-change">Zmień</button></div>
+        <div><dt>Prędkość</dt><dd>Światłowód ${sp.name}<small>${stepsText(sp.steps)}</small><small class="addr">${isB2B ? bAddress() : avAddress()}</small></dd><button class="btn-s" type="button" id="net-change">Zmień</button></div>
         <div><dt>Umowa</dt><dd>${state.period === 'bez' ? 'Bezterminowa' : '24 miesiące'}</dd></div>
         <div><dt>Modem</dt><dd>${md.name}<small>${fmt(modemPrice(md, state.speed))}/mies.</small></dd></div>
         <div><dt>Instalacja</dt><dd>Technik w cenie<small>${inst.length ? inst.join(', ') : 'bez dodatków'}</small></dd></div>
       </dl>
       ${pBadges('net')}
       ${feesHtml('net', [{label:`Abonament za Światłowód ${sp.name}`, steps:sp.steps}, {label:`Modem ${md.name}`, steps:flat(modemPrice(md, state.speed))}], state.period,
-        [{label:'Opłata aktywacyjna', n:99}, ...state.inst.map(id => { const x = INSTALL.find(i => i.id === id); return {label:x.name, n:x.price}; })],
+        [{label:'Opłata aktywacyjna', n:actFee()}, ...state.inst.map(id => { const x = INSTALL.find(i => i.id === id); return {label:x.name, n:x.price}; })],
         state.period === '24' ? AFTER_24.net : null)}
     </div>`;
   $('net-change').addEventListener('click', e => openPanel('net', e.currentTarget));
@@ -2399,7 +2414,7 @@ function renderServices(){
           ${s.id === 'mob' ? '' : `<div class="foot-b"><button class="btn-s" type="button" data-open="${s.id}">Zmień</button></div>`}
           ${s.id === 'mob'
             ? (() => { const ls = state.lines.map(l => { const o = s.options.find(x => x.id === l.plan); return {label:`Abonament ${o.name} (${lineName(l)})`, steps:o.steps}; }); return feesHtml('mob', [...ls, ...vasRows(state.lines), ...devRows(state.lines), ...mobDiscounts(ls)], '24', devOnce(state.lines), AFTER_24.mob) + (state.lines.length < MAX_LINES ? addLineTile() : ''); })()
-            : feesHtml(s.id, items.filter(o => o.per === 'm').map(o => ({label:o.name, steps:optSteps(o)})), s.id === 'tv' ? '24' : 'bez',
+            : feesHtml(s.id, items.filter(o => o.per === 'm').map(o => ({label:o.name, steps:optSteps(o)})), s.id === 'tv' ? '24' : s.id === 'pak' ? state.period : 'bez',
                 items.filter(o => o.per === 'o').map(o => ({label:o.name, n:o.price})), s.id === 'tv' ? AFTER_24.tv : null)}
         </div>
       </section>`;
@@ -2411,15 +2426,17 @@ function renderServices(){
       ${s.id === 'tv' ? `<div class="logos" aria-label="W pakietach">${TV_LOGOS.map(([f, a]) => `<span><img src="assets/cart/${f}" alt="${a}"></span>`).join('')}</div>` : ''}
     </article>`;
   };
-  const ORDER = ['tv', 'dek', 'mob', 'multi'], has = id => (state.added[id] || []).length > 0;
+  const ORDER = isB2B ? ['pak', 'tv'] : ['tv', 'dek', 'mob', 'multi'], has = id => (state.added[id] || []).length > 0;
   const group = (title, sub, ids) => { ids = ids.filter(id => !has(id)); return ids.length ? `<div class="sec-head"><h3>${title}</h3>${sub ? `<p>${sub}</p>` : ''}</div>${ids.map(id => card(svcById(id))).join('')}` : ''; };
   const devs = state.devs || [];
   const devCard = devs.length ? `<section class="card" id="svc-devs" style="--tint:var(--t-dek)" aria-label="Urządzenia">
       <div class="card-h"><h2>Urządzenia <span class="incart">✓ W koszyku</span></h2></div>
       <div class="card-b"><div class="sdevs">${devs.map(sdevRow).join('')}</div>
         ${feesHtml('devs', devRows(devs), '24', devOnce(devs))}${addDevTile('Dodaj kolejne urządzenie', 'Telefon na raty, bez abonamentu komórkowego')}</div></section>` : '';
-  const devOffer = devs.length ? '' : `<div class="sec-head"><h3>Dodaj urządzenie</h3><p>Kup telefon na raty – z abonamentem lub bez</p></div>${addDevTile('Dodaj urządzenie', 'Raty 0%, dostawa razem z zamówieniem')}`;
-  const offers = group('Często kupowane razem', '', ['tv', 'dek'])
+  const devOffer = devs.length || isB2B ? '' : `<div class="sec-head"><h3>Dodaj urządzenie</h3><p>Kup telefon na raty – z abonamentem lub bez</p></div>${addDevTile('Dodaj urządzenie', 'Raty 0%, dostawa razem z zamówieniem')}`;
+  const offers = isB2B
+    ? group('Bezpieczeństwo i wsparcie dla firmy', 'Paczka S lub L – pomoc IT i ochrona przed zagrożeniami z sieci', ['pak']) + group('Często kupowane razem', '', ['tv'])
+    : group('Często kupowane razem', '', ['tv', 'dek'])
     + group('W zestawie taniej!', 'Dodaj usługi do światłowodu i zyskaj rabat!', ['mob'])
     + devOffer
     + group('To może ci się przydać', '', ['multi']);
@@ -2505,13 +2522,13 @@ function renderSummary(){
   const sp = speedDef(state.speed, state.period), md = curModem();
   const rows = [{key:'net', label:`Abonament za Orange Światłowód ${sp.name}`, steps:sp.steps},
                 {key:'router', label:`Modem ${md.name}`, steps:flat(modemPrice(md, state.speed))}];
-  const o = [{key:'akt', label:'Opłata aktywacyjna za Światłowód', value:fmt(99), n:99},
+  const o = [{key:'akt', label:'Opłata aktywacyjna za Światłowód', value:fmt(actFee()), n:actFee()},
              ...state.inst.map(id => { const x = INSTALL.find(i => i.id === id); return {key:`inst:${id}`, label:x.name, value:fmt(x.price), n:x.price}; })];
   for (const n of state.nets){
     const sp = speedDef(n.speed, n.period), md = MODEMS.find(m => m.id === (n.modem || defaultModem(n.speed))), where = n2Addr(n.addr);
     rows.push({key:`net2:${n.id}`, label:`Abonament za Orange Światłowód ${sp.name} (${where})`, steps:sp.steps},
               {key:`router2:${n.id}`, label:`Modem ${md.name} (${where})`, steps:flat(modemPrice(md, n.speed))});
-    o.push({key:`akt2:${n.id}`, label:`Opłata aktywacyjna za Światłowód (${where})`, value:fmt(99), n:99},
+    o.push({key:`akt2:${n.id}`, label:`Opłata aktywacyjna za Światłowód (${where})`, value:fmt(actFee()), n:actFee()},
            ...n.inst.map(id => { const x = INSTALL.find(i => i.id === id); return {key:`inst2:${n.id}:${id}`, label:`${x.name} (${where})`, value:fmt(x.price), n:x.price}; }));
   }
   const mob = [];
@@ -2560,7 +2577,7 @@ function renderSummary(){
   if (payAuto){ payOpen.add(`p${total[0][0]}`); payAuto = false; }
   $('pay').innerHTML = timeline(payOpen, false);
   if ($('fees').open){ $('fees-pay').innerHTML = timeline(feesOpen, true); $('fees-ai').innerHTML = feesChips(); }
-  $('sum-fine').textContent = $('fees-fine').textContent = 'Ceny przykładowe, brutto. ' + (state.period === 'bez' ? 'Umowa bez okresu zobowiązania.' : 'Umowa na 24 miesiące.');
+  $('sum-fine').textContent = $('fees-fine').textContent = (isB2B ? 'Ceny przykładowe, netto – doliczymy 23% VAT. ' : 'Ceny przykładowe, brutto. ') + (state.period === 'bez' ? 'Umowa bez okresu zobowiązania.' : 'Umowa na 24 miesiące.');
   if (fresh.size){ const keep = fresh; setTimeout(() => { if (fresh === keep){ document.querySelectorAll('.ln.fresh').forEach(r => r.classList.remove('fresh')); fresh = new Set(); } }, 1800); }
 }
 const payOpen = new Set();
@@ -2618,7 +2635,7 @@ $('pay').addEventListener('click', e => {
   payOpen.has(b.dataset.pg) ? payOpen.delete(b.dataset.pg) : payOpen.add(b.dataset.pg);
   renderSummary(); $('pay').querySelector(`[data-pg="${b.dataset.pg}"]`)?.focus();
 });
-function renderAll(){ $('cli-note').hidden = !isClient; renderServices(); renderSummary(); }
+function renderAll(){ $('cli-note').hidden = !isClient || isB2B; $('b2b-note').hidden = !isB2B; renderServices(); renderSummary(); }
 
 /* panel */
 /* internet sidebar: contract (only for open-ended entries), speed, modem and installation in one place */
@@ -2645,7 +2662,7 @@ function renderNet2Step(){
   $('panel').querySelector('.p-foot').classList.add('off');
   if (draft.step === 'check'){ $('p-body').innerHTML = '<div class="n2-wait" role="status"><div class="n2ld" aria-hidden="true"><i></i></div>Sprawdzamy dostępność pod tym adresem…</div>'; return; }
   if (draft.step === 'ok'){
-    const best = Object.keys(OFFER[draft.period]).pop();
+    const best = Object.keys(offerOf(draft.period)).pop();
     $('p-body').innerHTML = `<div class="n2-ok"><span class="tick"><img src="assets/tv/tick.svg" alt=""></span><h3>Super, jesteś w zasięgu!</h3>
       <p>Pod adresem ${n2Addr(a)} dostępny jest światłowód ${SPEED_DEFS[best].name}.</p>
       <button class="sb-btn pri full" type="button" id="n2-next">Wybierz prędkość</button></div>`;
@@ -2702,7 +2719,7 @@ function renderNets(){
         <div><dt>Instalacja</dt><dd>Technik w cenie<small>${inst.length ? inst.join(', ') : 'bez dodatków'}</small></dd></div>
       </dl>
       ${feesHtml(n.id, [{label:`Abonament za Światłowód ${sp.name}`, steps:sp.steps}, {label:`Modem ${md.name}`, steps:flat(modemPrice(md, n.speed))}], n.period,
-        [{label:'Opłata aktywacyjna', n:99}, ...n.inst.map(id => { const x = INSTALL.find(i => i.id === id); return {label:x.name, n:x.price}; })],
+        [{label:'Opłata aktywacyjna', n:actFee()}, ...n.inst.map(id => { const x = INSTALL.find(i => i.id === id); return {label:x.name, n:x.price}; })],
         n.period === '24' ? AFTER_24.net : null)}
       </div></div></section>`;
   }).join('');
@@ -2766,7 +2783,7 @@ function renderNetPanel(focusSel){
 }
 function updateNetFoot(){
   const md = MODEMS.find(m => m.id === (draft.modem || defaultModem(draft.speed)));
-  const st = addSteps(OFFER[draft.period][draft.speed], flat(modemPrice(md, draft.speed)));
+  const st = addSteps(offerOf(draft.period)[draft.speed], flat(modemPrice(md, draft.speed)));
   const once = draft.inst.reduce((a, id) => a + INSTALL.find(x => x.id === id).price, 0);
   $('p-sum-l').textContent = 'Internet teraz';
   $('p-sum-v').innerHTML = `${fmt(st[0][2])}/mies.${st.length > 1 ? `<small>od ${st[1][0]}. mies. ${fmt(st[1][2])}</small>` : ''}${once ? `<small>+${fmt(once)} jednorazowo</small>` : ''}`;
@@ -3349,13 +3366,15 @@ document.addEventListener('keydown', e => {
     else if (!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
   }
 });
-$('back-lp').addEventListener('click', () => { avReady(); renderAv(); show('av'); });
+$('back-lp').addEventListener('click', () => { if (isB2B){ avbReady(); renderAvb(); show('avb'); return; } avReady(); renderAv(); show('av'); });
 /* shortcut: jump straight to the cart, keeping it if it was already filled */
 let cartStarted = false;
-$('go-cart').addEventListener('click', () => { avReady(); if (!cartStarted) startCart(); show('cart'); });
+$('go-cart').addEventListener('click', () => { avReady(); if (!cartStarted || isB2B){ isB2B = false; startCart(); } show('cart'); });
 $('go-lp').addEventListener('click', () => { isClient = false; demoRun++; $('cursor').classList.remove('on'); avReady(); show('lp'); });
 $('go-lp-b2b').addEventListener('click', () => { show('lpb'); bNav(); });
-$('go-cart-b2b').addEventListener('click', () => toast('Koszyk B2B jest w przygotowaniu', false));
+/* business cart: same cart, business offer; the TV packages screen is skipped */
+function goCartB2B(){ isB2B = true; isClient = false; avbReady(); startCart(); show('cart'); announceCart(); }
+$('go-cart-b2b').addEventListener('click', () => { if (!cartStarted || !isB2B){ lpb.speed = lpb.speed || '1g'; goCartB2B(); } else show('cart'); });
 
 /* ---------- AI assistant: answers in the cart's context and can change it after 'Zastosuj' ---------- */
 const ai = {msgs:[], max:false};
@@ -3387,7 +3406,7 @@ function aiAnswer(t){
   if (/esim|karta sim|karty sim|fizyczn/.test(q))
     return {text:'Obie działają tak samo: ten sam numer, zasięg i internet. Różnią się tylko formą.\n• Karta eSIM jest wbudowana w telefon. Aktywujesz ją kodem QR, który wyślemy e-mailem – nie czekasz na kuriera i nie zgubisz karty.\n• Fizyczna karta SIM to mała karta, którą wkładasz do telefonu. Dostarczymy ją razem z zamówieniem.\nKartę eSIM wybierz, jeśli Twój telefon ją obsługuje – sprawdzisz to w ustawieniach telefonu.'};
   if (/prędko|gb\/s|mb\/s|światłow/.test(q)){
-    const ids = Object.keys(OFFER[state.period]), next = ids[Math.min(ids.indexOf(state.speed) + 1, ids.length - 1)];
+    const ids = Object.keys(offerOf(state.period)), next = ids[Math.min(ids.indexOf(state.speed) + 1, ids.length - 1)];
     const to = speedDef(next === state.speed ? state.speed : next, state.period);
     if (to.id === state.speed) return {text:`Masz już najszybszy światłowód w tej umowie (${sp.name}). Wystarczy nawet dla domu pełnego urządzeń.`};
     return {text:`Masz teraz Światłowód ${sp.name}. Jeśli w domu kilka osób ogląda w 4K, gra online i pracuje zdalnie naraz, wygodniej będzie ze światłowodem ${to.name}.`,
