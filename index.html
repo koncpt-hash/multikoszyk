@@ -857,6 +857,8 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .side{display:flex;flex-direction:column;gap:16px;position:sticky;top:16px}
 .vat-sw{display:flex;background:var(--surface);border:2px solid var(--line-soft);border-radius:8px;padding:4px;gap:4px}
 .vat-sw[hidden]{display:none}
+/* B2B: the switch lines up with the Internet card, below the "Twój pakiet" heading */
+@media (min-width:901px){.side:has(.vat-sw:not([hidden])){margin-top:47px}}
 .vat-sw button{flex:1;border:0;border-radius:6px;background:transparent;padding:10px 12px;font-weight:700;font-size:14px;line-height:20px;color:#232323}
 .vat-sw button[aria-pressed="true"]{background:#232323;color:#fff}
 .vat-sw button:focus-visible{outline:3px solid #f15e00;outline-offset:2px}
