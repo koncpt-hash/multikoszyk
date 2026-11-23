@@ -933,6 +933,8 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .p-head h2{margin:0;font-size:20px;font-weight:700}
 .x{background:var(--surface);border:2px solid var(--ink);border-radius:4px;width:36px;height:36px;font-size:16px;line-height:1;flex:none;display:grid;place-items:center}
 .p-lead{padding:16px 20px 0;font-weight:700}
+.p-about{margin-top:8px;font-weight:500;color:#444}
+.p-more{margin-top:6px;border:0;background:none;padding:0;font-weight:700;color:#232323;text-decoration:underline;text-underline-offset:3px}
 .tile .tl-u{display:block;margin-top:6px}
 .tl-more{display:block;margin-top:6px;border:0;background:none;padding:0;font-weight:700;font-size:13px;color:#555;text-decoration:underline;text-underline-offset:3px}
 .tl-list{margin:6px 0 0;padding-left:16px;font-size:13px;line-height:18px;color:#444;display:flex;flex-direction:column;gap:4px}
@@ -1863,7 +1865,7 @@ const SERVICES = [
     {id:'ct-b', name:'CyberTarcza stacjonarna podstawowa', meta:'Ochrona urządzeń w sieci domowej', price:5, per:'m'},
     {id:'ct-r', name:'CyberTarcza stacjonarna rozszerzona', meta:'Rozszerzona ochrona i kontrola rodzicielska', price:10, per:'m'}]},
   {id:'multi', icon:'multi', tint:'--t-multi', title:'Multiroom', desc:'Telewizja na kolejnym telewizorze', mode:'single',
-   lead:'Oglądaj telewizję w drugim pokoju', options:[
+   lead:'Oglądaj telewizję w drugim pokoju', about:'Masz więcej niż 1 telewizor w domu? Dodaj usługę Multiroom na każdy dodatkowy telewizor i oglądaj telewizję równocześnie na wielu ekranach', options:[
     {id:'mr', name:'Multiroom', meta:'Drugi telewizor w domu', price:15, per:'m'}]}
 ];
 const svcById = id => SERVICES.find(s => s.id === id);
@@ -2981,6 +2983,7 @@ function openPanel(id, opener){
   $('panel').style.setProperty('--tint', `var(${panelSvc.tint})`);
   $('p-title').textContent = panelSvc.title;
   $('p-lead').textContent = panelSvc.lead;
+  if (panelSvc.about) $('p-lead').insertAdjacentHTML('beforeend', `<p class="p-about">${panelSvc.about}</p><button class="p-more" type="button" data-svc-more>Więcej o usłudze</button>`);
   const type = panelSvc.mode === 'multi' || panelSvc.options.length === 1 ? 'checkbox' : 'radio';
   const pre = editing ? current : (panelSvc.options.length === 1 ? [panelSvc.options[0].id] : []);
   $('p-body').innerHTML = panelSvc.options.map(o => `
@@ -2999,6 +3002,7 @@ function openPanel(id, opener){
   requestAnimationFrame(() => { $('scrim').classList.add('on'); $('panel').classList.add('on'); });
   setTimeout(() => ($('p-body').querySelector('input') || $('p-close')).focus({preventScroll:true}), 50);
 }
+$('p-lead').addEventListener('click', e => { if (e.target.closest('[data-svc-more]')) toast('Strona usługi otworzy się w nowej karcie – poza prototypem', false); });
 function selectedInPanel(){ return [...$('p-body').querySelectorAll('input:checked')].map(i => i.value); }
 function updatePanelFoot(){
   const sel = selectedInPanel().map(id => panelSvc.options.find(o => o.id === id));
