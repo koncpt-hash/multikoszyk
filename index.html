@@ -1042,8 +1042,10 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
   <div class="wrap">
     <span>Prototyp · LP ze światłowodem → koszyk z panelem bocznym · ceny przykładowe</span>
     <div class="proto-actions">
-      <button class="btn-s" id="go-lp" type="button">Od początku (LP)</button>
-      <button class="btn-s" id="go-cart" type="button">Koszyk</button>
+      <button class="btn-s" id="go-lp" type="button">LP B2C (od początku)</button>
+      <button class="btn-s" id="go-cart" type="button">Koszyk B2C</button>
+      <button class="btn-s" id="go-lp-b2b" type="button">LP B2B (od początku)</button>
+      <button class="btn-s" id="go-cart-b2b" type="button">Koszyk B2B</button>
       <button class="btn-s" id="demo" type="button" hidden>▶ Odtwórz demo</button>
       <button class="btn-s" id="reset" type="button" hidden>Wyczyść koszyk</button>
     </div>
@@ -2936,6 +2938,7 @@ $('back-lp').addEventListener('click', () => { avReady(); renderAv(); show('av')
 let cartStarted = false;
 $('go-cart').addEventListener('click', () => { avReady(); if (!cartStarted) startCart(); show('cart'); });
 $('go-lp').addEventListener('click', () => { isClient = false; demoRun++; $('cursor').classList.remove('on'); avReady(); show('lp'); });
+['go-lp-b2b','go-cart-b2b'].forEach(id => $(id).addEventListener('click', () => toast('Strefa B2B jest w przygotowaniu', false)));
 
 /* ---------- AI assistant: answers in the cart's context and can change it after 'Zastosuj' ---------- */
 const ai = {msgs:[], max:false};
