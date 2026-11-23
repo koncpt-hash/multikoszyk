@@ -1946,6 +1946,7 @@ const B2B = {
     {id:'2g', name:'do 2 Gb/s', badge:'Pierwszy miesiąc za 0 zł', steps:[[1,1,0],[2,12,65.62],[13,null,90.48]]},
     {id:'8g', name:'do 8 Gb/s', badge:'Pierwszy miesiąc za 0 zł', steps:[[1,1,0],[2,null,143.33]]}]};
 const PAK_S = 10;
+const PAK_NAME = 'Paczka S';
 const lpb = {pak:false, tv:false, period:'24'};
 const bTV = () => lpb.tv && lpb.period === '24';
 const bSteps = o => bTV() ? o.tv : o.steps.map(([f, t, v]) => [f, t, v && lpb.pak ? v + PAK_S : v]);
@@ -2134,10 +2135,9 @@ function renderAvb(){
         <p class="lh">W ofercie dostaniesz:</p>
         <ul class="inc">
           <li>${bullet}<span>Światłowód <b>${o.name}</b></span>${plusBtn()}</li>
-          ${pak ? `<li>${bullet}<span><b>Paczka S</b>: wsparcie zdalne IT i CyberTarcza</span>${plusBtn('av-info')}</li>` : ''}
+          ${pak ? `<li>${bullet}<span>Usługi w pakiecie <b>${PAK_NAME}</b></span>${plusBtn('av-info')}</li>` : ''}
           ${tv ? `<li>${bullet}<span>Telewizja <b>230 kanałów</b> i Amazon Prime</span>${plusBtn('av-info')}</li>` : ''}
           <li>${bullet}<span>Modem <b>${MODEM[o.id]}</b></span>${plusBtn()}</li>
-          <li>${bullet}<span>Opieka <b>Biznes Eksperta</b></span>${plusBtn()}</li>
         </ul>
         <p class="lh">Dodatkowe opłaty:</p>
         <ul class="fee">
