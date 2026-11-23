@@ -1100,9 +1100,9 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .avb-cards > .avd{flex:0 0 294px;scroll-snap-align:start}
 .avb-w .bnav{top:calc(50% + 17px)}
 .avd .pc .c small{display:inline;font-size:18px;color:var(--c-text-light)}
+.avb-cards .prs{justify-content:flex-start}.avb-cards .rab{margin-top:auto}
 .avd .avg2{font-size:12px;line-height:18px;font-weight:500;color:var(--c-text-light);text-align:center}
 .avd .avg2 b{color:var(--c-text)}
-.avd .cfg2{margin-top:8px;width:100%;background:var(--c-ghost);color:var(--c-text);border:0;border-radius:8px;padding:10px 12px;font-weight:700;font-size:16px;line-height:22px}
 @media (max-width:640px){.avb-cards{margin-inline:calc(50% - 50vw);padding-inline:16px;scroll-padding-inline:16px;gap:12px}.avb-cards > .avd{flex-basis:min(294px,82vw)}}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -2108,6 +2108,7 @@ function avbReady(){
   $('avb-load').hidden = true; $('avb-offers').hidden = $('view-avb').querySelector('.av-faq').hidden = false;
   /* bring the clicked speed into view */
   const el = $('avb-cards'), card = el.querySelector(`[data-sp="${lpb.speed}"]`);
+  avbAlign();
   el.style.scrollBehavior = 'auto'; el.scrollLeft = card && card.offsetLeft + card.offsetWidth > el.clientWidth ? card.offsetLeft - 16 : 0; el.style.scrollBehavior = '';
   avbNav();
 }
@@ -2130,7 +2131,6 @@ function renderAvb(){
           <p class="rabt" hidden>Ceny netto. Uwzględniają rabat za e‑fakturę i zgody marketingowe.</p>
         </div>
         <button class="cfg" type="button" data-bcfg="${o.id}">Konfiguruj</button>
-        <button class="cfg2" type="button" data-b-expert>Dokończ z Biznes Ekspertem</button>
         <p class="lh">W ofercie dostaniesz:</p>
         <ul class="inc">
           <li>${bullet}<span>Światłowód <b>${o.name}</b></span>${plusBtn()}</li>
@@ -2149,7 +2149,17 @@ function renderAvb(){
   }).join('');
   $('avb-pak').checked = pak; $('avb-pak').disabled = tv; $('avb-pak').closest('.tgl').classList.toggle('dis', tv);
   $('avb-tv').checked = lpb.tv && !bez; $('avb-tv').disabled = bez; $('avb-tv').closest('.tgl').classList.toggle('dis', bez);
-  avbNav();
+  avbAlign(); avbNav();
+}
+/* same height for the name and price blocks so every "Konfiguruj" sits on one line */
+function avbAlign(){
+  const cards = [...$('avb-cards').querySelectorAll('.avd')];
+  for (const sel of ['.nm', '.prs']){
+    const els = cards.map(c => c.querySelector(sel));
+    els.forEach(e => e.style.minHeight = '');
+    const h = Math.max(...els.map(e => e.offsetHeight));
+    if (h) els.forEach(e => e.style.minHeight = h + 'px');
+  }
 }
 function avbNav(){
   const el = $('avb-cards'), max = el.scrollWidth - el.clientWidth, w = $('view-avb');
@@ -2160,7 +2170,7 @@ function avbNav(){
   $('avb-dots').innerHTML = pages > 1 ? Array.from({length:pages}, (_, i) => `<i class="${i === cur ? 'on' : ''}"></i>`).join('') : '';
 }
 $('avb-cards').addEventListener('scroll', avbNav, {passive:true});
-window.addEventListener('resize', () => { if (!$('view-avb').hidden) avbNav(); });
+window.addEventListener('resize', () => { if (!$('view-avb').hidden){ avbAlign(); avbNav(); } });
 $('view-avb').querySelectorAll('.bnav').forEach(b => b.addEventListener('click', () => {
   const el = $('avb-cards'); el.scrollBy({left:(b.classList.contains('next') ? 1 : -1) * (el.clientWidth - 40)});
 }));
@@ -2170,7 +2180,7 @@ $('avb-tv').addEventListener('change', e => { lpb.tv = e.target.checked; renderB
 document.querySelectorAll('[data-bperiod]').forEach(b => b.addEventListener('click', renderAvb));
 $('avb-cards').addEventListener('click', e => {
   const r = e.target.closest('.rab');
-  if (r){ const on = r.getAttribute('aria-expanded') !== 'true'; r.setAttribute('aria-expanded', on); r.nextElementSibling.hidden = !on; return; }
+  if (r){ const on = r.getAttribute('aria-expanded') !== 'true'; r.setAttribute('aria-expanded', on); r.nextElementSibling.hidden = !on; avbAlign(); return; }
   if (e.target.closest('[data-bcfg]')) return toast('Koszyk B2B pojawi się w kolejnym kroku', false);
   if (e.target.closest('[data-b-expert]')) return toast('Biznes Ekspert oddzwoni do Ciebie – poza prototypem', false);
 });
