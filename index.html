@@ -1815,7 +1815,7 @@ const ICONS = {
   multi:'<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="3" y="6" width="22" height="15" rx="1"/><rect x="15" y="17" width="22" height="15" rx="1" fill="#fff"/><path d="M22 36h8"/></svg>'
 };
 const SERVICES = [
-  {id:'pak', icon:'ct', tint:'--t-usl', title:'Usługi w pakiecie', desc:'Wsparcie IT i bezpieczeństwo dla Twojej firmy', mode:'single', b2b:true,
+  {id:'pak', icon:'ct', tint:'--t-usl', title:'Paczki usług', desc:'Wsparcie IT i bezpieczeństwo dla Twojej firmy', mode:'single', b2b:true,
    lead:'Wybierz paczkę usług dla firmy', options:[
     {id:'pakS', name:'Paczka S', meta:'Wsparcie zdalne IT i CyberTarcza rozszerzona', price:10, per:'m'},
     {id:'pakL', name:'Paczka L', meta:'Paczka S + technik na miejscu do 24 h, stały adres IP, naprawy łącza w 8 h (SLA) i Orange Office', price:55, per:'m'}]},
@@ -2448,7 +2448,7 @@ function renderServices(){
         ${feesHtml('devs', devRows(devs), '24', devOnce(devs))}${addDevTile('Dodaj kolejne urządzenie', 'Telefon na raty, bez abonamentu komórkowego')}</div></section>` : '';
   const devOffer = devs.length || isB2B ? '' : `<div class="sec-head"><h3>Dodaj urządzenie</h3><p>Kup telefon na raty – z abonamentem lub bez</p></div>${addDevTile('Dodaj urządzenie', 'Raty 0%, dostawa razem z zamówieniem')}`;
   const offers = isB2B
-    ? group('Bezpieczeństwo i wsparcie dla firmy', 'Paczka S lub L – pomoc IT i ochrona przed zagrożeniami z sieci', ['pak']) + group('Często kupowane razem', '', ['tv'])
+    ? (has('pak') ? '' : card(svcById('pak'))) + group('Często kupowane razem', '', ['tv'])
     : group('Często kupowane razem', '', ['tv', 'dek'])
     + group('W zestawie taniej!', 'Dodaj usługi do światłowodu i zyskaj rabat!', ['mob'])
     + devOffer
