@@ -1916,7 +1916,7 @@ const pakExtras = (pick = state.pakL || [], qty = state.pakLQty || {}) => PAK_L_
   .map(o => ({key:`pakx:${o.id}`, label:pklName(o, qty), steps:flat(o.price * pklQ(o, qty))}));
 const SERVICES = [
   {id:'pak', icon:'ct', tint:'--t-usl', title:'Paczki usług', desc:'Wsparcie IT i bezpieczeństwo dla Twojej firmy', mode:'single', b2b:true,
-   lead:'Wybierz paczkę usług dla firmy', options:[
+   lead:'', options:[
     {id:'pakS', name:'Paczka S', meta:'CyberTarcza Stacjonarna Rozszerzona + Wsparcie Zdalne', price:10, per:'m', contract:true},
     {id:'pakL', name:'Paczka L', meta:'W cenie zawsze: CyberTarcza Rozszerzona i Wsparcie zdalne<br>Do wyboru 3 z 5: Stały adres IP, SLA 8H, Backup 250 GB, Orange Office, Wsparcie Zaawansowane', price:44, per:'m', contract:true}]},
   {id:'tv', icon:'tv', tint:'--t-tv', title:'Pakiety TV i streamingi', desc:'120+ kanałów, dekoder 4K i Amazon Prime w pakiecie', mode:'multi',
@@ -2786,7 +2786,7 @@ function openNet2Panel(opener, id){
     : {extra:true, id:`n${Date.now()}`, step:'addr', addr:{city:'', street:'', no:'', flat:'', nostreet:false}, period:state.period, speed:nearestSpeed('1g', state.period), modem:null, inst:[], note:''};
   $('panel').style.setProperty('--tint', 'var(--t-net)');
   $('p-title').textContent = cur ? 'Internet' : 'Kolejny internet';
-  $('p-lead').textContent = '';
+  $('p-lead').textContent = ''; $('p-lead').hidden = false;
   $('p-remove').hidden = !cur; $('p-remove').textContent = 'Usuń ten internet';
   renderNetPanel();
   $('scrim').hidden = false; $('panel').hidden = false; document.body.classList.add('side-open');
@@ -2877,7 +2877,7 @@ function openNetPanel(opener){
   draft = {period:state.period, speed:state.speed, modem:state.modem, inst:[...state.inst], note:''};
   $('panel').style.setProperty('--tint', 'var(--t-net)');
   $('p-title').textContent = 'Internet';
-  $('p-lead').textContent = '';
+  $('p-lead').textContent = ''; $('p-lead').hidden = false;
   $('p-remove').hidden = true;
   renderNetPanel();
   $('scrim').hidden = false; $('panel').hidden = false; document.body.classList.add('side-open');
@@ -2950,7 +2950,7 @@ function openMobPanel(opener, lineId, step = 'conf'){
   mdraft.step = step;
   $('panel').style.setProperty('--tint', 'var(--t-mob)');
   $('p-title').textContent = cur ? `Numer ${state.lines.indexOf(cur) + 1}` : state.lines.length ? 'Kolejny numer' : 'Abonament komórkowy';
-  $('p-lead').textContent = '';
+  $('p-lead').textContent = ''; $('p-lead').hidden = false;
   $('p-add').dataset.editing = cur ? '1' : '';
   $('p-remove').hidden = !cur;
   renderMobPanel();
@@ -3095,6 +3095,7 @@ function openPanel(id, opener, fromLP = false){
   $('panel').style.setProperty('--tint', `var(${panelSvc.tint})`);
   $('p-title').textContent = panelSvc.title;
   $('p-lead').textContent = panelSvc.lead;
+  $('p-lead').hidden = !panelSvc.lead && !panelSvc.about;
   if (panelSvc.about) $('p-lead').insertAdjacentHTML('beforeend', `<p class="p-about">${panelSvc.about}</p><button class="p-more" type="button" data-svc-more>Więcej o usłudze</button>`);
   const type = panelSvc.mode === 'multi' || panelSvc.options.length === 1 ? 'checkbox' : 'radio';
   const pre = editing ? current : (panelSvc.options.length === 1 ? [panelSvc.options[0].id] : []);
@@ -3322,7 +3323,7 @@ function openDevPanel(opener, lineId){
   ddraft.accOpt = Object.fromEntries((l.dev?.acc || []).map(x => [x.id, {color:x.color, pay:x.pay}]));
   $('panel').style.setProperty('--tint', 'var(--t-mob)');
   $('p-title').textContent = state.lines.includes(l) ? `Urządzenie do numeru ${state.lines.indexOf(l) + 1}` : l.dev ? 'Urządzenie' : state.devs.length ? 'Kolejne urządzenie' : 'Dodaj urządzenie';
-  $('p-lead').textContent = '';
+  $('p-lead').textContent = ''; $('p-lead').hidden = false;
   $('p-remove').hidden = !l.dev; $('p-remove').textContent = 'Usuń urządzenie';
   renderDevPanel();
   $('scrim').hidden = false; $('panel').hidden = false; document.body.classList.add('side-open');
