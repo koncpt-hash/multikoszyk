@@ -966,7 +966,9 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .pkl-lock svg{width:16px;height:16px}
 .pkl-o{display:flex;gap:10px;align-items:flex-start;background:#fff;border:2px solid #eee;border-radius:6px;padding:10px;cursor:pointer}
 .pkl-o:has(input:checked){border-color:#ff7900}
-.pkl-o.dis{opacity:.45;cursor:not-allowed}
+/* picked 3 already: the rest stays readable, only the checkbox is greyed out */
+.pkl-o.dis{cursor:default}
+.pkl-o.dis .ind{background:#eee;border-color:#ddd;cursor:not-allowed}
 .pkl-o.fix{cursor:default}
 .pkl-o.fix:has(input:checked){border-color:#eee}
 .pkl-o.fix input:checked + .ind{background:#999;border-color:#999}
