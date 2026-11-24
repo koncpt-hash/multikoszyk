@@ -2296,7 +2296,7 @@ document.querySelectorAll('[data-bperiod]').forEach(b => b.addEventListener('cli
 $('avb-cards').addEventListener('click', e => {
   const r = e.target.closest('.rab');
   if (r){ const on = r.getAttribute('aria-expanded') !== 'true'; r.setAttribute('aria-expanded', on); r.nextElementSibling.hidden = !on; avbAlign(); return; }
-  const cf = e.target.closest('[data-bcfg]'); if (cf){ lpb.speed = cf.dataset.bcfg; return goCartB2B(); }
+  const cf = e.target.closest('[data-bcfg]'); if (cf){ lpb.speed = cf.dataset.bcfg; return isClient ? goCartB2B(true) : openClientModal(cf, true); }
   if (e.target.closest('[data-b-expert]')) return toast('Biznes Ekspert oddzwoni do Ciebie – poza prototypem', false);
 });
 $('avb-back').addEventListener('click', () => { show('lpb'); bNav(); });
@@ -2405,8 +2405,10 @@ const PERSONAL = {
   tv:  ['Dla Ciebie: aktywacja pakietów TV za 0 zł']
 };
 const pBadges = key => isClient ? `<div class="pbadges">${(typeof PERSONAL[key] === 'function' ? PERSONAL[key]() : PERSONAL[key]).map(t => `<span class="pbadge">${t}</span>`).join('')}</div>` : '';
-function openClientModal(opener){
-  cmOpener = opener;
+/* the same 'are you a client?' modal serves the business path; cmB2B says where it leads */
+let cmB2B = false;
+function openClientModal(opener, b2b = false){
+  cmOpener = opener; cmB2B = b2b;
   document.querySelectorAll('input[name="cli"]').forEach(i => i.checked = false);
   $('cm-ok').disabled = true; $('cm').hidden = false;
   setTimeout(() => document.querySelector('input[name="cli"]').focus(), 30);
@@ -2423,7 +2425,7 @@ document.querySelectorAll('input[name="cli"]').forEach(i => i.addEventListener('
 $('cm-ok').addEventListener('click', () => {
   const v = document.querySelector('input[name="cli"]:checked')?.value;
   $('cm').hidden = true;
-  if (v === 'no') return goCart(false);
+  if (v === 'no') return cmB2B ? goCartB2B(false) : goCart(false);
   $('lg-form').reset(); show('login'); setTimeout(() => $('lg-mail').focus(), 30);
 });
 $('cm-x').addEventListener('click', closeClientModal);
@@ -2438,13 +2440,13 @@ function fakeLogin(btn){
   const label = btn.textContent; btn.disabled = true; btn.textContent = 'Logujemy…';
   setTimeout(() => {
     btn.disabled = false; btn.textContent = label;
-    goCart(true);
+    cmB2B ? goCartB2B(true) : goCart(true);
   }, 1200);
 }
 $('lg-go').addEventListener('click', () => fakeLogin($('lg-go')));
 $('lg-number').addEventListener('click', () => fakeLogin($('lg-number')));
-$('lg-guest').addEventListener('click', () => goCart(false));
-$('lg-back').addEventListener('click', () => show('av'));
+$('lg-guest').addEventListener('click', () => cmB2B ? goCartB2B(false) : goCart(false));
+$('lg-back').addEventListener('click', () => show(cmB2B ? 'avb' : 'av'));
 document.addEventListener('click', e => { const d = e.target.closest('[data-soon-dev]'); if (d) toast(`Dodawanie urządzenia do numeru ${d.dataset.soonDev} pokażemy w kolejnej wersji prototypu`, false); });
 document.querySelectorAll('#view-login [data-soon]').forEach(b => b.addEventListener('click', () => toast('Ta ścieżka nie jest częścią prototypu', false)));
 
@@ -3546,7 +3548,7 @@ $('go-cart').addEventListener('click', () => { avReady(); if (!cartStarted || is
 $('go-lp').addEventListener('click', () => { isClient = false; demoRun++; $('cursor').classList.remove('on'); avReady(); show('lp'); });
 $('go-lp-b2b').addEventListener('click', () => { show('lpb'); bNav(); });
 /* business cart: same cart, business offer; the TV packages screen is skipped */
-function goCartB2B(){ isB2B = true; gross = false; isClient = false; avbReady(); startCart(); show('cart'); announceCart(); }
+function goCartB2B(client = false){ isB2B = true; gross = false; isClient = client; avbReady(); startCart(); show('cart'); announceCart(); }
 $('go-cart-b2b').addEventListener('click', () => { if (!cartStarted || !isB2B){ lpb.speed = lpb.speed || '1g'; goCartB2B(); } else show('cart'); });
 
 /* ---------- AI assistant: answers in the cart's context and can change it after 'Zastosuj' ---------- */
