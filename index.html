@@ -3121,7 +3121,7 @@ function selectedInPanel(){ return [...$('p-body').querySelectorAll('input[name=
 const pklFixed = () => `
     <p class="pkl-h">W pakiecie dwie usługi na stałe</p>
     ${PAK_L_FIXED.map(x => `<div class="pkl-o fix"><input type="checkbox" name="pklfix" value="${x.id}" checked disabled aria-label="${x.name} – w pakiecie"><span class="ind" aria-hidden="true"></span>
-      <span><b>${x.name}</b><span class="pkl-pop">W pakiecie</span><small>${x.d}</small>
+      <span><b>${x.name}</b><small>${x.d}</small>
         <button class="pkl-more" type="button" data-pkl-more="${x.id}" aria-expanded="${pklOpen.has(x.id)}">${pklOpen.has(x.id) ? 'Mniej' : 'Więcej'}</button>
         <span class="pkl-det" ${pklOpen.has(x.id) ? '' : 'hidden'}>${x.more}</span></span></div>`).join('')}`;
 function renderPkl(){
