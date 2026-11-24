@@ -921,6 +921,8 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .fees .fine{color:var(--muted);font-size:11px;margin:8px 0 0}
 .fees-ai{margin:12px 0 4px}
 .fees-ai .ai-chips{flex-direction:row;flex-wrap:wrap}
+.pk-ai{margin-top:8px;padding-top:16px;border-top:2px solid #eee;display:flex;flex-direction:column;gap:10px}
+.pk-ai p{margin:0;font-weight:700;font-size:14px}
 .after-b{padding:0 48px 0 24px;font-size:12px;line-height:18px;font-weight:500;color:#232323}
 .after-b p{margin:0 0 12px}.after-b p:last-child{margin:0}
 .after-b p b{font-weight:700}
@@ -3097,6 +3099,7 @@ function openPanel(id, opener, fromLP = false){
     $('opt-pakS').closest('label').insertAdjacentHTML('afterend', `<div class="pkl" id="pks" ${pre.includes('pakS') ? '' : 'hidden'}>${pklFixed()}</div>`);
     renderPkl();
     $('p-body').querySelectorAll('[name="opt"]').forEach(i => i.addEventListener('change', () => { $('pkl').hidden = !$('opt-pakL').checked; $('pks').hidden = !$('opt-pakS').checked; }));
+    $('p-body').insertAdjacentHTML('beforeend', `<div class="pk-ai"><p>Nie wiesz, którą paczkę wybrać? Zapytaj Asystenta AI</p><div class="ai-chips">${PAK_AI.map(q => `<button class="ai-chip ai-stroke" type="button" data-ai="${q}"><img src="assets/ai/sparkles.svg" alt="">${q}</button>`).join('')}</div></div>`);
   }
   $('p-body').querySelectorAll('[data-tl-more]').forEach(b => b.addEventListener('click', e => {
     e.preventDefault(); const on = b.getAttribute('aria-expanded') !== 'true'; b.setAttribute('aria-expanded', on); b.textContent = on ? 'Mniej' : 'Więcej'; b.nextElementSibling.hidden = !on;
@@ -3598,8 +3601,21 @@ function aiAsk(text){
   setTimeout(() => { ai.msgs.pop(); ai.msgs.push(aiAnswer(text)); renderAi(); }, 800);
 }
 /* canned answers that read the live cart */
+/* suggested questions in the Paczki usług sidebar (LP and cart) and their answers */
+const PAK_AI = ['Czym różni się Paczka S od Paczki L?', 'Które 3 usługi wybrać do Paczki L?', 'Czy mojej firmie przyda się stały adres IP?'];
+function pakAnswer(t){
+  const q = t.toLowerCase();
+  if (/różni.*paczk|paczka s.*paczk|paczk.*s.*l\b/.test(q))
+    return {text:`Obie paczki mają te same dwie usługi na stałe:\n• CyberTarcza stacjonarna rozszerzona – blokuje zagrożenia z sieci, zanim dotrą do firmowych urządzeń,\n• Wsparcie zdalne – informatycy rozwiążą problem, logując się zdalnie do Twojego systemu.\nPaczka S kosztuje ${zl(10)}/mies. + VAT i na tym się kończy.\nPaczka L kosztuje ${zl(44)}/mies. + VAT – do tych dwóch usług dobierasz 3 z 5: stały adres IP, SLA 8H, Backup 250 GB, Orange Office albo Wsparcie Zaawansowane.\nJeśli potrzebujesz tylko ochrony i pomocy IT na odległość, wystarczy Paczka S.`};
+  if (/które.*(3|trzy).*usług|wybrać do paczki l|dobra/.test(q))
+    return {text:'To zależy od tego, jak pracuje Twoja firma:\n• Masz monitoring, serwer lub łączysz się przez VPN? Wybierz Stały adres IP.\n• Bez internetu firma stoi? Wybierz SLA 8H – naprawimy łącze do 8 godzin od zgłoszenia.\n• Trzymasz ważne pliki na komputerach? Wybierz Backup 250 GB.\n• Potrzebujesz poczty, domeny lub strony firmowej? Wybierz Orange Office.\n• Pracujesz na laptopach w kilku miejscach? Wybierz Wsparcie Zaawansowane – informatyk przyjedzie, a na czas naprawy zostawi laptop zastępczy.\nNapisz, czym zajmuje się Twoja firma, to podpowiem konkretny zestaw.'};
+  if (/adres ip|stał.*ip/.test(q))
+    return {text:'Stały adres IP przyda się, jeśli:\n• oglądasz monitoring z kamer IP spoza firmy (np. z telefonu),\n• masz własny serwer WWW, pocztę lub sklep internetowy,\n• pracownicy łączą się z firmą przez VPN,\n• podłączasz drukarki i skanery sieciowe, które mają być zawsze pod tym samym adresem.\nJeśli korzystasz tylko z przeglądarki, poczty w chmurze i programów online, stały adres IP nie jest konieczny. W Paczce L wybierzesz 1, 4 albo 8 adresów.'};
+  return null;
+}
 function aiAnswer(t){
   const fa = feesAnswer(t); if (fa) return fa;
+  const pa = pakAnswer(t); if (pa) return pa;
   const q = t.toLowerCase(), sp = speedDef(state.speed, state.period);
   if (/esim|karta sim|karty sim|fizyczn/.test(q))
     return {text:'Obie działają tak samo: ten sam numer, zasięg i internet. Różnią się tylko formą.\n• Karta eSIM jest wbudowana w telefon. Aktywujesz ją kodem QR, który wyślemy e-mailem – nie czekasz na kuriera i nie zgubisz karty.\n• Fizyczna karta SIM to mała karta, którą wkładasz do telefonu. Dostarczymy ją razem z zamówieniem.\nKartę eSIM wybierz, jeśli Twój telefon ją obsługuje – sprawdzisz to w ustawieniach telefonu.'};
