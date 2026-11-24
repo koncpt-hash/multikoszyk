@@ -936,6 +936,31 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .p-about{margin-top:8px;font-weight:500;color:#444}
 .p-more{margin-top:6px;border:0;background:none;padding:0;font-weight:700;color:#232323;text-decoration:underline;text-underline-offset:3px}
 .tile .tl-u{display:block;margin-top:6px}
+.tl-up{display:block;margin-top:6px;font-size:12px;line-height:17px;font-weight:700;color:#d35200}
+.pkl{margin:-4px 0 4px;border:2px solid #ff7900;border-top:0;border-radius:0 0 8px 8px;padding:14px 16px 16px;background:#fff8f2;display:flex;flex-direction:column;gap:8px}
+.pkl[hidden]{display:none}
+.pkl-h{font-weight:700;font-size:14px;line-height:20px;margin:0}
+.pkl-h2{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}
+.pkl-cnt{font-size:12px;font-weight:700;padding:2px 8px;border-radius:12px;background:#eee;color:#232323;white-space:nowrap}
+.pkl-cnt.ok{background:#32c832;color:#fff}
+.pkl-fix{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.pkl-fix li{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #eee;border-radius:6px;padding:8px 10px;font-size:14px}
+.pkl-fix b{flex:1}
+.pkl-fix small{color:#666;font-size:12px}
+.pkl-lock{width:16px;height:16px;color:#666;display:flex}
+.pkl-lock svg{width:16px;height:16px}
+.pkl-o{display:flex;gap:10px;align-items:flex-start;background:#fff;border:2px solid #eee;border-radius:6px;padding:10px;cursor:pointer}
+.pkl-o:has(input:checked){border-color:#ff7900}
+.pkl-o.dis{opacity:.45;cursor:not-allowed}
+.pkl-o input{position:absolute;opacity:0;width:1px;height:1px}
+.pkl-o .ind{width:20px;height:20px;border:2px solid #ccc;border-radius:4px;flex:none;display:grid;place-items:center;margin-top:1px}
+.pkl-o input:checked + .ind{background:#ff7900;border-color:#ff7900}
+.pkl-o input:checked + .ind::after{content:"";width:9px;height:5px;border:solid #fff;border-width:0 0 2px 2px;transform:translateY(-1px) rotate(-45deg)}
+.pkl-o:has(input:focus-visible){outline:3px solid #f15e00;outline-offset:2px}
+.pkl-o > span:last-child{display:flex;flex-direction:column;gap:2px;font-size:14px;line-height:20px}
+.pkl-o small{color:#555;font-size:12px;line-height:17px}
+.pkl-pop{align-self:flex-start;font-size:11px;line-height:16px;font-weight:700;background:#232323;color:#fff;border-radius:4px;padding:0 6px}
+.pkl-hint{font-size:12px;line-height:17px;color:#555;margin:0}
 .tl-more{display:block;margin-top:6px;border:0;background:none;padding:0;font-weight:700;font-size:13px;color:#555;text-decoration:underline;text-underline-offset:3px}
 .tl-list{margin:6px 0 0;padding-left:16px;font-size:13px;line-height:18px;color:#444;display:flex;flex-direction:column;gap:4px}
 .p-body{padding:12px 20px 20px;overflow:auto;display:flex;flex-direction:column;gap:12px;flex:1}
@@ -1821,13 +1846,23 @@ const ICONS = {
   ct:'<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.6"><path d="M20 4l13 5v10c0 9-6 14-13 17C13 33 7 28 7 19V9z"/><path d="M14 20l5 5 8-9"/></svg>',
   multi:'<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="3" y="6" width="22" height="15" rx="1"/><rect x="15" y="17" width="22" height="15" rx="1" fill="#fff"/><path d="M22 36h8"/></svg>'
 };
+/* Paczka L: 2 services always included, the customer picks 3 of 5 before adding it */
+const PAK_L_FIXED = ['CyberTarcza Rozszerzona', 'Wsparcie zdalne'];
+const PAK_L_OPTS = [
+  {id:'ip', name:'Stały adres IP', d:'Do monitoringu, serwera www lub VPN', pop:true},
+  {id:'sla', name:'SLA 8H', d:'Naprawa łącza w ciągu 8 godzin od zgłoszenia', pop:true},
+  {id:'bak', name:'Backup 250 GB', d:'Kopia zapasowa danych firmy w chmurze'},
+  {id:'off', name:'Orange Office', d:'Poczta, pliki i dokumenty firmy w chmurze'},
+  {id:'adv', name:'Wsparcie Zaawansowane', d:'Technik przyjedzie i naprawi komputer do 24 h', pop:true}];
+const PAK_L_N = 3;
+let pkPick = [];
 const SERVICES = [
   {id:'pak', icon:'ct', tint:'--t-usl', title:'Paczki usług', desc:'Wsparcie IT i bezpieczeństwo dla Twojej firmy', mode:'single', b2b:true,
    lead:'Wybierz paczkę usług dla firmy', options:[
     {id:'pakS', name:'Paczka S', meta:'CyberTarcza Stacjonarna Rozszerzona + Wsparcie Zdalne', price:10, per:'m',
      more:['Wsparcie zdalne – specjaliści IT zdiagnozują i usuną usterkę na Twoim komputerze przez bezpłatną infolinię', 'CyberTarcza rozszerzona – ochrona przed zagrożeniami z sieci, bez instalowania i aktualizacji']},
     {id:'pakL', name:'Paczka L', meta:'Rozszerzenie paczki S o trzy wybrane przez ciebie usługi dodatkowe', price:44, per:'m',
-     more:['Wszystko z Paczki S', 'Do wyboru 3 z usług: wsparcie rozszerzone (technik u Ciebie do 24 h), stały adres IP, gwarantowane naprawy internetu (SLA 8 h), Orange Office']}]},
+     more:['W cenie zawsze: CyberTarcza Rozszerzona i Wsparcie zdalne', 'Do wyboru 3 z 5: Stały adres IP, SLA 8H, Backup 250 GB, Orange Office, Wsparcie Zaawansowane']}]},
   {id:'tv', icon:'tv', tint:'--t-tv', title:'Pakiety TV i streamingi', desc:'120+ kanałów, dekoder 4K i Amazon Prime w pakiecie', mode:'multi',
    lead:'Wybierz jeden lub kilka pakietów', options:[
     /* price = umowa na 24 mies., priceBez = umowa bezterminowa; group = można mieć tylko 1 pakiet z grupy */
@@ -2428,7 +2463,7 @@ function renderServices(){
       const list = s.id === 'mob'
         ? state.lines.map((l, i) => { const o = s.options.find(x => x.id === l.plan); return `<li class="mline"><img class="mic" src="assets/cart/ic-sim.svg" alt=""><span>Numer ${i + 1} · ${o.name} ${o.meta}<small>${lineLabel(l)} · ${SIM_TYPE[l.sim]}</small><small>${stepsText(o.steps)}</small></span>
             <span class="hbtns"><button class="lnk3" type="button" data-line-edit="${l.id}">Zmień</button><button class="lnk3" type="button" data-line-del="${l.id}">Usuń</button></span>${lineExtras(l)}${addDevice(i + 1, l)}</li>`; }).join('')
-        : items.map(o => `<li><span>${o.name}<small>${o.meta}${s.id === 'tv' && tvPlan(o) === 'bez' ? ' · umowa bezterminowa' : ''}</small></span><span class="num">${o.per === 'm' ? stepsText(optSteps(o)) : fmt(o.price) + perLabel(o)}</span></li>`).join('');
+        : items.map(o => `<li><span>${o.name}<small>${o.id === 'pakL' && state.pakL ? [...PAK_L_FIXED, ...state.pakL.map(id => PAK_L_OPTS.find(x => x.id === id).name)].join(' · ') : o.meta}${s.id === 'tv' && tvPlan(o) === 'bez' ? ' · umowa bezterminowa' : ''}</small></span><span class="num">${o.per === 'm' ? stepsText(optSteps(o)) : fmt(o.price) + perLabel(o)}</span></li>`).join('');
       return `<section class="card" id="svc-${s.id}" style="--tint:var(${s.id === 'mob' ? '--t-dek' : s.tint})" aria-label="${s.title}">
         <div class="card-h"><h2>${s.title} <span class="incart">✓ W koszyku</span></h2><button class="btn-s" type="button" data-remove="${s.id}">Usuń</button></div>
         <div class="card-b">
@@ -2992,8 +3027,14 @@ function openPanel(id, opener){
   $('p-body').innerHTML = panelSvc.options.map(o => `
     <label class="tile ${type==='checkbox'?'cb':''}"><input type="${type}" name="opt" id="opt-${o.id}" value="${o.id}" ${pre.includes(o.id)?'checked':''}>
       <span class="ind" aria-hidden="true"></span>
-      <span><span class="t">${o.name}${o.tag ? `<span class="mtag">${o.tag}</span>` : ''}</span><span class="d" style="display:block">${o.meta}</span>${o.more ? `<span class="d tl-u">${state.period === 'bez' ? 'Umowa bezterminowa' : 'Umowa na 24 mies.'}</span><button class="tl-more" type="button" aria-expanded="false" data-tl-more>Szczegóły</button><ul class="tl-list" hidden>${o.more.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}</span>
+      <span><span class="t">${o.name}${o.tag ? `<span class="mtag">${o.tag}</span>` : ''}</span><span class="d" style="display:block">${o.meta}</span>${o.id === 'pakS' ? `<span class="tl-up">Dopłać ${zl(svcById('pak').options[1].price - o.price)}/mies. i wybierz 3 dodatkowe usługi w Paczce L</span>` : ''}${o.more ? `<span class="d tl-u">${state.period === 'bez' ? 'Umowa bezterminowa' : 'Umowa na 24 mies.'}</span><button class="tl-more" type="button" aria-expanded="false" data-tl-more>Szczegóły</button><ul class="tl-list" hidden>${o.more.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}</span>
       <span class="p num">${fmt(o.price)}<small>${o.per==='m'?'/mies.':'jednorazowo'}${isB2B ? (gross ? ' brutto' : ' + VAT') : ''}</small></span></label>`).join('');
+  if (id === 'pak'){
+    pkPick = (state.added.pak || []).includes('pakL') ? [...(state.pakL || [])] : [];
+    $('opt-pakL').closest('label').insertAdjacentHTML('afterend', `<div class="pkl" id="pkl" ${pre.includes('pakL') ? '' : 'hidden'}></div>`);
+    renderPkl();
+    $('p-body').querySelectorAll('[name="opt"]').forEach(i => i.addEventListener('change', () => { $('pkl').hidden = !$('opt-pakL').checked; }));
+  }
   $('p-body').querySelectorAll('[data-tl-more]').forEach(b => b.addEventListener('click', e => {
     e.preventDefault(); const on = b.getAttribute('aria-expanded') !== 'true'; b.setAttribute('aria-expanded', on); b.nextElementSibling.hidden = !on;
   }));
@@ -3006,7 +3047,24 @@ function openPanel(id, opener){
   setTimeout(() => ($('p-body').querySelector('input') || $('p-close')).focus({preventScroll:true}), 50);
 }
 $('p-lead').addEventListener('click', e => { if (e.target.closest('[data-svc-more]')) toast('Strona usługi otworzy się w nowej karcie – poza prototypem', false); });
-function selectedInPanel(){ return [...$('p-body').querySelectorAll('input:checked')].map(i => i.value); }
+function selectedInPanel(){ return [...$('p-body').querySelectorAll('input[name="opt"]:checked')].map(i => i.value); }
+function renderPkl(){
+  const n = pkPick.length, full = n >= PAK_L_N;
+  $('pkl').innerHTML = `
+    <p class="pkl-h">W cenie zawsze</p>
+    <ul class="pkl-fix">${PAK_L_FIXED.map(x => `<li><span class="pkl-lock" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg></span><b>${x}</b><small>w pakiecie</small></li>`).join('')}</ul>
+    <div class="pkl-h2"><p class="pkl-h">Wybierz ${PAK_L_N} z ${PAK_L_OPTS.length}</p><span class="pkl-cnt ${full ? 'ok' : ''}" aria-live="polite">Wybrano ${n} z ${PAK_L_N}</span></div>
+    ${PAK_L_OPTS.map(o => { const on = pkPick.includes(o.id), dis = full && !on; return `<label class="pkl-o ${dis ? 'dis' : ''}"><input type="checkbox" name="pkl" value="${o.id}" ${on ? 'checked' : ''} ${dis ? 'disabled' : ''}><span class="ind" aria-hidden="true"></span>
+      <span><b>${o.name}</b>${o.pop ? '<span class="pkl-pop">Najczęściej wybierane</span>' : ''}<small>${o.d}</small></span></label>`; }).join('')}
+    ${full ? '<p class="pkl-hint">Chcesz inną usługę? Odznacz jedną z wybranych.</p>' : ''}`;
+}
+$('p-body').addEventListener('change', e => {
+  if (e.target.name !== 'pkl') return;
+  const v = e.target.value;
+  pkPick = e.target.checked ? [...pkPick, v].slice(0, PAK_L_N) : pkPick.filter(x => x !== v);
+  renderPkl(); $('pkl').querySelector(`[value="${v}"]`)?.focus({preventScroll:true});
+  updatePanelFoot();
+});
 function updatePanelFoot(){
   const sel = selectedInPanel().map(id => panelSvc.options.find(o => o.id === id));
   const m = sel.filter(o => o.per==='m').reduce((a,o) => a + o.price, 0);
@@ -3017,6 +3075,11 @@ function updatePanelFoot(){
 
   $('p-add').disabled = !sel.length;
   $('p-add').textContent = editing ? 'Zapisz zmiany' : 'Dodaj do pakietu';
+  if (panelSvc.id === 'pak' && sel.some(o => o.id === 'pakL')){
+    const left = PAK_L_N - pkPick.length;
+    if (left > 0){ $('p-add').disabled = true; $('p-add').textContent = `Wybierz jeszcze ${left} ${left === 1 ? 'usługę' : 'usługi'}`; }
+    else if (!editing) $('p-add').textContent = 'Dodaj Paczkę L';
+  }
 }
 /* ---------- device for a mobile number: list → short product card → version → payment → protection ---------- */
 /* phones and prices are example values; a color may carry a product photo (3rd item), otherwise the phone is drawn */
@@ -3369,6 +3432,7 @@ function commit(){
   }
   undoState = JSON.parse(JSON.stringify(state));
   const before = new Set(state.added[s.id] || []);
+  if (s.id === 'pak') state.pakL = sel.includes('pakL') ? [...pkPick] : null;
   state.added[s.id] = sel;
   fresh = new Set(sel.filter(id => !before.has(id)).map(id => `${s.id}:${id}`));
   const names = sel.map(id => s.options.find(o => o.id === id).name).join(', ');
