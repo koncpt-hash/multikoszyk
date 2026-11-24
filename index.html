@@ -1160,7 +1160,9 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .avb-cards > .avd{flex:0 0 294px;scroll-snap-align:start}
 .avb-w .bnav{top:calc(50% + 17px)}
 .avd .pc .c small{display:inline;font-size:18px;color:var(--c-text-light)}
-.avb-cards .prs{justify-content:flex-start}.avb-cards .rab{margin-top:auto}
+.avb-cards .prs{justify-content:flex-start}
+.avd .cfg2{margin-top:8px;width:100%;background:#fff;color:var(--c-text);border:2px solid var(--c-bold-80);border-radius:8px;padding:10px 12px;font-weight:700;font-size:16px;line-height:22px}
+.avd .cfg2:hover{background:var(--c-ghost)}.avb-cards .rab{margin-top:auto}
 .avd .avg2{font-size:12px;line-height:18px;font-weight:500;color:var(--c-text-light);text-align:center}
 .avd .avg2 b{color:var(--c-text)}
 @media (max-width:640px){.avb-cards{margin-inline:calc(50% - 50vw);padding-inline:16px;scroll-padding-inline:16px;gap:12px}.avb-cards > .avd{flex-basis:min(294px,82vw)}}
@@ -2064,7 +2066,11 @@ const PAK_S = 10;
 const PAK_NAME = 'Paczka S';
 const lpb = {pak:false, tv:false, period:'24'};
 const bTV = () => lpb.tv && lpb.period === '24';
-const bSteps = o => bTV() ? o.tv : o.steps.map(([f, t, v]) => [f, t, v && lpb.pak ? v + PAK_S : v]);
+/* package picked on the LP (sidebar "Zmień paczkę"): Paczka S by default, or Paczka L with its 3 services */
+const lpPakId = () => lpb.pak || bTV() ? (lpb.pakId || 'pakS') : null;
+const lpPakName = () => lpPakId() === 'pakL' ? 'Paczka L' : 'Paczka S';
+const lpPakPrice = () => lpPakId() === 'pakL' ? svcById('pak').options[1].price + pakExtras(lpb.pakL || [], lpb.pakLQty || {}).reduce((a, r) => a + r.steps[0][2], 0) : PAK_S;
+const bSteps = o => bTV() ? o.tv.map(([f, t, v]) => [f, t, v ? v + lpPakPrice() - PAK_S : v]) : o.steps.map(([f, t, v]) => [f, t, v && lpb.pak ? v + lpPakPrice() : v]);
 const bWhen = ([f, t]) => lpb.period === 'bez' && f === 1 && t === 1 ? 'w pierwszym miesiącu' : `z rabatami, od ${f}.${t ? ` do ${t}.` : ''} mies.`;
 const bNum = v => fmt0(v).replace(' zł', '').replace(/,00$/, '');
 function renderB2B(){
@@ -2074,7 +2080,7 @@ function renderB2B(){
     const avg = lpb.period === '24' && st.length > 1 ? st.reduce((a, [f, t, v]) => a + (t - f + 1) * v, 0) / 24 : null;
     return `<article class="bdish"><div class="bh">${tv ? 'Extra TV za 30 zł/mies. przez rok' : o.badge}</div><div class="c">
       <div class="el"><span class="k">Światłowód</span><h3>${o.name}</h3></div>
-      ${pak ? `<div class="tv"><span class="pls"><img src="assets/lp/av-plus-tiny.svg" alt="plus"></span><div class="t"><span>Usługi w pakiecie</span><b>Paczka S</b></div></div>` : ''}
+      ${pak ? `<div class="tv"><span class="pls"><img src="assets/lp/av-plus-tiny.svg" alt="plus"></span><div class="t"><span>Usługi w pakiecie</span><b>${lpPakName()}</b></div></div>` : ''}
       ${tv ? `<div class="tv"><span class="pls"><img src="assets/lp/av-plus-tiny.svg" alt="plus"></span><div class="t"><span>Telewizja i Amazon Prime</span><b>230 kanałów</b><img src="assets/lp/av-amazon-prime.svg" alt="Amazon Prime"></div></div>` : ''}
       <div class="prs">${st.map((s, i) => `<div class="pr"><div class="hrow">${o.od && !tv && i === 0 ? '<span class="od">od</span>' : ''}<span class="v">${bNum(s[2])}</span><span class="cur">zł/mies. + VAT</span></div><span class="fine">${bWhen(s)}</span>${o.ter && !tv ? '<span class="ter">Oferta ograniczona terytorialnie</span>' : ''}</div>`).join('')}</div>
       ${avg != null ? `<div class="avg"><div><b>${bNum(avg)} zł/mies. + VAT</b><span>Średnia cena przez 2 lata</span></div><i title="Średnia z 24 miesięcy umowy">i</i></div>` : ''}
@@ -2083,6 +2089,7 @@ function renderB2B(){
       <button class="cta2" type="button" data-b-expert>Dokończ z Biznes Ekspertem</button>
     </div></article>`;
   }).join('');
+  for (const id of ['b-pak', 'avb-pak']) $(id).closest('.tgl').querySelector('.t span').innerHTML = `${lpPakName()} - <u>Zobacz, co zawiera</u>`;
   $('b-pak').checked = pak; $('b-pak').disabled = tv; $('b-pak').closest('.tgl').classList.toggle('dis', tv);
   $('b-tv').disabled = lpb.period === 'bez'; $('b-tv').closest('.tgl').classList.toggle('dis', lpb.period === 'bez');
   $('b-tiles').scrollLeft = 0; bNav();
@@ -2238,7 +2245,7 @@ function renderAvb(){
       <div class="stk">${tv ? 'Extra TV za 30 zł/mies. przez rok' : o.badge}</div>
       <div class="cb">
         <div class="nm"><span>Światłowód</span><h3>${o.name}</h3>
-          ${pak ? `<span class="pls"><img src="assets/lp/av-plus-tiny.svg" alt="plus"></span><div class="tv"><span>Usługi w pakiecie</span><b>Paczka S</b></div>` : ''}
+          ${pak ? `<span class="pls"><img src="assets/lp/av-plus-tiny.svg" alt="plus"></span><div class="tv"><span>Usługi w pakiecie</span><b>${lpPakName()}</b></div>` : ''}
           ${tv ? `<span class="pls"><img src="assets/lp/av-plus-tiny.svg" alt="plus"></span><div class="tv"><span>Telewizja i Amazon Prime</span><b>230 kanałów</b><img src="assets/lp/av-amazon-prime.svg" alt="Amazon Prime"></div>` : ''}</div>
         <div class="prs">
           ${st.map((x, k) => `${k ? '<div class="dv"></div>' : ''}<div class="pc">${o.od && !tv && !k ? '<span class="c" style="margin:0 4px 0 0">od</span>' : ''}<span class="v">${bNum(x[2])}</span><span class="c">zł/mies. + VAT</span><small>${bWhen(x)}</small></div>`).join('')}
@@ -2247,10 +2254,11 @@ function renderAvb(){
           <p class="rabt" hidden>Ceny netto. Uwzględniają rabat za e‑fakturę i zgody marketingowe.</p>
         </div>
         <button class="cfg" type="button" data-bcfg="${o.id}">Konfiguruj</button>
+        <button class="cfg2" type="button" data-b-pak>Zmień paczkę</button>
         <p class="lh">W ofercie dostaniesz:</p>
         <ul class="inc">
           <li>${bullet}<span>Światłowód <b>${o.name}</b></span>${plusBtn()}</li>
-          ${pak ? `<li>${bullet}<span>Usługi w pakiecie <b>${PAK_NAME}</b></span>${plusBtn('av-info')}</li>` : ''}
+          ${pak ? `<li>${bullet}<span>Usługi w pakiecie <b>${lpPakName()}</b></span>${plusBtn('av-info')}</li>` : ''}
           ${tv ? `<li>${bullet}<span>Telewizja <b>230 kanałów</b> i Amazon Prime</span>${plusBtn('av-info')}</li>` : ''}
           <li>${bullet}<span>Modem <b>${MODEM[o.id]}</b></span>${plusBtn()}</li>
         </ul>
@@ -2296,6 +2304,7 @@ document.querySelectorAll('[data-bperiod]').forEach(b => b.addEventListener('cli
 $('avb-cards').addEventListener('click', e => {
   const r = e.target.closest('.rab');
   if (r){ const on = r.getAttribute('aria-expanded') !== 'true'; r.setAttribute('aria-expanded', on); r.nextElementSibling.hidden = !on; avbAlign(); return; }
+  const pb = e.target.closest('[data-b-pak]'); if (pb) return openPanel('pak', pb, true);
   const cf = e.target.closest('[data-bcfg]'); if (cf){ lpb.speed = cf.dataset.bcfg; return isClient ? goCartB2B(true) : openClientModal(cf, true); }
   if (e.target.closest('[data-b-expert]')) return toast('Biznes Ekspert oddzwoni do Ciebie – poza prototypem', false);
 });
@@ -2464,8 +2473,8 @@ function startCart(){
   if (isB2B ? bTV() : lpTV()) tv.push('tvap');
   if (!isB2B && lp.nfx && lp.period === '24') tv.push('nfx');
   if (tv.length) state.added.tv = tv;
-  const pak = isB2B && (lpb.pak || bTV()) ? ['pak:pakS'] : [];
-  if (pak.length) state.added.pak = ['pakS'];
+  const pid = isB2B ? lpPakId() : null, pak = pid ? [`pak:${pid}`] : [];
+  if (pid){ state.added.pak = [pid]; if (pid === 'pakL'){ state.pakL = [...(lpb.pakL || [])]; state.pakLQty = {...(lpb.pakLQty || {})}; } }
   const mob = [];
   if (!isB2B && lp.mob){ const id = `l${Date.now()}`; state.lines.push({id, proc:'new', number:newNumber(), plan:LP_MOB, sim:'esim'}); syncMob(); mob.push(`mob:${id}`, 'disc'); }
   fresh = new Set(['net', ...tv.map(id => `tv:${id}`), ...pak, ...mob]);
@@ -2860,7 +2869,7 @@ function openNetPanel(opener){
   setTimeout(() => $('p-body').querySelector('input:checked')?.focus({preventScroll:true}), 50);
 }
 /* business cart: say whether a price is net or gross */
-const vatTag = () => isB2B ? (gross ? ' brutto' : ' + VAT') : '';
+const vatTag = () => isB2B || pakFromLP ? (isB2B && gross && inCart ? ' brutto' : ' + VAT') : '';
 function renderNetPanel(focusSel){
   if (draft.extra && draft.step !== 'cfg') return renderNet2Step();
   $('panel').querySelector('.p-foot').classList.remove('off');
@@ -3058,12 +3067,14 @@ function removeLine(id){
   if (panelSvc) closePanel();
   renderAll(); toast(`Usunięto numer ${i + 1}`);
 }
-function openPanel(id, opener){
+let pakFromLP = false;
+function openPanel(id, opener, fromLP = false){
+  pakFromLP = fromLP && id === 'pak';
   if (id === 'net') return openNetPanel(opener);
   $('panel').querySelector('.p-foot').classList.remove('off');
   if (id === 'mob') return openMobPanel(opener);
   panelSvc = svcById(id); lastFocus = opener || document.activeElement;
-  const current = state.added[id] || [];
+  const current = pakFromLP ? (lpPakId() ? [lpPakId()] : []) : state.added[id] || [];
   const editing = current.length > 0;
   $('panel').style.setProperty('--tint', `var(${panelSvc.tint})`);
   $('p-title').textContent = panelSvc.title;
@@ -3074,11 +3085,12 @@ function openPanel(id, opener){
   $('p-body').innerHTML = panelSvc.options.map(o => `
     <label class="tile ${type==='checkbox'?'cb':''}"><input type="${type}" name="opt" id="opt-${o.id}" value="${o.id}" ${pre.includes(o.id)?'checked':''}>
       <span class="ind" aria-hidden="true"></span>
-      <span><span class="t">${o.name}${o.tag ? `<span class="mtag">${o.tag}</span>` : ''}</span><span class="d" style="display:block">${o.meta}</span>${o.id === 'pakS' ? `<span class="tl-up">Dopłać ${zl(svcById('pak').options[1].price - o.price)}/mies. i wybierz 3 dodatkowe usługi w Paczce L</span>` : ''}${o.more || o.contract ? `<span class="d tl-u">${state.period === 'bez' ? 'Umowa bezterminowa' : 'Umowa na 24 mies.'}</span><b class="tl-p">${fmt(o.price)}/mies.${vatTag()}</b>` : ''}${o.more ? `<button class="tl-more" type="button" aria-expanded="false" data-tl-more>Więcej</button><ul class="tl-list" hidden>${o.more.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}</span>
+      <span><span class="t">${o.name}${o.tag ? `<span class="mtag">${o.tag}</span>` : ''}</span><span class="d" style="display:block">${o.meta}</span>${o.id === 'pakS' ? `<span class="tl-up">Dopłać ${zl(svcById('pak').options[1].price - o.price)}/mies. i wybierz 3 dodatkowe usługi w Paczce L</span>` : ''}${o.more || o.contract ? `<span class="d tl-u">${(pakFromLP ? lpb.period : state.period) === 'bez' ? 'Umowa bezterminowa' : 'Umowa na 24 mies.'}</span><b class="tl-p">${fmt(o.price)}/mies.${vatTag()}</b>` : ''}${o.more ? `<button class="tl-more" type="button" aria-expanded="false" data-tl-more>Więcej</button><ul class="tl-list" hidden>${o.more.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}</span>
       ${o.more || o.contract ? '' : `<span class="p num">${fmt(o.price)}<small>${o.per==='m'?'/mies.':'jednorazowo'}${isB2B ? (gross ? ' brutto' : ' + VAT') : ''}</small></span>`}</label>`).join('');
   if (id === 'pak'){
-    pkPick = (state.added.pak || []).includes('pakL') ? [...(state.pakL || [])] : [];
-    pkQty = (state.added.pak || []).includes('pakL') ? {...(state.pakLQty || {})} : {};
+    const src = pakFromLP ? {on:lpPakId() === 'pakL', pick:lpb.pakL, qty:lpb.pakLQty} : {on:(state.added.pak || []).includes('pakL'), pick:state.pakL, qty:state.pakLQty};
+    pkPick = src.on ? [...(src.pick || [])] : [];
+    pkQty = src.on ? {...(src.qty || {})} : {};
     $('opt-pakL').closest('label').insertAdjacentHTML('afterend', `<div class="pkl" id="pkl" ${pre.includes('pakL') ? '' : 'hidden'}></div>`);
     $('opt-pakS').closest('label').insertAdjacentHTML('afterend', `<div class="pkl" id="pks" ${pre.includes('pakS') ? '' : 'hidden'}>${pklFixed()}</div>`);
     renderPkl();
@@ -3089,7 +3101,7 @@ function openPanel(id, opener){
   }));
   $('p-body').querySelectorAll('input').forEach(i => i.addEventListener('change', updatePanelFoot));
   $('p-add').dataset.editing = editing ? '1' : '';
-  $('p-remove').hidden = !editing; $('p-remove').textContent = 'Usuń z pakietu';
+  $('p-remove').hidden = !editing || (pakFromLP && bTV()); $('p-remove').textContent = pakFromLP ? 'Bez paczki usług' : 'Usuń z pakietu';
   updatePanelFoot();
   $('scrim').hidden = false; $('panel').hidden = false; document.body.classList.add('side-open');
   requestAnimationFrame(() => { $('scrim').classList.add('on'); $('panel').classList.add('on'); });
@@ -3464,7 +3476,7 @@ function removeDev(){
 function closePanel(){
   $('scrim').classList.remove('on'); $('panel').classList.remove('on'); document.body.classList.remove('side-open');
   setTimeout(() => { $('scrim').hidden = true; $('panel').hidden = true; }, 300);
-  const id = panelSvc && panelSvc.id; panelSvc = null;
+  const id = panelSvc && panelSvc.id; panelSvc = null; pakFromLP = false;
   const target = id && document.querySelector(id === 'net2' ? '#add-net' : id === 'net' ? '#net-change' : `#svc-${id} [data-open]`);
   (target || lastFocus)?.focus({preventScroll:true});
 }
@@ -3505,6 +3517,15 @@ function commit(){
     else if (changed) toast('Zapisano zmiany w internecie');
     return;
   }
+  if (pakFromLP){
+    const id = sel[0];
+    lpb.pak = !!id; if (id) lpb.pakId = id;
+    lpb.pakL = id === 'pakL' ? [...pkPick] : null;
+    lpb.pakLQty = id === 'pakL' ? Object.fromEntries(pkPick.map(x => [x, pkQty[x]]).filter(([, q]) => q)) : null;
+    closePanel(); renderB2B(); renderAvb(); avbAlign();
+    toast(`Wybrano: ${lpPakName()}`, false);
+    return;
+  }
   undoState = JSON.parse(JSON.stringify(state));
   const before = new Set(state.added[s.id] || []);
   if (s.id === 'pak'){ state.pakL = sel.includes('pakL') ? [...pkPick] : null; state.pakLQty = sel.includes('pakL') ? Object.fromEntries(pkPick.map(id => [id, pkQty[id]]).filter(([, q]) => q)) : null; }
@@ -3528,7 +3549,7 @@ function toast(t, undo = true){
 }
 $('toast-undo').addEventListener('click', () => { if (undoState){ state = undoState; undoState = null; fresh = new Set(); renderSpeeds(); renderAll(); } $('toast').classList.remove('on'); });
 $('p-add').addEventListener('click', commit);
-$('p-remove').addEventListener('click', () => panelSvc.dev ? removeDev() : panelSvc.mob ? removeLine(mdraft.id) : panelSvc.id === 'net2' ? removeNet2(draft.id) : removeSvc(panelSvc.id));
+$('p-remove').addEventListener('click', () => pakFromLP ? (lpb.pak = false, closePanel(), renderB2B(), renderAvb(), avbAlign(), toast('Oferta bez paczki usług', false)) : panelSvc.dev ? removeDev() : panelSvc.mob ? removeLine(mdraft.id) : panelSvc.id === 'net2' ? removeNet2(draft.id) : removeSvc(panelSvc.id));
 $('p-close').addEventListener('click', closePanel);
 $('scrim').addEventListener('click', closePanel);
 document.addEventListener('keydown', e => {
