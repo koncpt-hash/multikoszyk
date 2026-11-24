@@ -3079,8 +3079,9 @@ function openPanel(id, opener){
     pkPick = (state.added.pak || []).includes('pakL') ? [...(state.pakL || [])] : [];
     pkQty = (state.added.pak || []).includes('pakL') ? {...(state.pakLQty || {})} : {};
     $('opt-pakL').closest('label').insertAdjacentHTML('afterend', `<div class="pkl" id="pkl" ${pre.includes('pakL') ? '' : 'hidden'}></div>`);
+    $('opt-pakS').closest('label').insertAdjacentHTML('afterend', `<div class="pkl" id="pks" ${pre.includes('pakS') ? '' : 'hidden'}>${pklFixed()}</div>`);
     renderPkl();
-    $('p-body').querySelectorAll('[name="opt"]').forEach(i => i.addEventListener('change', () => { $('pkl').hidden = !$('opt-pakL').checked; }));
+    $('p-body').querySelectorAll('[name="opt"]').forEach(i => i.addEventListener('change', () => { $('pkl').hidden = !$('opt-pakL').checked; $('pks').hidden = !$('opt-pakS').checked; }));
   }
   $('p-body').querySelectorAll('[data-tl-more]').forEach(b => b.addEventListener('click', e => {
     e.preventDefault(); const on = b.getAttribute('aria-expanded') !== 'true'; b.setAttribute('aria-expanded', on); b.textContent = on ? 'Mniej' : 'Więcej'; b.nextElementSibling.hidden = !on;
@@ -3095,14 +3096,16 @@ function openPanel(id, opener){
 }
 $('p-lead').addEventListener('click', e => { if (e.target.closest('[data-svc-more]')) toast('Strona usługi otworzy się w nowej karcie – poza prototypem', false); });
 function selectedInPanel(){ return [...$('p-body').querySelectorAll('input[name="opt"]:checked')].map(i => i.value); }
-function renderPkl(){
-  const n = pkPick.length, full = n >= PAK_L_N;
-  $('pkl').innerHTML = `
+const pklFixed = () => `
     <p class="pkl-h">W pakiecie dwie usługi na stałe</p>
     ${PAK_L_FIXED.map(x => `<div class="pkl-o fix"><input type="checkbox" name="pklfix" value="${x.id}" checked disabled aria-label="${x.name} – w pakiecie"><span class="ind" aria-hidden="true"></span>
       <span><b>${x.name}</b><span class="pkl-pop">W pakiecie</span><small>${x.d}</small>
         <button class="pkl-more" type="button" data-pkl-more="${x.id}" aria-expanded="${pklOpen.has(x.id)}">${pklOpen.has(x.id) ? 'Mniej' : 'Więcej'}</button>
-        <span class="pkl-det" ${pklOpen.has(x.id) ? '' : 'hidden'}>${x.more}</span></span></div>`).join('')}
+        <span class="pkl-det" ${pklOpen.has(x.id) ? '' : 'hidden'}>${x.more}</span></span></div>`).join('')}`;
+function renderPkl(){
+  const n = pkPick.length, full = n >= PAK_L_N;
+  $('pkl').innerHTML = `
+    ${pklFixed()}
     <div class="pkl-h2"><p class="pkl-h">Dobierz pozostałe ${PAK_L_N} z ${PAK_L_OPTS.length}</p><span class="pkl-cnt ${full ? 'ok' : ''}" aria-live="polite">Wybrano ${n} z ${PAK_L_N}</span></div>
     ${PAK_L_OPTS.map(o => { const on = pkPick.includes(o.id), dis = full && !on; return `<label class="pkl-o ${dis ? 'dis' : ''}"><input type="checkbox" name="pkl" value="${o.id}" ${on ? 'checked' : ''} ${dis ? 'disabled' : ''}><span class="ind" aria-hidden="true"></span>
       <span><b>${o.name}</b><small>${o.d}</small>
@@ -3116,7 +3119,7 @@ $('p-body').addEventListener('click', e => {
   const b = e.target.closest('[data-pkl-more]'); if (!b) return;
   const id = b.dataset.pklMore, on = !pklOpen.has(id);
   on ? pklOpen.add(id) : pklOpen.delete(id);
-  b.setAttribute('aria-expanded', on); b.textContent = on ? 'Mniej' : 'Więcej'; b.nextElementSibling.hidden = !on;
+  $('p-body').querySelectorAll(`[data-pkl-more="${id}"]`).forEach(x => { x.setAttribute('aria-expanded', on); x.textContent = on ? 'Mniej' : 'Więcej'; x.nextElementSibling.hidden = !on; });
 });
 /* counters: Stały adres IP 1 → 4 → 8, Orange Office 1–3, Wsparcie Zaawansowane 1–5 */
 $('p-body').addEventListener('click', e => {
