@@ -1905,8 +1905,7 @@ const pakExtras = (pick = state.pakL || [], qty = state.pakLQty || {}) => PAK_L_
 const SERVICES = [
   {id:'pak', icon:'ct', tint:'--t-usl', title:'Paczki usług', desc:'Wsparcie IT i bezpieczeństwo dla Twojej firmy', mode:'single', b2b:true,
    lead:'Wybierz paczkę usług dla firmy', options:[
-    {id:'pakS', name:'Paczka S', meta:'CyberTarcza Stacjonarna Rozszerzona + Wsparcie Zdalne', price:10, per:'m',
-     more:['Wsparcie zdalne – specjaliści IT zdiagnozują i usuną usterkę na Twoim komputerze przez bezpłatną infolinię', 'CyberTarcza rozszerzona – ochrona przed zagrożeniami z sieci, bez instalowania i aktualizacji']},
+    {id:'pakS', name:'Paczka S', meta:'CyberTarcza Stacjonarna Rozszerzona + Wsparcie Zdalne', price:10, per:'m', contract:true},
     {id:'pakL', name:'Paczka L', meta:'W cenie zawsze: CyberTarcza Rozszerzona i Wsparcie zdalne<br>Do wyboru 3 z 5: Stały adres IP, SLA 8H, Backup 250 GB, Orange Office, Wsparcie Zaawansowane', price:44, per:'m', contract:true}]},
   {id:'tv', icon:'tv', tint:'--t-tv', title:'Pakiety TV i streamingi', desc:'120+ kanałów, dekoder 4K i Amazon Prime w pakiecie', mode:'multi',
    lead:'Wybierz jeden lub kilka pakietów', options:[
