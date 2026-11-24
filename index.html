@@ -1119,7 +1119,7 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .bdish .tv .t img{width:130px;height:36px}
 .bdish .prs{display:flex;flex-direction:column;gap:12px;width:100%;margin-top:4px}
 .bdish .pr{display:flex;flex-direction:column;align-items:center}
-.bdish .pr .hrow{display:flex;gap:4px;align-items:baseline;justify-content:center;white-space:nowrap;font-weight:700}
+.bdish .pr .hrow{display:flex;flex-wrap:wrap;gap:0 4px;align-items:baseline;justify-content:center;white-space:nowrap;font-weight:700}
 .bdish .pr .od,.bdish .pr .cur{font-size:18px;line-height:24px;color:var(--c-text)}
 .bdish .pr .v{font-size:34px;line-height:38px;color:var(--c-active);font-variant-numeric:tabular-nums}
 .bdish .pr .fine{font-size:12px;line-height:18px;font-weight:700;color:var(--c-text-light)}
@@ -1161,6 +1161,8 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .avb-w .bnav{top:calc(50% + 17px)}
 .avd .pc .c small{display:inline;font-size:18px;color:var(--c-text-light)}
 .avb-cards .prs{justify-content:flex-start}
+/* a long price moves "zł/mies. + VAT" to the next line as a whole, never "VAT" alone */
+.avb-cards .pc .c{white-space:nowrap}
 .avd .cfg2{margin-top:8px;width:100%;background:#fff;color:var(--c-text);border:2px solid var(--c-bold-80);border-radius:8px;padding:10px 12px;font-weight:700;font-size:16px;line-height:22px}
 .avd .cfg2:hover{background:var(--c-ghost)}.avb-cards .rab{margin-top:auto}
 .avd .avg2{font-size:12px;line-height:18px;font-weight:500;color:var(--c-text-light);text-align:center}
