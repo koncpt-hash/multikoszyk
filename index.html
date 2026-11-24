@@ -937,15 +937,24 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .p-more{margin-top:6px;border:0;background:none;padding:0;font-weight:700;color:#232323;text-decoration:underline;text-underline-offset:3px}
 .tile .tl-u{display:block;margin-top:6px}
 .tl-up{display:block;margin-top:6px;font-size:12px;line-height:17px;font-weight:700;color:#d35200}
-.pkl{margin:-4px 0 4px;border:2px solid #ff7900;border-top:0;border-radius:0 0 8px 8px;padding:14px 16px 16px;background:#fff8f2;display:flex;flex-direction:column;gap:8px}
+.pkl{margin:-4px 0 4px;border:2px solid #ff7900;border-top:0;border-radius:0 0 8px 8px;padding:14px 16px 16px;background:#fff;display:flex;flex-direction:column;gap:8px}
 .pkl[hidden]{display:none}
 .pkl-h{font-weight:700;font-size:14px;line-height:20px;margin:0}
 .pkl-h2{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}
 .pkl-cnt{font-size:12px;font-weight:700;padding:2px 8px;border-radius:12px;background:#eee;color:#232323;white-space:nowrap}
 .pkl-cnt.ok{background:#32c832;color:#fff}
 .pkl-fix{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
-.pkl-fix li{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid #eee;border-radius:6px;padding:8px 10px;font-size:14px}
+.pkl-fix > li{display:flex;flex-direction:column;gap:4px;background:#fff;border:1px solid #eee;border-radius:6px;padding:10px;font-size:14px}
+.pkl-fr{display:flex;align-items:center;gap:8px}
 .pkl-fix b{flex:1}
+.pkl-d{margin:0;font-size:12px;line-height:17px;color:#555}
+.pkl-more{align-self:flex-start;border:0;background:none;padding:0;font-weight:700;font-size:12px;color:#232323;text-decoration:underline;text-underline-offset:3px}
+.pkl-det{font-size:12px;line-height:17px;color:#444;display:flex;flex-direction:column;gap:6px;border-top:1px solid #eee;padding-top:8px;margin-top:2px}
+.pkl-det[hidden]{display:none}
+.pkl-det b{flex:none;font-size:13px;color:#232323}
+.pkl-det small{margin-top:-4px;color:#666}
+.pkl-det p{margin:0}
+.pkl-det ul{list-style:disc;margin:0;padding-left:16px;display:flex;flex-direction:column;gap:4px}
 .pkl-fix small{color:#666;font-size:12px}
 .pkl-lock{width:16px;height:16px;color:#666;display:flex}
 .pkl-lock svg{width:16px;height:16px}
@@ -1847,7 +1856,13 @@ const ICONS = {
   multi:'<svg viewBox="0 0 40 40" fill="none" stroke="currentColor" stroke-width="2.4"><rect x="3" y="6" width="22" height="15" rx="1"/><rect x="15" y="17" width="22" height="15" rx="1" fill="#fff"/><path d="M22 36h8"/></svg>'
 };
 /* Paczka L: 2 services always included, the customer picks 3 of 5 before adding it */
-const PAK_L_FIXED = ['CyberTarcza Rozszerzona', 'Wsparcie zdalne'];
+const PAK_L_FIXED = [
+  {id:'ct', name:'CyberTarcza stacjonarna rozszerzona', d:'Cybertarcza wykrywa i blokuje zagrożenia z sieci, zanim dotrą do Twoich firmowych urządzeń.',
+   more:`<b>Cybertarcza Stacjonarna Rozszerzona</b><small>W ramach paczki S i L</small><p>Zabezpiecz dane Twojej firmy. Cybertarcza wykrywa i blokuje zagrożenia z sieci, zanim dotrą do Twoich firmowych urządzeń. Cybertarcza to:</p>
+     <ul><li>do 20 urządzeń chronionych przed cyberatakami,</li><li>ochrona przed atakami ransomware, phishingiem, malware i botnetami,</li><li>prosta obsługa – nie wymaga cyklicznych aktualizacji, licencji czy instalowania oprogramowania.</li></ul>`},
+  {id:'wz', name:'Wsparcie zdalne', d:'Rozwiązywanie problemów technicznych za pomocą zdalnego logowania się w Twoim systemie.',
+   more:`<p>W Twojej firmie nie działa komputer lub laptop, nie możesz prowadzić biznesu, a pracownicy czekają? Awarii sprzętu IT nigdy nie możesz przewidzieć. W przypadku problemów z komputerem lub oprogramowaniem nasi informatycy pomogą Ci rozwiązać problem techniczny za pomocą zdalnego logowania się w Twoim systemie.</p>`}];
+const pklOpen = new Set();
 const PAK_L_OPTS = [
   {id:'ip', name:'Stały adres IP', d:'Do monitoringu, serwera www lub VPN', pop:true},
   {id:'sla', name:'SLA 8H', d:'Naprawa łącza w ciągu 8 godzin od zgłoszenia', pop:true},
@@ -1861,8 +1876,7 @@ const SERVICES = [
    lead:'Wybierz paczkę usług dla firmy', options:[
     {id:'pakS', name:'Paczka S', meta:'CyberTarcza Stacjonarna Rozszerzona + Wsparcie Zdalne', price:10, per:'m',
      more:['Wsparcie zdalne – specjaliści IT zdiagnozują i usuną usterkę na Twoim komputerze przez bezpłatną infolinię', 'CyberTarcza rozszerzona – ochrona przed zagrożeniami z sieci, bez instalowania i aktualizacji']},
-    {id:'pakL', name:'Paczka L', meta:'Rozszerzenie paczki S o trzy wybrane przez ciebie usługi dodatkowe', price:44, per:'m',
-     more:['W cenie zawsze: CyberTarcza Rozszerzona i Wsparcie zdalne', 'Do wyboru 3 z 5: Stały adres IP, SLA 8H, Backup 250 GB, Orange Office, Wsparcie Zaawansowane']}]},
+    {id:'pakL', name:'Paczka L', meta:'W cenie zawsze: CyberTarcza Rozszerzona i Wsparcie zdalne<br>Do wyboru 3 z 5: Stały adres IP, SLA 8H, Backup 250 GB, Orange Office, Wsparcie Zaawansowane', price:44, per:'m', contract:true}]},
   {id:'tv', icon:'tv', tint:'--t-tv', title:'Pakiety TV i streamingi', desc:'120+ kanałów, dekoder 4K i Amazon Prime w pakiecie', mode:'multi',
    lead:'Wybierz jeden lub kilka pakietów', options:[
     /* price = umowa na 24 mies., priceBez = umowa bezterminowa; group = można mieć tylko 1 pakiet z grupy */
@@ -2463,7 +2477,7 @@ function renderServices(){
       const list = s.id === 'mob'
         ? state.lines.map((l, i) => { const o = s.options.find(x => x.id === l.plan); return `<li class="mline"><img class="mic" src="assets/cart/ic-sim.svg" alt=""><span>Numer ${i + 1} · ${o.name} ${o.meta}<small>${lineLabel(l)} · ${SIM_TYPE[l.sim]}</small><small>${stepsText(o.steps)}</small></span>
             <span class="hbtns"><button class="lnk3" type="button" data-line-edit="${l.id}">Zmień</button><button class="lnk3" type="button" data-line-del="${l.id}">Usuń</button></span>${lineExtras(l)}${addDevice(i + 1, l)}</li>`; }).join('')
-        : items.map(o => `<li><span>${o.name}<small>${o.id === 'pakL' && state.pakL ? [...PAK_L_FIXED, ...state.pakL.map(id => PAK_L_OPTS.find(x => x.id === id).name)].join(' · ') : o.meta}${s.id === 'tv' && tvPlan(o) === 'bez' ? ' · umowa bezterminowa' : ''}</small></span><span class="num">${o.per === 'm' ? stepsText(optSteps(o)) : fmt(o.price) + perLabel(o)}</span></li>`).join('');
+        : items.map(o => `<li><span>${o.name}<small>${o.id === 'pakL' && state.pakL ? [...PAK_L_FIXED.map(x => x.name), ...state.pakL.map(id => PAK_L_OPTS.find(x => x.id === id).name)].join(' · ') : o.meta}${s.id === 'tv' && tvPlan(o) === 'bez' ? ' · umowa bezterminowa' : ''}</small></span><span class="num">${o.per === 'm' ? stepsText(optSteps(o)) : fmt(o.price) + perLabel(o)}</span></li>`).join('');
       return `<section class="card" id="svc-${s.id}" style="--tint:var(${s.id === 'mob' ? '--t-dek' : s.tint})" aria-label="${s.title}">
         <div class="card-h"><h2>${s.title} <span class="incart">✓ W koszyku</span></h2><button class="btn-s" type="button" data-remove="${s.id}">Usuń</button></div>
         <div class="card-b">
@@ -3027,7 +3041,7 @@ function openPanel(id, opener){
   $('p-body').innerHTML = panelSvc.options.map(o => `
     <label class="tile ${type==='checkbox'?'cb':''}"><input type="${type}" name="opt" id="opt-${o.id}" value="${o.id}" ${pre.includes(o.id)?'checked':''}>
       <span class="ind" aria-hidden="true"></span>
-      <span><span class="t">${o.name}${o.tag ? `<span class="mtag">${o.tag}</span>` : ''}</span><span class="d" style="display:block">${o.meta}</span>${o.id === 'pakS' ? `<span class="tl-up">Dopłać ${zl(svcById('pak').options[1].price - o.price)}/mies. i wybierz 3 dodatkowe usługi w Paczce L</span>` : ''}${o.more ? `<span class="d tl-u">${state.period === 'bez' ? 'Umowa bezterminowa' : 'Umowa na 24 mies.'}</span><button class="tl-more" type="button" aria-expanded="false" data-tl-more>Szczegóły</button><ul class="tl-list" hidden>${o.more.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}</span>
+      <span><span class="t">${o.name}${o.tag ? `<span class="mtag">${o.tag}</span>` : ''}</span><span class="d" style="display:block">${o.meta}</span>${o.id === 'pakS' ? `<span class="tl-up">Dopłać ${zl(svcById('pak').options[1].price - o.price)}/mies. i wybierz 3 dodatkowe usługi w Paczce L</span>` : ''}${o.more || o.contract ? `<span class="d tl-u">${state.period === 'bez' ? 'Umowa bezterminowa' : 'Umowa na 24 mies.'}</span>` : ''}${o.more ? `<button class="tl-more" type="button" aria-expanded="false" data-tl-more>Szczegóły</button><ul class="tl-list" hidden>${o.more.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}</span>
       <span class="p num">${fmt(o.price)}<small>${o.per==='m'?'/mies.':'jednorazowo'}${isB2B ? (gross ? ' brutto' : ' + VAT') : ''}</small></span></label>`).join('');
   if (id === 'pak'){
     pkPick = (state.added.pak || []).includes('pakL') ? [...(state.pakL || [])] : [];
@@ -3052,12 +3066,20 @@ function renderPkl(){
   const n = pkPick.length, full = n >= PAK_L_N;
   $('pkl').innerHTML = `
     <p class="pkl-h">W cenie zawsze</p>
-    <ul class="pkl-fix">${PAK_L_FIXED.map(x => `<li><span class="pkl-lock" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg></span><b>${x}</b><small>w pakiecie</small></li>`).join('')}</ul>
+    <ul class="pkl-fix">${PAK_L_FIXED.map(x => `<li><div class="pkl-fr"><span class="pkl-lock" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg></span><b>${x.name}</b><small>w pakiecie</small></div>
+      <p class="pkl-d">${x.d}</p><button class="pkl-more" type="button" data-pkl-more="${x.id}" aria-expanded="${pklOpen.has(x.id)}">Szczegóły</button>
+      <div class="pkl-det" ${pklOpen.has(x.id) ? '' : 'hidden'}>${x.more}</div></li>`).join('')}</ul>
     <div class="pkl-h2"><p class="pkl-h">Wybierz ${PAK_L_N} z ${PAK_L_OPTS.length}</p><span class="pkl-cnt ${full ? 'ok' : ''}" aria-live="polite">Wybrano ${n} z ${PAK_L_N}</span></div>
     ${PAK_L_OPTS.map(o => { const on = pkPick.includes(o.id), dis = full && !on; return `<label class="pkl-o ${dis ? 'dis' : ''}"><input type="checkbox" name="pkl" value="${o.id}" ${on ? 'checked' : ''} ${dis ? 'disabled' : ''}><span class="ind" aria-hidden="true"></span>
       <span><b>${o.name}</b>${o.pop ? '<span class="pkl-pop">Najczęściej wybierane</span>' : ''}<small>${o.d}</small></span></label>`; }).join('')}
     ${full ? '<p class="pkl-hint">Chcesz inną usługę? Odznacz jedną z wybranych.</p>' : ''}`;
 }
+$('p-body').addEventListener('click', e => {
+  const b = e.target.closest('[data-pkl-more]'); if (!b) return;
+  const id = b.dataset.pklMore, on = !pklOpen.has(id);
+  on ? pklOpen.add(id) : pklOpen.delete(id);
+  b.setAttribute('aria-expanded', on); b.nextElementSibling.hidden = !on;
+});
 $('p-body').addEventListener('change', e => {
   if (e.target.name !== 'pkl') return;
   const v = e.target.value;
