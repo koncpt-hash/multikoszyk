@@ -2498,9 +2498,13 @@ function announceCart(){
   toast(`W koszyku: Światłowód ${sp.name}${extra.length ? ' + ' + extra.join(', ') : ''}`, false);
 }
 
+/* what a package holds and costs, for the Internet card */
+const pakServices = o => o.id === 'pakL' && state.pakL ? [...PAK_L_FIXED.map(x => x.name), ...state.pakL.map(id => pklName(PAK_L_OPTS.find(x => x.id === id), state.pakLQty || {}))].join(' · ') : PAK_L_FIXED.map(x => x.name).join(' · ');
+const pakTotal = o => o.price + (o.id === 'pakL' ? pakExtras().reduce((a, r) => a + r.steps[0][2], 0) : 0);
 function renderSpeeds(){
   const sp = speedDef(state.speed, state.period), md = curModem();
   const inst = state.inst.map(id => INSTALL.find(x => x.id === id).name);
+  const pk = isB2B && (state.added.pak || []).length ? svcById('pak').options.find(o => o.id === state.added.pak[0]) : null;
   $('speeds').innerHTML = `
     <div class="net-box">
       <dl class="nrows">
@@ -2508,13 +2512,15 @@ function renderSpeeds(){
         <div><dt>Umowa</dt><dd>${state.period === 'bez' ? 'Bezterminowa' : '24 miesiące'}</dd></div>
         <div><dt>Modem</dt><dd>${md.name}<small>${fmt(modemPrice(md, state.speed))}/mies.</small></dd></div>
         <div><dt>Instalacja</dt><dd>Technik w cenie<small>${inst.length ? inst.join(', ') : 'bez dodatków'}</small></dd></div>
+        ${pk ? `<div><dt>Paczka usług</dt><dd>${pk.name}<small>${pakServices(pk)}</small><small>${fmt(pakTotal(pk))}/mies.</small></dd><button class="btn-s" type="button" id="pak-change">Zmień</button></div>` : ''}
       </dl>
       ${pBadges('net')}
-      ${feesHtml('net', [{label:`Abonament za Światłowód ${sp.name}`, steps:sp.steps}, {label:`Modem ${md.name}`, steps:flat(modemPrice(md, state.speed))}], state.period,
+      ${feesHtml('net', [{label:`Abonament za Światłowód ${sp.name}`, steps:sp.steps}, {label:`Modem ${md.name}`, steps:flat(modemPrice(md, state.speed))}, ...(pk ? [{label:pk.name, steps:optSteps(pk)}, ...(pk.id === 'pakL' ? pakExtras() : [])] : [])], state.period,
         [{label:'Opłata aktywacyjna', n:actFee()}, ...state.inst.map(id => { const x = INSTALL.find(i => i.id === id); return {label:x.name, n:x.price}; })],
         state.period === '24' ? AFTER_24.net : null)}
     </div>`;
   $('net-change').addEventListener('click', e => openPanel('net', e.currentTarget));
+  $('pak-change')?.addEventListener('click', e => openPanel('pak', e.currentTarget));
   renderNets();
 }
 
@@ -2564,7 +2570,7 @@ function renderServices(){
     + devOffer
     + group('To może ci się przydać', '', ['multi']);
   /* services keep the order they were added in, so the newest sits right above 'Dodaj do pakietu' */
-  const added = [...mineBefore.filter(has), ...ORDER.filter(id => has(id) && !mineBefore.includes(id))];
+  const added = [...mineBefore.filter(has), ...ORDER.filter(id => has(id) && !mineBefore.includes(id))].filter(id => !(isB2B && id === 'pak'));
   $('services').innerHTML = added.map(id => card(svcById(id))).join('') + devCard
     + (offers ? `<div class="offers"><h2 class="zone-h">Dodaj do pakietu</h2>${offers}</div>` : '');
   const n = 1 + state.nets.length + ORDER.filter(has).length;
@@ -2666,8 +2672,8 @@ function renderSummary(){
       }
       const label = op.name + (s.id === 'tv' && tvPlan(op) === 'bez' ? ' (bezterminowo)' : '');
       if (op.per === 'm') rows.push({key:`${s.id}:${id}`, label, steps:optSteps(op)});
-      if (id === 'pakL') rows.push(...pakExtras());
       else o.push({key:`${s.id}:${id}`, label, value:fmt(op.price), n:op.price});
+      if (id === 'pakL') rows.push(...pakExtras());
     }
   }
   if (mob.length) rows.push(...mobDiscounts(mob));
@@ -2763,7 +2769,7 @@ $('pay').addEventListener('click', e => {
   payOpen.has(b.dataset.pg) ? payOpen.delete(b.dataset.pg) : payOpen.add(b.dataset.pg);
   renderSummary(); $('pay').querySelector(`[data-pg="${b.dataset.pg}"]`)?.focus();
 });
-function renderAll(){ $('cli-note').hidden = !isClient || isB2B; $('b2b-note').hidden = $('vat-sw').hidden = !isB2B;
+function renderAll(){ if (isB2B) renderSpeeds(); $('cli-note').hidden = !isClient || isB2B; $('b2b-note').hidden = $('vat-sw').hidden = !isB2B;
   $('b2b-vat').textContent = gross ? 'Wszystkie ceny w koszyku są cenami brutto – zawierają 23% VAT.' : 'Wszystkie ceny w koszyku są cenami netto – do kwot doliczymy 23% VAT.';
   $('vat-sw').querySelectorAll('[data-vat]').forEach(b => b.setAttribute('aria-pressed', (b.dataset.vat === 'gross') === gross)); renderServices(); renderSummary(); }
 
@@ -3488,7 +3494,7 @@ function closePanel(){
   $('scrim').classList.remove('on'); $('panel').classList.remove('on'); document.body.classList.remove('side-open');
   setTimeout(() => { $('scrim').hidden = true; $('panel').hidden = true; }, 300);
   const id = panelSvc && panelSvc.id; panelSvc = null; pakFromLP = false;
-  const target = id && document.querySelector(id === 'net2' ? '#add-net' : id === 'net' ? '#net-change' : `#svc-${id} [data-open]`);
+  const target = id && document.querySelector(id === 'net2' ? '#add-net' : id === 'net' ? '#net-change' : id === 'pak' ? '#pak-change' : `#svc-${id} [data-open]`);
   (target || lastFocus)?.focus({preventScroll:true});
 }
 function commit(){
