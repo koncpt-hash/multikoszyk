@@ -939,11 +939,13 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .p-more{margin-top:6px;border:0;background:none;padding:0;font-weight:700;color:#232323;text-decoration:underline;text-underline-offset:3px}
 .tile .tl-u{display:block;margin-top:6px}
 .tl-up{display:block;margin-top:6px;font-size:12px;line-height:17px;font-weight:700;color:#d35200}
-.pkl{margin:-4px 0 4px;border:2px solid #ff7900;border-top:0;border-radius:0 0 8px 8px;padding:14px 16px 16px;background:#fff;display:flex;flex-direction:column;gap:8px}
+/* the expanded part sits in a light grey area under the selected package; a small notch points at it */
+.pkl{position:relative;margin:4px 0 4px;border:0;border-radius:8px;padding:16px;background:#f4f4f4;display:flex;flex-direction:column;gap:8px}
+.pkl::before{content:"";position:absolute;top:-8px;left:22px;border:8px solid transparent;border-top:0;border-bottom-color:#f4f4f4}
 .pkl[hidden]{display:none}
 .pkl-h{font-weight:700;font-size:14px;line-height:20px;margin:0}
 .pkl-h2{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}
-.pkl-cnt{font-size:12px;font-weight:700;padding:2px 8px;border-radius:12px;background:#eee;color:#232323;white-space:nowrap}
+.pkl-cnt{font-size:12px;font-weight:700;padding:2px 8px;border-radius:12px;background:#fff;color:#232323;white-space:nowrap}
 .pkl-cnt.ok{background:#32c832;color:#fff}
 .pkl-fix{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
 .pkl-fix > li{display:flex;flex-direction:column;gap:4px;background:#fff;border:1px solid #eee;border-radius:6px;padding:10px;font-size:14px}
