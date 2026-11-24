@@ -3069,12 +3069,12 @@ function selectedInPanel(){ return [...$('p-body').querySelectorAll('input[name=
 function renderPkl(){
   const n = pkPick.length, full = n >= PAK_L_N;
   $('pkl').innerHTML = `
-    <p class="pkl-h">W cenie zawsze</p>
+    <p class="pkl-h">W pakiecie dwie usługi na stałe</p>
     ${PAK_L_FIXED.map(x => `<div class="pkl-o fix"><input type="checkbox" name="pklfix" value="${x.id}" checked disabled aria-label="${x.name} – w pakiecie"><span class="ind" aria-hidden="true"></span>
       <span><b>${x.name}</b><span class="pkl-pop">W pakiecie</span><small>${x.d}</small>
         <button class="pkl-more" type="button" data-pkl-more="${x.id}" aria-expanded="${pklOpen.has(x.id)}">Szczegóły</button>
         <span class="pkl-det" ${pklOpen.has(x.id) ? '' : 'hidden'}>${x.more}</span></span></div>`).join('')}
-    <div class="pkl-h2"><p class="pkl-h">Wybierz ${PAK_L_N} z ${PAK_L_OPTS.length}</p><span class="pkl-cnt ${full ? 'ok' : ''}" aria-live="polite">Wybrano ${n} z ${PAK_L_N}</span></div>
+    <div class="pkl-h2"><p class="pkl-h">Dobierz pozostałe ${PAK_L_N} z ${PAK_L_OPTS.length}</p><span class="pkl-cnt ${full ? 'ok' : ''}" aria-live="polite">Wybrano ${n} z ${PAK_L_N}</span></div>
     ${PAK_L_OPTS.map(o => { const on = pkPick.includes(o.id), dis = full && !on; return `<label class="pkl-o ${dis ? 'dis' : ''}"><input type="checkbox" name="pkl" value="${o.id}" ${on ? 'checked' : ''} ${dis ? 'disabled' : ''}><span class="ind" aria-hidden="true"></span>
       <span><b>${o.name}</b>${o.pop ? '<span class="pkl-pop">Najczęściej wybierane</span>' : ''}<small>${o.d}</small></span></label>`; }).join('')}
     ${full ? '<p class="pkl-hint">Chcesz inną usługę? Odznacz jedną z wybranych.</p>' : ''}`;
