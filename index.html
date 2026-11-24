@@ -961,6 +961,10 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .pkl-o{display:flex;gap:10px;align-items:flex-start;background:#fff;border:2px solid #eee;border-radius:6px;padding:10px;cursor:pointer}
 .pkl-o:has(input:checked){border-color:#ff7900}
 .pkl-o.dis{opacity:.45;cursor:not-allowed}
+.pkl-o.fix{cursor:default}
+.pkl-o.fix:has(input:checked){border-color:#eee}
+.pkl-o.fix input:checked + .ind{background:#999;border-color:#999}
+.pkl-o .pkl-more{margin-top:2px}
 .pkl-o input{position:absolute;opacity:0;width:1px;height:1px}
 .pkl-o .ind{width:20px;height:20px;border:2px solid #ccc;border-radius:4px;flex:none;display:grid;place-items:center;margin-top:1px}
 .pkl-o input:checked + .ind{background:#ff7900;border-color:#ff7900}
@@ -1858,7 +1862,7 @@ const ICONS = {
 /* Paczka L: 2 services always included, the customer picks 3 of 5 before adding it */
 const PAK_L_FIXED = [
   {id:'ct', name:'CyberTarcza stacjonarna rozszerzona', d:'Cybertarcza wykrywa i blokuje zagrożenia z sieci, zanim dotrą do Twoich firmowych urządzeń.',
-   more:`<b>Cybertarcza Stacjonarna Rozszerzona</b><small>W ramach paczki S i L</small><p>Zabezpiecz dane Twojej firmy. Cybertarcza wykrywa i blokuje zagrożenia z sieci, zanim dotrą do Twoich firmowych urządzeń. Cybertarcza to:</p>
+   more:`<p>Zabezpiecz dane Twojej firmy. Cybertarcza wykrywa i blokuje zagrożenia z sieci, zanim dotrą do Twoich firmowych urządzeń. Cybertarcza to:</p>
      <ul><li>do 20 urządzeń chronionych przed cyberatakami,</li><li>ochrona przed atakami ransomware, phishingiem, malware i botnetami,</li><li>prosta obsługa – nie wymaga cyklicznych aktualizacji, licencji czy instalowania oprogramowania.</li></ul>`},
   {id:'wz', name:'Wsparcie zdalne', d:'Rozwiązywanie problemów technicznych za pomocą zdalnego logowania się w Twoim systemie.',
    more:`<p>W Twojej firmie nie działa komputer lub laptop, nie możesz prowadzić biznesu, a pracownicy czekają? Awarii sprzętu IT nigdy nie możesz przewidzieć. W przypadku problemów z komputerem lub oprogramowaniem nasi informatycy pomogą Ci rozwiązać problem techniczny za pomocą zdalnego logowania się w Twoim systemie.</p>`}];
@@ -3066,9 +3070,10 @@ function renderPkl(){
   const n = pkPick.length, full = n >= PAK_L_N;
   $('pkl').innerHTML = `
     <p class="pkl-h">W cenie zawsze</p>
-    <ul class="pkl-fix">${PAK_L_FIXED.map(x => `<li><div class="pkl-fr"><span class="pkl-lock" aria-hidden="true"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg></span><b>${x.name}</b><small>w pakiecie</small></div>
-      <p class="pkl-d">${x.d}</p><button class="pkl-more" type="button" data-pkl-more="${x.id}" aria-expanded="${pklOpen.has(x.id)}">Szczegóły</button>
-      <div class="pkl-det" ${pklOpen.has(x.id) ? '' : 'hidden'}>${x.more}</div></li>`).join('')}</ul>
+    ${PAK_L_FIXED.map(x => `<div class="pkl-o fix"><input type="checkbox" name="pklfix" value="${x.id}" checked disabled aria-label="${x.name} – w pakiecie"><span class="ind" aria-hidden="true"></span>
+      <span><b>${x.name}</b><span class="pkl-pop">W pakiecie</span><small>${x.d}</small>
+        <button class="pkl-more" type="button" data-pkl-more="${x.id}" aria-expanded="${pklOpen.has(x.id)}">Szczegóły</button>
+        <span class="pkl-det" ${pklOpen.has(x.id) ? '' : 'hidden'}>${x.more}</span></span></div>`).join('')}
     <div class="pkl-h2"><p class="pkl-h">Wybierz ${PAK_L_N} z ${PAK_L_OPTS.length}</p><span class="pkl-cnt ${full ? 'ok' : ''}" aria-live="polite">Wybrano ${n} z ${PAK_L_N}</span></div>
     ${PAK_L_OPTS.map(o => { const on = pkPick.includes(o.id), dis = full && !on; return `<label class="pkl-o ${dis ? 'dis' : ''}"><input type="checkbox" name="pkl" value="${o.id}" ${on ? 'checked' : ''} ${dis ? 'disabled' : ''}><span class="ind" aria-hidden="true"></span>
       <span><b>${o.name}</b>${o.pop ? '<span class="pkl-pop">Najczęściej wybierane</span>' : ''}<small>${o.d}</small></span></label>`; }).join('')}
