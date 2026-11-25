@@ -1920,8 +1920,10 @@ let pkPick = [], pkQty = {};
 const PAK_UP = [
   {id:'bak', name:'Backup 250 GB', icon:'cloud.svg', price:10, ds:'250GB przestrzeni w chmurze na przechowywanie danych'},
   {id:'ip', name:'Stały adres IP', icon:'ip.svg', price:15, ds:'Wzmocnij wiarygodność i swobodnie prowadź swój biznes online', note:'Bez umowy terminowej. Wyłączasz, kiedy chcesz.'}];
-const pakUpFor = (pid, pick = []) => pid === 'pakS' ? PAK_UP : pid === 'pakL' ? PAK_UP.filter(u => u.id === 'bak' && !pick.includes('bak')) : [];
-const pakUpRows = (pid, pick, ups) => pakUpFor(pid, pick).filter(u => (ups || []).includes(u.id)).map(u => ({key:`pakup:${u.id}`, label:u.name, steps:flat(u.price)}));
+/* Paczka L always shows the step; if Backup is already one of its 3, the card says so and can't be added (to discuss with the business) */
+const pakUpFor = (pid, pick = []) => pid === 'pakS' ? PAK_UP : pid === 'pakL' ? PAK_UP.filter(u => u.id === 'bak') : [];
+const pakUpIn = (u, pid, pick = []) => pid === 'pakL' && pick.includes(u.id);
+const pakUpRows = (pid, pick, ups) => pakUpFor(pid, pick).filter(u => !pakUpIn(u, pid, pick) && (ups || []).includes(u.id)).map(u => ({key:`pakup:${u.id}`, label:u.name, steps:flat(u.price)}));
 let pkStep = 'conf', pkUp = [];
 const pklQ = (o, qty = pkQty) => o.qty ? (qty[o.id] || o.qty[0]) : 1;
 const ipWord = n => n === 1 ? 'adres' : n < 5 ? 'adresy' : 'adresów';
@@ -3166,11 +3168,11 @@ function renderPkUp(){
   $('pk-s2').innerHTML = `<section class="ps"><div class="dv-top"><button class="dv-back" type="button" id="pk-back">← Wstecz</button><p class="mlab">Krok 2 z 2</p></div>
       <div class="mp-sum"><img src="assets/vas/safety.svg" alt=""><div><b>${o.name}</b><span>${fmt(o.price + (pid === 'pakL' ? pakExtras(pkPick, pkQty).reduce((a, r) => a + r.steps[0][2], 0) : 0))}/mies.${vatTag()}</span></div></div></section>
     <section class="ps pvas pk-up"><h3>Usługi dodatkowe</h3><p class="mlab">Uzupełnij paczkę · możesz je zmienić w każdej chwili</p>
-      <div class="car"><button class="nav l" type="button" aria-label="Poprzednie usługi" hidden><img src="assets/tv/arrow-left.svg" alt=""></button><div class="track">${ups.map(u => { const on = pkUp.includes(u.id); return `<article class="vas ${on ? 'on' : ''}" aria-label="${u.name}">
+      <div class="car"><button class="nav l" type="button" aria-label="Poprzednie usługi" hidden><img src="assets/tv/arrow-left.svg" alt=""></button><div class="track">${ups.map(u => { const inPak = pakUpIn(u, pid, pkPick), on = !inPak && pkUp.includes(u.id); return `<article class="vas ${on ? 'on' : ''}" aria-label="${u.name}">
         <div class="card2"><div class="im blank"><span class="lg"><img src="assets/vas/${u.icon}" alt=""></span></div>
           <div class="ct"><div class="h"><h3>${u.name}</h3><span class="ar" aria-hidden="true"><img src="assets/tv/arrow-right.svg" alt=""></span></div><p class="ds">${u.ds}</p><hr>
             <div class="plans"><div class="one"><b>${u.note || per}</b><div class="ln"><span>Od 1. mies.</span><b>${fmt(u.price)}/mies.${vatTag()}</b></div></div></div>
-            <button class="add" type="button" data-pkup="${u.id}" aria-pressed="${on}">${on ? 'Dodano – usuń' : 'Dodaj'}<img src="assets/tv/plus.svg" alt=""></button></div></div></article>`; }).join('')}</div>
+            ${inPak ? `<button class="add" type="button" disabled>Masz już w Paczce L</button>` : `<button class="add" type="button" data-pkup="${u.id}" aria-pressed="${on}">${on ? 'Dodano – usuń' : 'Dodaj'}<img src="assets/tv/plus.svg" alt=""></button>`}</div></div></article>`; }).join('')}</div>
         <button class="nav r" type="button" aria-label="Następne usługi" hidden><img src="assets/tv/arrow-right.svg" alt=""></button><div class="ind" hidden></div></div>
     </section>`;
   const car = $('pk-s2').querySelector('.car');
@@ -3599,7 +3601,7 @@ function commit(){
     return;
   }
   if (s.id === 'pak' && pkStep === 'conf' && sel[0] && pakUpFor(sel[0], pkPick).length) return pkGo('vas');
-  const upKeep = s.id === 'pak' && sel[0] ? pakUpFor(sel[0], pkPick).map(u => u.id).filter(id => pkUp.includes(id)) : [];
+  const upKeep = s.id === 'pak' && sel[0] ? pakUpFor(sel[0], pkPick).filter(u => !pakUpIn(u, sel[0], pkPick)).map(u => u.id).filter(id => pkUp.includes(id)) : [];
   if (pakFromLP){
     const id = sel[0];
     lpb.pak = !!id; if (id) lpb.pakId = id;
