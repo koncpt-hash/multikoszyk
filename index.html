@@ -579,8 +579,6 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .pvas .car .nav.l{left:4px}.pvas .car .nav.r{right:4px}
 .pvas .car .ind{margin-top:4px}
 .pvas .vas{width:min(300px,76vw)}
-.pk-up .car .track{flex-direction:column;overflow:visible;padding-top:0;margin-top:0}
-.pk-up .vas{width:auto}
 .pk-s{display:flex;flex-direction:column;gap:12px}
 .pk-s[hidden]{display:none}
 .pvas .vas .im{height:112px}
@@ -3164,15 +3162,19 @@ const pklFixed = () => `
 function renderPkUp(){
   const pid = selectedInPanel()[0], o = svcById('pak').options.find(x => x.id === pid), ups = pakUpFor(pid, pkPick);
   const per = (pakFromLP ? lpb.period : state.period) === 'bez' ? 'Umowa bezterminowa' : 'Umowa na 24 miesiące';
+  const keepX = $('pk-s2').querySelector('.track')?.scrollLeft || 0;
   $('pk-s2').innerHTML = `<section class="ps"><div class="dv-top"><button class="dv-back" type="button" id="pk-back">← Wstecz</button><p class="mlab">Krok 2 z 2</p></div>
       <div class="mp-sum"><img src="assets/vas/safety.svg" alt=""><div><b>${o.name}</b><span>${fmt(o.price + (pid === 'pakL' ? pakExtras(pkPick, pkQty).reduce((a, r) => a + r.steps[0][2], 0) : 0))}/mies.${vatTag()}</span></div></div></section>
     <section class="ps pvas pk-up"><h3>Usługi dodatkowe</h3><p class="mlab">Uzupełnij paczkę · możesz je zmienić w każdej chwili</p>
-      <div class="car"><div class="track">${ups.map(u => { const on = pkUp.includes(u.id); return `<article class="vas ${on ? 'on' : ''}" aria-label="${u.name}">
+      <div class="car"><button class="nav l" type="button" aria-label="Poprzednie usługi" hidden><img src="assets/tv/arrow-left.svg" alt=""></button><div class="track">${ups.map(u => { const on = pkUp.includes(u.id); return `<article class="vas ${on ? 'on' : ''}" aria-label="${u.name}">
         <div class="card2"><div class="im blank"><span class="lg"><img src="assets/vas/${u.icon}" alt=""></span></div>
-          <div class="ct"><div class="h"><h3>${u.name}</h3></div><p class="ds">${u.ds}</p><hr>
+          <div class="ct"><div class="h"><h3>${u.name}</h3><span class="ar" aria-hidden="true"><img src="assets/tv/arrow-right.svg" alt=""></span></div><p class="ds">${u.ds}</p><hr>
             <div class="plans"><div class="one"><b>${u.note || per}</b><div class="ln"><span>Od 1. mies.</span><b>${fmt(u.price)}/mies.${vatTag()}</b></div></div></div>
-            <button class="add" type="button" data-pkup="${u.id}" aria-pressed="${on}">${on ? 'Dodano – usuń' : 'Dodaj'}<img src="assets/tv/plus.svg" alt=""></button></div></div></article>`; }).join('')}</div></div>
+            <button class="add" type="button" data-pkup="${u.id}" aria-pressed="${on}">${on ? 'Dodano – usuń' : 'Dodaj'}<img src="assets/tv/plus.svg" alt=""></button></div></div></article>`; }).join('')}</div>
+        <button class="nav r" type="button" aria-label="Następne usługi" hidden><img src="assets/tv/arrow-right.svg" alt=""></button><div class="ind" hidden></div></div>
     </section>`;
+  const car = $('pk-s2').querySelector('.car');
+  setTimeout(() => { car.querySelector('.track').scrollLeft = keepX; syncCar(car); });
 }
 function pkGo(step){
   pkStep = step;
@@ -3184,6 +3186,8 @@ function pkGo(step){
 $('p-body').addEventListener('click', e => {
   if (panelSvc?.id !== 'pak') return;
   if (e.target.closest('#pk-back')) return pkGo('conf');
+  const n = e.target.closest('.pk-up .nav');
+  if (n){ const t = n.parentElement.querySelector('.track'); t.scrollBy({left:(n.classList.contains('l') ? -1 : 1) * t.clientWidth * .8, behavior:'smooth'}); return; }
   const b = e.target.closest('[data-pkup]'); if (!b) return;
   const id = b.dataset.pkup; pkUp = pkUp.includes(id) ? pkUp.filter(x => x !== id) : [...pkUp, id];
   renderPkUp(); updatePanelFoot(); $('pk-s2').querySelector(`[data-pkup="${id}"]`)?.focus({preventScroll:true});
