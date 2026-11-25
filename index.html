@@ -983,7 +983,11 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .pkl-o b{font-size:18px;line-height:24px}
 /* package names in the Paczki usług sidebar use the same size as the service names */
 .tile:has(input[name="opt"][value^="pak"]) .t{font-size:18px;line-height:24px}
-.pkl-pr{font-size:13px;line-height:18px;font-weight:700;color:#232323;margin-top:2px}
+.pkl-pr{font-size:12px;line-height:17px;font-weight:500;color:#555;margin-top:2px}
+.pkl-o .pkl-pr b{font-size:12px;line-height:17px;font-weight:700;color:#232323}
+.pkl-q > span:first-child{display:flex;flex-direction:column}
+.pkl-x{font-style:normal;font-size:12px;line-height:17px;color:#666}
+.pkl-x.on{font-weight:700;color:#232323}
 .pkl-q{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px;font-size:13px;color:#444}
 .pkl-st{display:flex;align-items:center;border:2px solid #ccc;border-radius:6px;overflow:hidden}
 .pkl-st button{width:32px;height:30px;border:0;background:#fff;font-size:18px;line-height:1;font-weight:700;color:#232323}
@@ -1890,7 +1894,7 @@ const PAK_L_FIXED = [
    more:`<p>W Twojej firmie nie działa komputer lub laptop, nie możesz prowadzić biznesu, a pracownicy czekają? Awarii sprzętu IT nigdy nie możesz przewidzieć. W przypadku problemów z komputerem lub oprogramowaniem nasi informatycy pomogą Ci rozwiązać problem techniczny za pomocą zdalnego logowania się w Twoim systemie.</p>`}];
 const pklOpen = new Set();
 const PAK_L_OPTS = [
-  {id:'ip', name:'Stały adres IP', qty:[1, 4, 8], qlab:'Liczba adresów IP', d:'Do wyboru 1, 4 lub 8 stałych adresów IP dla Twojej firmy.',
+  {id:'ip', name:'Stały adres IP', qty:[1, 4, 8], step:11, qlab:'Liczba adresów IP', d:'Do wyboru 1, 4 lub 8 stałych adresów IP dla Twojej firmy.',
    more:`<p>Wzmocnij wiarygodność firmy i swobodnie prowadź swój biznes online. Stały adres IP zapewni Ci:</p>
      <ul><li>stabilną pracę w sieci,</li><li>możliwość podłączenia urządzeń sieciowych, np. drukarek, skanerów,</li><li>niezawodną pracę serwerów WWW,</li><li>możliwość wdrożenia w Twojej firmie monitoringu – kamery IP na recepcji czy w magazynie.</li></ul>
      <p>To Ty decydujesz, ile adresów IP potrzebujesz – 1, 4 czy 8.</p>`},
@@ -1899,10 +1903,10 @@ const PAK_L_OPTS = [
      <p>Zapewniamy gotowość służb technicznych do usunięcia awarii przez 24 godziny na dobę oraz zobowiązujemy się do usunięcia uszkodzenia do 8 godzin od momentu, w którym wykryjemy awarię lub awaria zostanie do nas zgłoszona, aby zapewnić niezawodność działania Twoich usług.</p>`},
   {id:'bak', name:'Backup 250 GB', d:'250 GB przestrzeni w chmurze na przechowywanie danych.',
    more:`<p>Backup 250 GB to idealna przestrzeń do bezpiecznego przechowywania danych, takich jak pliki tekstowe, multimedia czy oprogramowanie. Dzięki chmurze masz dostęp do swoich danych na dowolnym urządzeniu połączonym z internetem.</p>`},
-  {id:'off', name:'Orange Office', price:10, qty:[1, 2, 3], qlab:'Liczba', d:'Hosting Orange Office to wirtualne biuro dla Twojej firmy.',
+  {id:'off', name:'Orange Office', step:11, qty:[1, 2, 3], qlab:'Liczba', d:'Hosting Orange Office to wirtualne biuro dla Twojej firmy.',
    more:`<p>Hosting Orange Office to wirtualne biuro dla Twojej firmy. Elastycznie dobieraj narzędzia potrzebne w Twoim biznesie:</p>
      <ul><li>kreator WWW, e-sklep, e-rezerwacje, poczta firmowa, współdzielony kalendarz, domena firmowa,</li><li>10 GB podstawowej przestrzeni na dysku w chmurze,</li><li>archiwum dokumentów, do których masz dostęp z dowolnego miejsca.</li></ul>`},
-  {id:'adv', name:'Wsparcie Zaawansowane', price:10, qty:[1, 2, 3, 4, 5], qlab:'Liczba', d:'Zdalne wsparcie informatyczne, z opcją udostępnienia sprzętu zastępczego i naprawy urządzeń w serwisie.',
+  {id:'adv', name:'Wsparcie Zaawansowane', step:11, qty:[1, 2, 3, 4, 5], qlab:'Liczba', d:'Zdalne wsparcie informatyczne, z opcją udostępnienia sprzętu zastępczego i naprawy urządzeń w serwisie.',
    more:`<p>Gdziekolwiek w Polsce prowadzisz swój biznes, zapewnimy techniczne wsparcie w każdej Twojej lokalizacji.</p>
      <p>W przypadku bardziej skomplikowanych usterek i problemów, gdzie brak jest możliwości zdalnego rozwiązania problemu, informatyk pojedzie do lokalizacji Klienta i naprawi sprzęt na miejscu.</p>
      <p>W przypadku braku możliwości naprawy na miejscu, informatyk zabiera z sobą sprzęt, zostawiając zastępczy laptop na czas naprawy.</p>`}];
@@ -1910,10 +1914,13 @@ const PAK_L_N = 3;
 let pkPick = [], pkQty = {};
 const pklQ = (o, qty = pkQty) => o.qty ? (qty[o.id] || o.qty[0]) : 1;
 const ipWord = n => n === 1 ? 'adres' : n < 5 ? 'adresy' : 'adresów';
-const pklName = (o, qty) => !o.qty ? o.name : o.id === 'ip' ? `${o.name} (${pklQ(o, qty)} ${ipWord(pklQ(o, qty))})` : `${o.name} × ${pklQ(o, qty)}`;
+const pklName = (o, qty) => !o.qty ? o.name : o.id === 'ip' ? `${o.name} (${pklQ(o, qty)} ${ipWord(pklQ(o, qty))})` : pklQ(o, qty) > 1 ? `${o.name} × ${pklQ(o, qty)} (1 w cenie)` : o.name;
+/* extra cost above the package price: IP +11 zł per 4 more addresses (1 → 4 → 8), Office and Wsparcie +11 zł per unit above the first */
+const pklExtra = (o, qty) => o.step ? o.qty.indexOf(pklQ(o, qty)) * o.step : 0;
+const pklExtraLabel = (o, qty) => o.id === 'ip' ? `${o.name} – ${pklQ(o, qty)} ${ipWord(pklQ(o, qty))} (dopłata)` : `${o.name} – ${pklQ(o, qty) - 1} ${pklQ(o, qty) - 1 === 1 ? 'dodatkowa' : 'dodatkowe'}`;
 /* paid extras chosen inside Paczka L (price per unit, per month) */
-const pakExtras = (pick = state.pakL || [], qty = state.pakLQty || {}) => PAK_L_OPTS.filter(o => o.price && pick.includes(o.id))
-  .map(o => ({key:`pakx:${o.id}`, label:pklName(o, qty), steps:flat(o.price * pklQ(o, qty))}));
+const pakExtras = (pick = state.pakL || [], qty = state.pakLQty || {}) => PAK_L_OPTS.filter(o => pick.includes(o.id) && pklExtra(o, qty) > 0)
+  .map(o => ({key:`pakx:${o.id}`, label:pklExtraLabel(o, qty), steps:flat(pklExtra(o, qty))}));
 const SERVICES = [
   {id:'pak', icon:'ct', tint:'--t-usl', title:'Paczki usług', desc:'Wsparcie IT i bezpieczeństwo dla Twojej firmy', mode:'single', b2b:true,
    lead:'', options:[
@@ -3140,8 +3147,8 @@ function renderPkl(){
     <div class="pkl-h2"><p class="pkl-h">Dobierz pozostałe ${PAK_L_N} z ${PAK_L_OPTS.length}</p><span class="pkl-cnt ${full ? 'ok' : ''}" aria-live="polite">Wybrano ${n} z ${PAK_L_N}</span></div>
     ${PAK_L_OPTS.map(o => { const on = pkPick.includes(o.id), dis = full && !on; return `<label class="pkl-o ${dis ? 'dis' : ''}"><input type="checkbox" name="pkl" value="${o.id}" ${on ? 'checked' : ''} ${dis ? 'disabled' : ''}><span class="ind" aria-hidden="true"></span>
       <span><b>${o.name}</b><small>${o.d}</small>
-        ${o.price ? `<span class="pkl-pr">${fmt(o.price)}/mies.${vatTag()}</span>` : ''}
-        ${o.qty && on ? `<span class="pkl-q"><span>${o.qlab}</span><span class="pkl-st"><button type="button" data-pq="${o.id}" data-d="-1" aria-label="Mniej" ${pklQ(o) === o.qty[0] ? 'disabled' : ''}>−</button><b aria-live="polite">${pklQ(o)}</b><button type="button" data-pq="${o.id}" data-d="1" aria-label="Więcej" ${pklQ(o) === o.qty[o.qty.length - 1] ? 'disabled' : ''}>+</button></span></span>` : ''}
+        ${o.step ? `<span class="pkl-pr"><b>${o.id === 'ip' ? '1 adres' : '1'} w cenie paczki</b> · ${o.id === 'ip' ? 'każde kolejne 4' : 'każda kolejna'} +${fmt(o.step)}/mies.${vatTag()}</span>` : ''}
+        ${o.qty && on ? `<span class="pkl-q"><span>${o.qlab}<em class="pkl-x ${pklExtra(o) ? 'on' : ''}">${pklExtra(o) ? `+${fmt(pklExtra(o))}/mies.${vatTag()}` : 'w cenie paczki'}</em></span><span class="pkl-st"><button type="button" data-pq="${o.id}" data-d="-1" aria-label="Mniej" ${pklQ(o) === o.qty[0] ? 'disabled' : ''}>−</button><b aria-live="polite">${pklQ(o)}</b><button type="button" data-pq="${o.id}" data-d="1" aria-label="Więcej" ${pklQ(o) === o.qty[o.qty.length - 1] ? 'disabled' : ''}>+</button></span></span>` : ''}
         <button class="pkl-more" type="button" data-pkl-more="${o.id}" aria-expanded="${pklOpen.has(o.id)}">${pklOpen.has(o.id) ? 'Mniej' : 'Więcej'}</button>
         <span class="pkl-det" ${pklOpen.has(o.id) ? '' : 'hidden'}>${o.more}</span></span></label>`; }).join('')}
     ${full ? '<p class="pkl-hint">Chcesz inną usługę? Odznacz jedną z wybranych.</p>' : ''}`;
