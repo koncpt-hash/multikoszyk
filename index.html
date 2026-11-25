@@ -1217,14 +1217,15 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
   .pkm-back{width:100%}
 }
 /* package ad on the B2B offer cards */
-.pk-note{margin:12px 0 0;width:100%;display:flex;gap:10px;align-items:flex-start;background:#fff3e6;border:2px solid #ffd2a8;border-radius:8px;padding:10px 12px;text-align:left}
-.pk-note img{width:28px;height:28px;flex:none;margin-top:2px}
-.pk-note > div{display:flex;flex-direction:column;gap:2px;min-width:0}
-.pk-note b{font-size:15px;line-height:20px;font-weight:700;color:#232323}
-.pk-note span{font-size:13px;line-height:18px;font-weight:500;color:#232323}
-.pk-note button{align-self:flex-start;margin-top:2px;border:0;background:none;padding:0;font-size:13px;line-height:18px;font-weight:700;color:#232323;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
-.pk-note small{font-size:12px;line-height:16px;color:#666}
-.bdish .pk-note{margin:0 0 4px}
+.pk-note{margin-top:16px;width:100%;display:flex;gap:8px;align-items:center;background:#f5f5f5;border:0;border-radius:8px;padding:8px 12px;text-align:left;cursor:pointer;color:#232323}
+.pk-note:hover{background:#eee}
+.pk-note .tx{flex:1;min-width:0;display:flex;flex-direction:column}
+.pk-note b{font-size:16px;line-height:22px;font-weight:700;color:#232323}
+.pk-note .tx > span{font-size:12px;line-height:18px;font-weight:500;color:#444}
+.pk-note u{font-weight:700;color:#232323;text-underline-offset:2px}
+.pk-note img{width:32px;height:32px;flex:none}
+.pk-note:focus-visible{outline:3px solid #f15e00;outline-offset:2px}
+.bdish .pk-note{margin-top:4px}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
@@ -1586,7 +1587,7 @@ Paczka S (10 zł/mies. netto) to:
 • Wsparcie zdalne – natychmiastowa pomoc naszych specjalistów IT, którzy w ramach bezpłatnej infolinii zdiagnozują i usuną usterkę na Twoim komputerze.
 • CyberTarcza rozszerzona – ochrona przed zagrożeniami online. Nie wymaga instalowania i aktualizacji, chroni przed różnymi rodzajami ataków.
 
-Paczka L (55 zł/mies. netto) to:
+Paczka L (44 zł/mies. netto) to:
 
 • Wsparcie zdalne
 • Wsparcie rozszerzone – w ramach którego nasz technik przyjedzie na miejsce i naprawi komputer lub laptop do 24 godzin od zgłoszenia.
@@ -2184,7 +2185,7 @@ const lpPakPrice = () => (lpPakId() === 'pakL' ? svcById('pak').options[1].price
 /* the production TV prices include Paczka S; TV is independent of packages, so it is taken out */
 const bSteps = o => bTV() ? o.tv.map(([f, t, v]) => [f, t, v ? Math.round((v - PAK_S) * 100) / 100 : v]) : o.steps;
 /* the package ad on every offer card: info only, the choice is in the cart */
-const pkNote = () => `<div class="pk-note"><img src="assets/vas/safety.svg" alt=""><div><b>Zabezpiecz firmę</b><span>CyberTarcza i wsparcie IT od ${zl(PAK_S)}/mies. + VAT</span><button type="button" data-pkm>Zobacz paczki usług</button><small>Dodasz w koszyku</small></div></div>`;
+const pkNote = () => `<button class="pk-note" type="button" data-pkm><span class="tx"><b>Zabezpiecz firmę</b><span>CyberTarcza i wsparcie IT od ${zl(PAK_S)}/mies. + VAT – dodasz w koszyku. <u>Zobacz paczki usług</u></span></span><img src="assets/vas/safety.svg" alt=""></button>`;
 const bWhen = ([f, t]) => lpb.period === 'bez' && f === 1 && t === 1 ? 'w pierwszym miesiącu' : `z rabatami, od ${f}.${t ? ` do ${t}.` : ''} mies.`;
 const bNum = v => fmt0(v).replace(' zł', '').replace(/,00$/, '');
 function renderB2B(){
@@ -2198,9 +2199,9 @@ function renderB2B(){
       <div class="prs">${st.map((s, i) => `<div class="pr"><div class="hrow">${o.od && !tv && i === 0 ? '<span class="od">od</span>' : ''}<span class="v">${bNum(s[2])}</span><span class="cur">zł/mies. + VAT</span></div><span class="fine">${bWhen(s)}</span>${o.ter && !tv ? '<span class="ter">Oferta ograniczona terytorialnie</span>' : ''}</div>`).join('')}</div>
       ${avg != null ? `<div class="avg"><div><b>${bNum(avg)} zł/mies. + VAT</b><span>Średnia cena przez 2 lata</span></div><i title="Średnia z 24 miesięcy umowy">i</i></div>` : ''}
       <div class="sp"></div>
-      ${pkNote()}
       <button class="cta" type="button" data-b-check="${o.id}">Sprawdź dostępność</button>
       <button class="cta2" type="button" data-b-expert>Dokończ z Biznes Ekspertem</button>
+      ${pkNote()}
     </div></article>`;
   }).join('');
   $('b-tv').disabled = lpb.period === 'bez'; $('b-tv').closest('.tgl').classList.toggle('dis', lpb.period === 'bez');
@@ -2377,7 +2378,6 @@ function renderAvb(){
           <button class="rab" type="button" aria-expanded="false">Ceny zawierają rabaty<img src="assets/lp/av-plus-sm.svg" alt=""></button>
           <p class="rabt" hidden>Ceny netto. Uwzględniają rabat za e‑fakturę i zgody marketingowe.</p>
         </div>
-        ${pkNote()}
         <button class="cfg" type="button" data-bcfg="${o.id}">Konfiguruj</button>
         <p class="lh">W ofercie dostaniesz:</p>
         <ul class="inc">
@@ -2390,6 +2390,7 @@ function renderAvb(){
           <li>${bullet}<span><b>60 zł + VAT</b> jednorazowa aktywacja</span>${plusBtn()}</li>
           <li>${bullet}<span><b>4,99 zł/mies. + VAT</b> za Modem ${MODEM[o.id]}</span></li>
         </ul>
+        ${pkNote()}
       </div>
     </article>`;
   }).join('');
