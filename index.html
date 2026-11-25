@@ -987,6 +987,8 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .pkl-o .pkl-pr b{font-size:12px;line-height:17px;font-weight:700;color:#232323}
 .pkl-q > span:first-child{display:flex;flex-direction:column}
 .pkl-x{font-style:normal;font-size:12px;line-height:17px;color:#666}
+.pkl-xi{display:flex;flex-direction:column;gap:2px;margin-top:6px;padding:8px 10px;border-radius:6px;background:#f4f4f4;font-size:12px;line-height:17px;color:#444}
+.pkl-o .pkl-xi b{font-size:13px;line-height:18px;color:#232323}
 .pkl-x.on{font-weight:700;color:#232323}
 .pkl-q{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:6px;font-size:13px;color:#444}
 .pkl-st{display:flex;align-items:center;border:2px solid #ccc;border-radius:6px;overflow:hidden}
@@ -3147,8 +3149,8 @@ function renderPkl(){
     <div class="pkl-h2"><p class="pkl-h">Dobierz pozostałe ${PAK_L_N} z ${PAK_L_OPTS.length}</p><span class="pkl-cnt ${full ? 'ok' : ''}" aria-live="polite">Wybrano ${n} z ${PAK_L_N}</span></div>
     ${PAK_L_OPTS.map(o => { const on = pkPick.includes(o.id), dis = full && !on; return `<label class="pkl-o ${dis ? 'dis' : ''}"><input type="checkbox" name="pkl" value="${o.id}" ${on ? 'checked' : ''} ${dis ? 'disabled' : ''}><span class="ind" aria-hidden="true"></span>
       <span><b>${o.name}</b><small>${o.d}</small>
-        ${o.step ? `<span class="pkl-pr"><b>${o.id === 'ip' ? '1 adres' : '1'} w cenie paczki</b> · ${o.id === 'ip' ? 'każde kolejne 4' : 'każda kolejna'} +${fmt(o.step)}/mies.${vatTag()}</span>` : ''}
-        ${o.qty && on ? `<span class="pkl-q"><span>${o.qlab}<em class="pkl-x ${pklExtra(o) ? 'on' : ''}">${pklExtra(o) ? `+${fmt(pklExtra(o))}/mies.${vatTag()}` : 'w cenie paczki'}</em></span><span class="pkl-st"><button type="button" data-pq="${o.id}" data-d="-1" aria-label="Mniej" ${pklQ(o) === o.qty[0] ? 'disabled' : ''}>−</button><b aria-live="polite">${pklQ(o)}</b><button type="button" data-pq="${o.id}" data-d="1" aria-label="Więcej" ${pklQ(o) === o.qty[o.qty.length - 1] ? 'disabled' : ''}>+</button></span></span>` : ''}
+        ${o.qty ? `<span class="pkl-q"><span>${o.qlab}</span><span class="pkl-st"><button type="button" data-pq="${o.id}" data-d="-1" aria-label="Mniej" ${!on || pklQ(o) === o.qty[0] ? 'disabled' : ''}>−</button><b aria-live="polite">${on ? pklQ(o) : o.qty[0]}</b><button type="button" data-pq="${o.id}" data-d="1" aria-label="Więcej" ${dis || (on && pklQ(o) === o.qty[o.qty.length - 1]) ? 'disabled' : ''}>+</button></span></span>` : ''}
+        ${o.qty && on && pklExtra(o) ? `<span class="pkl-xi">${o.id === 'ip' ? '1 adres jest w cenie paczki, każde kolejne 4 adresy są płatne dodatkowo' : '1 usługa jest w cenie paczki, każda kolejna jest płatna dodatkowo'} ${fmt(o.step)}/mies.${vatTag()}<b>Dopłata: +${fmt(pklExtra(o))}/mies.${vatTag()}</b></span>` : ''}
         <button class="pkl-more" type="button" data-pkl-more="${o.id}" aria-expanded="${pklOpen.has(o.id)}">${pklOpen.has(o.id) ? 'Mniej' : 'Więcej'}</button>
         <span class="pkl-det" ${pklOpen.has(o.id) ? '' : 'hidden'}>${o.more}</span></span></label>`; }).join('')}
     ${full ? '<p class="pkl-hint">Chcesz inną usługę? Odznacz jedną z wybranych.</p>' : ''}`;
@@ -3163,7 +3165,9 @@ $('p-body').addEventListener('click', e => {
 $('p-body').addEventListener('click', e => {
   const b = e.target.closest('[data-pq]'); if (!b) return;
   e.preventDefault();
-  const o = PAK_L_OPTS.find(x => x.id === b.dataset.pq), i = o.qty.indexOf(pklQ(o)) + +b.dataset.d;
+  const o = PAK_L_OPTS.find(x => x.id === b.dataset.pq);
+  if (!pkPick.includes(o.id)){ if (pkPick.length >= PAK_L_N) return; pkPick.push(o.id); pkQty[o.id] = o.qty[0]; }
+  const i = o.qty.indexOf(pklQ(o)) + +b.dataset.d;
   if (i < 0 || i >= o.qty.length) return;
   pkQty[o.id] = o.qty[i];
   renderPkl(); updatePanelFoot();
