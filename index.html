@@ -579,6 +579,10 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .pvas .car .nav.l{left:4px}.pvas .car .nav.r{right:4px}
 .pvas .car .ind{margin-top:4px}
 .pvas .vas{width:min(300px,76vw)}
+.pk-up .car .track{flex-direction:column;overflow:visible;padding-top:0;margin-top:0}
+.pk-up .vas{width:auto}
+.pk-s{display:flex;flex-direction:column;gap:12px}
+.pk-s[hidden]{display:none}
 .pvas .vas .im{height:112px}
 .pvas .vas .im.blank{background:#f5f5f5}
 .pvas .vas .ct .ds{font-size:13px;line-height:18px}
@@ -1914,6 +1918,13 @@ const PAK_L_OPTS = [
      <p>W przypadku braku możliwości naprawy na miejscu, informatyk zabiera z sobą sprzęt, zostawiając zastępczy laptop na czas naprawy.</p>`}];
 const PAK_L_N = 3;
 let pkPick = [], pkQty = {};
+/* upsell after "Dalej" in the Paczki usług sidebar: Paczka S gets both, Paczka L only Backup (unless Backup is already one of its 3) */
+const PAK_UP = [
+  {id:'bak', name:'Backup 250 GB', icon:'cloud.svg', price:10, ds:'250GB przestrzeni w chmurze na przechowywanie danych'},
+  {id:'ip', name:'Stały adres IP', icon:'ip.svg', price:15, ds:'Wzmocnij wiarygodność i swobodnie prowadź swój biznes online', note:'Bez umowy terminowej. Wyłączasz, kiedy chcesz.'}];
+const pakUpFor = (pid, pick = []) => pid === 'pakS' ? PAK_UP : pid === 'pakL' ? PAK_UP.filter(u => u.id === 'bak' && !pick.includes('bak')) : [];
+const pakUpRows = (pid, pick, ups) => pakUpFor(pid, pick).filter(u => (ups || []).includes(u.id)).map(u => ({key:`pakup:${u.id}`, label:u.name, steps:flat(u.price)}));
+let pkStep = 'conf', pkUp = [];
 const pklQ = (o, qty = pkQty) => o.qty ? (qty[o.id] || o.qty[0]) : 1;
 const ipWord = n => n === 1 ? 'adres' : n < 5 ? 'adresy' : 'adresów';
 const pklName = (o, qty) => !o.qty ? o.name : o.id === 'ip' ? `${o.name} (${pklQ(o, qty)} ${ipWord(pklQ(o, qty))})` : pklQ(o, qty) > 1 ? `${o.name} × ${pklQ(o, qty)} (1 w cenie)` : o.name;
@@ -2088,7 +2099,8 @@ const bTV = () => lpb.tv && lpb.period === '24';
 /* package picked on the LP (sidebar "Zmień paczkę"): Paczka S by default, or Paczka L with its 3 services */
 const lpPakId = () => lpb.pak || bTV() ? (lpb.pakId || 'pakS') : null;
 const lpPakName = () => lpPakId() === 'pakL' ? 'Paczka L' : 'Paczka S';
-const lpPakPrice = () => lpPakId() === 'pakL' ? svcById('pak').options[1].price + pakExtras(lpb.pakL || [], lpb.pakLQty || {}).reduce((a, r) => a + r.steps[0][2], 0) : PAK_S;
+const lpPakPrice = () => (lpPakId() === 'pakL' ? svcById('pak').options[1].price + pakExtras(lpb.pakL || [], lpb.pakLQty || {}).reduce((a, r) => a + r.steps[0][2], 0) : PAK_S)
+  + pakUpRows(lpPakId(), lpb.pakL || [], lpb.pakUp).reduce((a, r) => a + r.steps[0][2], 0);
 const bSteps = o => bTV() ? o.tv.map(([f, t, v]) => [f, t, v ? v + lpPakPrice() - PAK_S : v]) : o.steps.map(([f, t, v]) => [f, t, v && lpb.pak ? v + lpPakPrice() : v]);
 const bWhen = ([f, t]) => lpb.period === 'bez' && f === 1 && t === 1 ? 'w pierwszym miesiącu' : `z rabatami, od ${f}.${t ? ` do ${t}.` : ''} mies.`;
 const bNum = v => fmt0(v).replace(' zł', '').replace(/,00$/, '');
@@ -2493,7 +2505,7 @@ function startCart(){
   if (!isB2B && lp.nfx && lp.period === '24') tv.push('nfx');
   if (tv.length) state.added.tv = tv;
   const pid = isB2B ? lpPakId() : null, pak = pid ? [`pak:${pid}`] : [];
-  if (pid){ state.added.pak = [pid]; if (pid === 'pakL'){ state.pakL = [...(lpb.pakL || [])]; state.pakLQty = {...(lpb.pakLQty || {})}; } }
+  if (pid){ state.added.pak = [pid]; state.pakUp = [...(lpb.pakUp || [])]; if (pid === 'pakL'){ state.pakL = [...(lpb.pakL || [])]; state.pakLQty = {...(lpb.pakLQty || {})}; } }
   const mob = [];
   if (!isB2B && lp.mob){ const id = `l${Date.now()}`; state.lines.push({id, proc:'new', number:newNumber(), plan:LP_MOB, sim:'esim'}); syncMob(); mob.push(`mob:${id}`, 'disc'); }
   fresh = new Set(['net', ...tv.map(id => `tv:${id}`), ...pak, ...mob]);
@@ -2509,7 +2521,7 @@ function announceCart(){
 
 /* what a package holds and costs, for the Internet card */
 const pakServices = o => o.id === 'pakL' && state.pakL ? [...PAK_L_FIXED.map(x => x.name), ...state.pakL.map(id => pklName(PAK_L_OPTS.find(x => x.id === id), state.pakLQty || {}))].join(' · ') : PAK_L_FIXED.map(x => x.name).join(' · ');
-const pakTotal = o => o.price + (o.id === 'pakL' ? pakExtras().reduce((a, r) => a + r.steps[0][2], 0) : 0);
+const pakTotal = o => o.price + (o.id === 'pakL' ? pakExtras().reduce((a, r) => a + r.steps[0][2], 0) : 0) + pakUpRows(o.id, state.pakL || [], state.pakUp).reduce((a, r) => a + r.steps[0][2], 0);
 function renderSpeeds(){
   const sp = speedDef(state.speed, state.period), md = curModem();
   const inst = state.inst.map(id => INSTALL.find(x => x.id === id).name);
@@ -2521,10 +2533,10 @@ function renderSpeeds(){
         <div><dt>Umowa</dt><dd>${state.period === 'bez' ? 'Bezterminowa' : '24 miesiące'}</dd></div>
         <div><dt>Modem</dt><dd>${md.name}<small>${fmt(modemPrice(md, state.speed))}/mies.</small></dd></div>
         <div><dt>Instalacja</dt><dd>Technik w cenie<small>${inst.length ? inst.join(', ') : 'bez dodatków'}</small></dd></div>
-        ${pk ? `<div><dt>Paczka usług</dt><dd>${pk.name}<small>${pakServices(pk)}</small><small>${fmt(pakTotal(pk))}/mies.</small></dd><button class="btn-s" type="button" id="pak-change">Zmień</button></div>` : ''}
+        ${pk ? `<div><dt>Paczka usług</dt><dd>${pk.name}<small>${pakServices(pk)}${pakUpRows(pk.id, state.pakL || [], state.pakUp).map(r => ' · ' + r.label).join('')}</small><small>${fmt(pakTotal(pk))}/mies.</small></dd><button class="btn-s" type="button" id="pak-change">Zmień</button></div>` : ''}
       </dl>
       ${pBadges('net')}
-      ${feesHtml('net', [{label:`Abonament za Światłowód ${sp.name}`, steps:sp.steps}, {label:`Modem ${md.name}`, steps:flat(modemPrice(md, state.speed))}, ...(pk ? [{label:pk.name, steps:optSteps(pk)}, ...(pk.id === 'pakL' ? pakExtras() : [])] : [])], state.period,
+      ${feesHtml('net', [{label:`Abonament za Światłowód ${sp.name}`, steps:sp.steps}, {label:`Modem ${md.name}`, steps:flat(modemPrice(md, state.speed))}, ...(pk ? [{label:pk.name, steps:optSteps(pk)}, ...(pk.id === 'pakL' ? pakExtras() : []), ...pakUpRows(pk.id, state.pakL || [], state.pakUp)] : [])], state.period,
         [{label:'Opłata aktywacyjna', n:actFee()}, ...state.inst.map(id => { const x = INSTALL.find(i => i.id === id); return {label:x.name, n:x.price}; })],
         state.period === '24' ? AFTER_24.net : null)}
     </div>`;
@@ -2683,6 +2695,7 @@ function renderSummary(){
       if (op.per === 'm') rows.push({key:`${s.id}:${id}`, label, steps:optSteps(op)});
       else o.push({key:`${s.id}:${id}`, label, value:fmt(op.price), n:op.price});
       if (id === 'pakL') rows.push(...pakExtras());
+      if (s.id === 'pak') rows.push(...pakUpRows(id, state.pakL || [], state.pakUp));
     }
   }
   if (mob.length) rows.push(...mobDiscounts(mob));
@@ -3121,7 +3134,13 @@ function openPanel(id, opener, fromLP = false){
     $('opt-pakS').closest('label').insertAdjacentHTML('afterend', `<div class="pkl" id="pks" ${pre.includes('pakS') ? '' : 'hidden'}>${pklFixed()}</div>`);
     renderPkl();
     $('p-body').querySelectorAll('[name="opt"]').forEach(i => i.addEventListener('change', () => { $('pkl').hidden = !$('opt-pakL').checked; $('pks').hidden = !$('opt-pakS').checked; }));
+    pkStep = 'conf'; pkUp = [...((pakFromLP ? lpb.pakUp : state.pakUp) || [])];
     $('p-body').insertAdjacentHTML('beforeend', `<div class="pk-ai"><p>Nie wiesz, którą paczkę wybrać? Zapytaj Asystenta AI</p><div class="ai-chips">${PAK_AI.map(q => `<button class="ai-chip ai-stroke" type="button" data-ai="${q}"><img src="assets/ai/sparkles.svg" alt="">${q}</button>`).join('')}</div></div>`);
+  }
+  if (id === 'pak'){
+    const s1 = document.createElement('div'); s1.id = 'pk-s1'; s1.className = 'pk-s';
+    while ($('p-body').firstChild) s1.appendChild($('p-body').firstChild);
+    $('p-body').append(s1); $('p-body').insertAdjacentHTML('beforeend', '<div id="pk-s2" class="pk-s" hidden></div>');
   }
   $('p-body').querySelectorAll('[data-tl-more]').forEach(b => b.addEventListener('click', e => {
     e.preventDefault(); const on = b.getAttribute('aria-expanded') !== 'true'; b.setAttribute('aria-expanded', on); b.textContent = on ? 'Mniej' : 'Więcej'; b.nextElementSibling.hidden = !on;
@@ -3142,6 +3161,33 @@ const pklFixed = () => `
       <span><b>${x.name}</b><small>${x.d}</small>
         <button class="pkl-more" type="button" data-pkl-more="${x.id}" aria-expanded="${pklOpen.has(x.id)}">${pklOpen.has(x.id) ? 'Mniej' : 'Więcej'}</button>
         <span class="pkl-det" ${pklOpen.has(x.id) ? '' : 'hidden'}>${x.more}</span></span></div>`).join('')}`;
+function renderPkUp(){
+  const pid = selectedInPanel()[0], o = svcById('pak').options.find(x => x.id === pid), ups = pakUpFor(pid, pkPick);
+  const per = (pakFromLP ? lpb.period : state.period) === 'bez' ? 'Umowa bezterminowa' : 'Umowa na 24 miesiące';
+  $('pk-s2').innerHTML = `<section class="ps"><div class="dv-top"><button class="dv-back" type="button" id="pk-back">← Wstecz</button><p class="mlab">Krok 2 z 2</p></div>
+      <div class="mp-sum"><img src="assets/vas/safety.svg" alt=""><div><b>${o.name}</b><span>${fmt(o.price + (pid === 'pakL' ? pakExtras(pkPick, pkQty).reduce((a, r) => a + r.steps[0][2], 0) : 0))}/mies.${vatTag()}</span></div></div></section>
+    <section class="ps pvas pk-up"><h3>Usługi dodatkowe</h3><p class="mlab">Uzupełnij paczkę · możesz je zmienić w każdej chwili</p>
+      <div class="car"><div class="track">${ups.map(u => { const on = pkUp.includes(u.id); return `<article class="vas ${on ? 'on' : ''}" aria-label="${u.name}">
+        <div class="card2"><div class="im blank"><span class="lg"><img src="assets/vas/${u.icon}" alt=""></span></div>
+          <div class="ct"><div class="h"><h3>${u.name}</h3></div><p class="ds">${u.ds}</p><hr>
+            <div class="plans"><div class="one"><b>${u.note || per}</b><div class="ln"><span>Od 1. mies.</span><b>${fmt(u.price)}/mies.${vatTag()}</b></div></div></div>
+            <button class="add" type="button" data-pkup="${u.id}" aria-pressed="${on}">${on ? 'Dodano – usuń' : 'Dodaj'}<img src="assets/tv/plus.svg" alt=""></button></div></div></article>`; }).join('')}</div></div>
+    </section>`;
+}
+function pkGo(step){
+  pkStep = step;
+  if (step === 'vas') renderPkUp();
+  $('pk-s1').hidden = step === 'vas'; $('pk-s2').hidden = step !== 'vas';
+  $('p-body').scrollTop = 0; updatePanelFoot();
+  $(step === 'vas' ? 'pk-back' : 'opt-pakS')?.focus({preventScroll:true});
+}
+$('p-body').addEventListener('click', e => {
+  if (panelSvc?.id !== 'pak') return;
+  if (e.target.closest('#pk-back')) return pkGo('conf');
+  const b = e.target.closest('[data-pkup]'); if (!b) return;
+  const id = b.dataset.pkup; pkUp = pkUp.includes(id) ? pkUp.filter(x => x !== id) : [...pkUp, id];
+  renderPkUp(); updatePanelFoot(); $('pk-s2').querySelector(`[data-pkup="${id}"]`)?.focus({preventScroll:true});
+});
 function renderPkl(){
   const n = pkPick.length, full = n >= PAK_L_N;
   $('pkl').innerHTML = `
@@ -3183,7 +3229,8 @@ $('p-body').addEventListener('change', e => {
 function updatePanelFoot(){
   const sel = selectedInPanel().map(id => panelSvc.options.find(o => o.id === id));
   const m = sel.filter(o => o.per==='m').reduce((a,o) => a + o.price, 0)
-    + (panelSvc.id === 'pak' && sel.some(o => o.id === 'pakL') ? pakExtras(pkPick, pkQty).reduce((a, r) => a + r.steps[0][2], 0) : 0);
+    + (panelSvc.id === 'pak' && sel.some(o => o.id === 'pakL') ? pakExtras(pkPick, pkQty).reduce((a, r) => a + r.steps[0][2], 0) : 0)
+    + (panelSvc.id === 'pak' && pkStep === 'vas' && sel[0] ? pakUpRows(sel[0].id, pkPick, pkUp).reduce((a, r) => a + r.steps[0][2], 0) : 0);
   const o = sel.filter(o => o.per==='o').reduce((a,x) => a + x.price, 0);
   const editing = !!$('p-add').dataset.editing;
   $('p-sum-l').textContent = sel.length ? (editing ? 'Po zmianie do pakietu' : 'Dodajesz do pakietu') : 'Wybierz opcję';
@@ -3196,6 +3243,7 @@ function updatePanelFoot(){
     if (left > 0){ $('p-add').disabled = true; $('p-add').textContent = `Wybierz jeszcze ${left} ${left === 1 ? 'usługę' : 'usługi'}`; }
     else if (!editing) $('p-add').textContent = 'Dodaj Paczkę L';
   }
+  if (panelSvc.id === 'pak' && pkStep === 'conf' && !$('p-add').disabled && sel[0] && pakUpFor(sel[0].id, pkPick).length) $('p-add').textContent = 'Dalej';
 }
 /* ---------- device for a mobile number: list → short product card → version → payment → protection ---------- */
 /* phones and prices are example values; a color may carry a product photo (3rd item), otherwise the phone is drawn */
@@ -3546,18 +3594,21 @@ function commit(){
     else if (changed) toast('Zapisano zmiany w internecie');
     return;
   }
+  if (s.id === 'pak' && pkStep === 'conf' && sel[0] && pakUpFor(sel[0], pkPick).length) return pkGo('vas');
+  const upKeep = s.id === 'pak' && sel[0] ? pakUpFor(sel[0], pkPick).map(u => u.id).filter(id => pkUp.includes(id)) : [];
   if (pakFromLP){
     const id = sel[0];
     lpb.pak = !!id; if (id) lpb.pakId = id;
     lpb.pakL = id === 'pakL' ? [...pkPick] : null;
     lpb.pakLQty = id === 'pakL' ? Object.fromEntries(pkPick.map(x => [x, pkQty[x]]).filter(([, q]) => q)) : null;
+    lpb.pakUp = upKeep;
     closePanel(); renderB2B(); renderAvb(); avbAlign();
     toast(`Wybrano: ${lpPakName()}`, false);
     return;
   }
   undoState = JSON.parse(JSON.stringify(state));
   const before = new Set(state.added[s.id] || []);
-  if (s.id === 'pak'){ state.pakL = sel.includes('pakL') ? [...pkPick] : null; state.pakLQty = sel.includes('pakL') ? Object.fromEntries(pkPick.map(id => [id, pkQty[id]]).filter(([, q]) => q)) : null; }
+  if (s.id === 'pak'){ state.pakUp = upKeep; state.pakL = sel.includes('pakL') ? [...pkPick] : null; state.pakLQty = sel.includes('pakL') ? Object.fromEntries(pkPick.map(id => [id, pkQty[id]]).filter(([, q]) => q)) : null; }
   state.added[s.id] = sel;
   fresh = new Set(sel.filter(id => !before.has(id)).map(id => `${s.id}:${id}`));
   const names = sel.map(id => s.options.find(o => o.id === id).name).join(', ');
