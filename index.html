@@ -1185,6 +1185,42 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .avd .avg2{font-size:12px;line-height:18px;font-weight:500;color:var(--c-text-light);text-align:center}
 .avd .avg2 b{color:var(--c-text)}
 @media (max-width:640px){.avb-cards{margin-inline:calc(50% - 50vw);padding-inline:16px;scroll-padding-inline:16px;gap:12px}.avb-cards > .avd{flex-basis:min(294px,82vw)}}
+
+/* ================= package info modal ================= */
+.pkm{width:min(760px,calc(100vw - 32px));max-height:calc(100vh - 48px);padding:0;border:0;border-radius:8px;background:#fff;color:#232323;box-shadow:0 8px 32px rgba(0,0,0,.25);flex-direction:column;overflow:hidden}
+.pkm[open]{display:flex}
+.pkm::backdrop{background:rgba(0,0,0,.55)}
+.pkm-top{padding:20px 24px 12px;border-bottom:1px solid #eee;display:flex;flex-direction:column;gap:16px}
+.pkm-hd{display:flex;align-items:center;justify-content:space-between;gap:16px}
+.pkm-hd h2{margin:0;font-size:24px;line-height:30px;font-weight:700}
+.pkm-tabs{display:flex;background:#f4f4f4;border-radius:8px;padding:4px;gap:4px}
+.pkm-tabs button{flex:1;border:2px solid transparent;border-radius:6px;background:transparent;padding:10px 12px;font-weight:700;font-size:16px;color:#232323}
+.pkm-tabs button[aria-selected="true"]{background:#fff;border-color:#ff7900}
+.pkm-b{overflow:auto;padding:20px 24px;flex:1}
+.pkm-b h3{margin:0 0 6px;font-size:34px;line-height:40px;font-weight:700}
+.pkm-b .pkm-who{font-size:16px;line-height:22px;font-weight:700;color:#232323;margin:0 0 14px}
+.pkm-b h4{margin:18px 0 4px;font-size:16px;line-height:22px;font-weight:700}
+.pkm-b p{margin:6px 0;font-size:15px;line-height:22px;color:#444}
+.pkm-b p b{color:#232323}
+.pkm-b ul{margin:8px 0;padding-left:22px;display:flex;flex-direction:column;gap:8px}
+.pkm-b li{font-size:15px;line-height:22px}
+.pkm-b li::marker{color:#ff7900}
+.pkm-f{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 24px;border-top:1px solid #eee}
+.pkm-f p{margin:0;font-size:13px;color:#555}
+.pkm-back{background:#ff7900;color:#000;border:0;border-radius:8px;padding:12px 32px;font-weight:700;font-size:16px}
+@media (max-width:640px){
+  .pkm{width:100vw;max-width:100vw;height:100dvh;max-height:100dvh;margin:0;border-radius:0}
+  .pkm-top{padding:14px 16px 10px}
+  .pkm-b{padding:16px}
+  .pkm-b h3{font-size:28px;line-height:34px}
+  .pkm-f{padding:12px 16px;flex-direction:column;align-items:stretch;gap:8px}
+  .pkm-back{width:100%}
+}
+/* package ad on the B2B offer cards */
+.pk-note{margin:8px 0 0;width:100%;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:13px;line-height:18px;font-weight:500;color:#232323;text-align:center}
+.pk-note button{border:0;background:none;padding:0;font:inherit;font-weight:700;color:#232323;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.pk-note small{font-size:12px;color:#666}
+.bdish .pk-note{margin:0 0 4px}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
@@ -1436,7 +1472,6 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
           <p class="sub">Przedłużasz umowę? <a href="#b-offers">Zaloguj się</a>, by poznać oferty</p>
         </div>
         <div class="tgls">
-          <label class="tgl"><span class="t"><b>Usługi w pakiecie</b><span>Paczka S - <u>Zobacz, co zawiera</u></span></span><input type="checkbox" id="b-pak"><span class="sw" aria-hidden="true"><i></i></span></label>
           <label class="tgl"><span class="t"><b>Telewizja i Amazon Prime</b><span>230 kanałów z Extra TV <u>Szczegóły</u></span></span><input type="checkbox" id="b-tv"><span class="sw" aria-hidden="true"><i></i></span></label>
         </div>
         <div class="czas">
@@ -1466,7 +1501,7 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
           <div class="ih">
             <h3>Usługi w pakiecie, które dają <br>bezpieczeństwo i spokój Twojej firmie</h3>
             <ul><li>Wsparcie IT przy problemach z Twoim sprzętem i oprogramowaniem</li><li>CyberTarcza chroni przed zagrożeniami z sieci</li></ul>
-            <button class="btn-ter" type="button" data-b-soon>Szczegóły</button>
+            <button class="btn-ter" type="button" data-pkm>Szczegóły</button>
           </div>
           <div class="sph"></div>
         </div>
@@ -1569,6 +1604,46 @@ Paczka L (55 zł/mies. netto) to:
   <div data-clone="lp-foot"></div>
 </div>
 
+<dialog class="pkm" id="pkm" aria-labelledby="pkm-h">
+  <div class="pkm-top">
+    <div class="pkm-hd"><h2 id="pkm-h">Zobacz, co zawiera</h2><button class="icon-btn" type="button" id="pkm-x" aria-label="Zamknij"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4.5 4.5l11 11M15.5 4.5l-11 11" stroke="#232323" stroke-width="2.2" stroke-linecap="round"/></svg></button></div>
+    <div class="pkm-tabs" role="tablist">
+      <button type="button" role="tab" aria-selected="true" data-pkt="S">Paczka S</button>
+      <button type="button" role="tab" aria-selected="false" data-pkt="L">Paczka L</button>
+    </div>
+  </div>
+  <div class="pkm-b">
+    <section data-pkp="S">
+      <h3>Paczka usług S</h3>
+      <p class="pkm-who">Dla małego biura, które chce ochrony przed atakami z sieci i pomocy informatyka na odległość.</p>
+      <ul><li>w cenie 10 zł/mies. + VAT</li><li>2 usługi na stałe: CyberTarcza Rozszerzona, Wsparcie Zdalne</li></ul>
+      <h4>CyberTarcza Rozszerzona</h4>
+      <p>Ochrona firmy przed atakami z internetu:</p>
+      <ul><li>do 20 chronionych urządzeń</li><li>ochrona przed ransomware, phishingiem, malware i botnetami</li><li>nie wymaga instalacji i aktualizacji na chronionym urządzeniu, np. laptopie</li><li>możliwość blokowania konkretnych stron, np. na urządzeniach służbowych</li></ul>
+      <p>Popraw bezpieczeństwo w firmie. <b>Chroń dane, pieniądze i swoich pracowników.</b></p>
+      <h4>Wsparcie zdalne</h4>
+      <p>Informatyk na telefon – zdalne rozwiązywanie problemów związanych z komputerem i internetem.</p>
+      <ul><li>dostęp do certyfikowanych specjalistów informatyki</li><li>konsultujesz się przez telefon, informatyk może także zdalnie działać bezpośrednio na komputerze w Twojej firmie</li><li>statystycznie problem rozwiązujemy w 15 minut</li></ul>
+      <p>Zamawiając światłowód od Orange <b>zyskasz profesjonalny dział techniczny w swojej firmie.</b></p>
+      <h4>Możesz dokupić</h4>
+      <ul><li><b>Backup danych</b> – do 250 GB w cenie 10 zł/mies. + VAT</li><li><b>Stały adres IP</b> – 15 zł/mies. + VAT, bez umowy terminowej</li></ul>
+    </section>
+    <section data-pkp="L" hidden>
+      <h3>Paczka usług L</h3>
+      <p class="pkm-who">Dla firmy, która potrzebuje więcej: stałego IP, szybkiej naprawy łącza, kopii danych albo informatyka na miejscu.</p>
+      <ul><li>w cenie 44 zł/mies. + VAT</li><li>2 usługi na stałe: CyberTarcza Rozszerzona, Wsparcie Zdalne</li><li>i 3 usługi, które wybierasz z 5</li></ul>
+      <h4>Usługi na stałe</h4>
+      <ul><li><b>CyberTarcza Rozszerzona</b> – chroni do 20 urządzeń przed ransomware, phishingiem, malware i botnetami, bez instalowania oprogramowania</li><li><b>Wsparcie zdalne</b> – informatyk na telefon, który może też zdalnie działać na komputerze w Twojej firmie</li></ul>
+      <h4>Wybierasz 3 z 5</h4>
+      <ul><li><b>Stały adres IP</b> – 1, 4 lub 8 adresów, np. do monitoringu, serwera WWW lub VPN</li><li><b>SLA 8H</b> – naprawimy Twoje łącze do 8 godzin od zgłoszenia</li><li><b>Backup 250 GB</b> – bezpieczne miejsce na dane firmy w chmurze</li><li><b>Orange Office</b> – wirtualne biuro: strona WWW, poczta firmowa, domena, dysk w chmurze</li><li><b>Wsparcie Zaawansowane</b> – informatyk przyjedzie do Twojej firmy, a na czas naprawy zostawi laptop zastępczy</li></ul>
+      <p>Przy Stałym adresie IP, Orange Office i Wsparciu Zaawansowanym jedna sztuka jest w cenie paczki, a każda kolejna kosztuje 11 zł/mies. + VAT.</p>
+      <h4>Możesz dokupić</h4>
+      <ul><li><b>Backup danych</b> – kolejne 250 GB w cenie 10 zł/mies. + VAT</li></ul>
+    </section>
+  </div>
+  <div class="pkm-f"><p>Paczkę dodasz w koszyku, po wybraniu internetu.</p><button class="pkm-back" type="button" id="pkm-close">Wróć</button></div>
+</dialog>
+
 <!-- ================= B2B availability ================= -->
 <div id="view-avb" class="lp lpb" hidden>
   <div data-clone-b="lp-head"></div>
@@ -1583,7 +1658,6 @@ Paczka L (55 zł/mies. netto) to:
   <section class="av-offers gutter" id="avb-offers" aria-label="Oferty pod adresem firmy">
     <div class="top">
       <div class="tgls">
-        <label class="tgl"><span class="t"><b>Usługi w pakiecie</b><span>Paczka S - <u>Zobacz, co zawiera</u></span></span><input type="checkbox" id="avb-pak"><span class="sw" aria-hidden="true"><i></i></span></label>
         <label class="tgl"><span class="t"><b>Telewizja i Amazon Prime</b><span>230 kanałów z Extra TV <u>Szczegóły</u></span></span><input type="checkbox" id="avb-tv"><span class="sw" aria-hidden="true"><i></i></span></label>
       </div>
       <p class="lab">Czas trwania umowy</p>
@@ -2098,31 +2172,33 @@ const PAK_NAME = 'Paczka S';
 const lpb = {pak:false, tv:false, period:'24'};
 const bTV = () => lpb.tv && lpb.period === '24';
 /* package picked on the LP (sidebar "Zmień paczkę"): Paczka S by default, or Paczka L with its 3 services */
-const lpPakId = () => lpb.pak || bTV() ? (lpb.pakId || 'pakS') : null;
+/* packages are no longer chosen on the LP (only advertised there); kept so the cart start stays the same */
+const lpPakId = () => null;
 const lpPakName = () => lpPakId() === 'pakL' ? 'Paczka L' : 'Paczka S';
 const lpPakPrice = () => (lpPakId() === 'pakL' ? svcById('pak').options[1].price + pakExtras(lpb.pakL || [], lpb.pakLQty || {}).reduce((a, r) => a + r.steps[0][2], 0) : PAK_S)
   + pakUpRows(lpPakId(), lpb.pakL || [], lpb.pakUp).reduce((a, r) => a + r.steps[0][2], 0);
-const bSteps = o => bTV() ? o.tv.map(([f, t, v]) => [f, t, v ? v + lpPakPrice() - PAK_S : v]) : o.steps.map(([f, t, v]) => [f, t, v && lpb.pak ? v + lpPakPrice() : v]);
+/* the production TV prices include Paczka S; TV is independent of packages, so it is taken out */
+const bSteps = o => bTV() ? o.tv.map(([f, t, v]) => [f, t, v ? Math.round((v - PAK_S) * 100) / 100 : v]) : o.steps;
+/* the package ad on every offer card: info only, the choice is in the cart */
+const pkNote = () => `<p class="pk-note"><span>Zabezpiecz firmę od ${zl(PAK_S)}/mies. + VAT</span><button type="button" data-pkm>Zobacz paczki usług</button><small>dodasz w koszyku</small></p>`;
 const bWhen = ([f, t]) => lpb.period === 'bez' && f === 1 && t === 1 ? 'w pierwszym miesiącu' : `z rabatami, od ${f}.${t ? ` do ${t}.` : ''} mies.`;
 const bNum = v => fmt0(v).replace(' zł', '').replace(/,00$/, '');
 function renderB2B(){
-  const tv = bTV(), pak = lpb.pak || tv;
+  const tv = bTV();
   $('b-tiles').innerHTML = B2B[lpb.period].map(o => {
     const st = bSteps(o);
     const avg = lpb.period === '24' && st.length > 1 ? st.reduce((a, [f, t, v]) => a + (t - f + 1) * v, 0) / 24 : null;
     return `<article class="bdish"><div class="bh">${tv ? 'Extra TV za 30 zł/mies. przez rok' : o.badge}</div><div class="c">
       <div class="el"><span class="k">Światłowód</span><h3>${o.name}</h3></div>
-      ${pak ? `<div class="tv"><span class="pls"><img src="assets/lp/av-plus-tiny.svg" alt="plus"></span><div class="t"><span>Usługi w pakiecie</span><b>${lpPakName()}</b></div></div>` : ''}
       ${tv ? `<div class="tv"><span class="pls"><img src="assets/lp/av-plus-tiny.svg" alt="plus"></span><div class="t"><span>Telewizja i Amazon Prime</span><b>230 kanałów</b><img src="assets/lp/av-amazon-prime.svg" alt="Amazon Prime"></div></div>` : ''}
       <div class="prs">${st.map((s, i) => `<div class="pr"><div class="hrow">${o.od && !tv && i === 0 ? '<span class="od">od</span>' : ''}<span class="v">${bNum(s[2])}</span><span class="cur">zł/mies. + VAT</span></div><span class="fine">${bWhen(s)}</span>${o.ter && !tv ? '<span class="ter">Oferta ograniczona terytorialnie</span>' : ''}</div>`).join('')}</div>
       ${avg != null ? `<div class="avg"><div><b>${bNum(avg)} zł/mies. + VAT</b><span>Średnia cena przez 2 lata</span></div><i title="Średnia z 24 miesięcy umowy">i</i></div>` : ''}
       <div class="sp"></div>
+      ${pkNote()}
       <button class="cta" type="button" data-b-check="${o.id}">Sprawdź dostępność</button>
       <button class="cta2" type="button" data-b-expert>Dokończ z Biznes Ekspertem</button>
     </div></article>`;
   }).join('');
-  for (const id of ['b-pak', 'avb-pak']) $(id).closest('.tgl').querySelector('.t span').innerHTML = `${lpPakName()} - <u>Zobacz, co zawiera</u>`;
-  $('b-pak').checked = pak; $('b-pak').disabled = tv; $('b-pak').closest('.tgl').classList.toggle('dis', tv);
   $('b-tv').disabled = lpb.period === 'bez'; $('b-tv').closest('.tgl').classList.toggle('dis', lpb.period === 'bez');
   $('b-tiles').scrollLeft = 0; bNav();
 }
@@ -2140,7 +2216,6 @@ window.addEventListener('resize', () => { if (!$('view-lpb').hidden) bNav(); });
 $('view-lpb').querySelectorAll('.bnav').forEach(b => b.addEventListener('click', () => {
   const el = $('b-tiles'); el.scrollBy({left:(b.classList.contains('next') ? 1 : -1) * (el.clientWidth - 40)});
 }));
-$('b-pak').addEventListener('change', e => { lpb.pak = e.target.checked; renderB2B(); });
 $('b-tv').addEventListener('change', e => { lpb.tv = e.target.checked; renderB2B(); });
 document.querySelectorAll('[data-bperiod]').forEach(b => b.addEventListener('click', () => {
   lpb.period = b.dataset.bperiod;
@@ -2162,6 +2237,20 @@ $('view-lpb').addEventListener('click', e => {
   if (e.target.closest('[data-b-soon]')) return toast('Ta ścieżka nie jest częścią prototypu', false);
 });
 renderB2B();
+/* "Zobacz paczki usług": information only, tabs S / L */
+function openPkm(tab = 'S'){
+  document.querySelectorAll('[data-pkt]').forEach(b => b.setAttribute('aria-selected', b.dataset.pkt === tab));
+  document.querySelectorAll('[data-pkp]').forEach(p => p.hidden = p.dataset.pkp !== tab);
+  $('pkm').showModal(); $('pkm').querySelector('.pkm-b').scrollTop = 0; $('pkm-close').focus();
+}
+document.addEventListener('click', e => { if (e.target.closest('[data-pkm]')) openPkm(); });
+$('pkm').addEventListener('click', e => {
+  if (e.target === $('pkm') || e.target.closest('#pkm-x, #pkm-close')) return $('pkm').close();
+  const t = e.target.closest('[data-pkt]'); if (!t) return;
+  document.querySelectorAll('[data-pkt]').forEach(b => b.setAttribute('aria-selected', b === t));
+  document.querySelectorAll('[data-pkp]').forEach(p => p.hidden = p.dataset.pkp !== t.dataset.pkt);
+  $('pkm').querySelector('.pkm-b').scrollTop = 0;
+});
 
 function checkAvailability(speedId){
   lp.speed = speedId;
@@ -2269,7 +2358,7 @@ function avbReady(){
 }
 function renderAvb(){
   $('avb-addr').textContent = bAddress();
-  const tv = bTV(), pak = lpb.pak || tv, bez = lpb.period === 'bez';
+  const tv = bTV(), bez = lpb.period === 'bez';
   $('avb-cards').innerHTML = B2B[lpb.period].map(o => {
     const st = bSteps(o);
     const avg = !bez && st.length > 1 ? st.reduce((a, [f, t, v]) => a + (t - f + 1) * v, 0) / 24 : null;
@@ -2277,7 +2366,6 @@ function renderAvb(){
       <div class="stk">${tv ? 'Extra TV za 30 zł/mies. przez rok' : o.badge}</div>
       <div class="cb">
         <div class="nm"><span>Światłowód</span><h3>${o.name}</h3>
-          ${pak ? `<span class="pls"><img src="assets/lp/av-plus-tiny.svg" alt="plus"></span><div class="tv"><span>Usługi w pakiecie</span><b>${lpPakName()}</b></div>` : ''}
           ${tv ? `<span class="pls"><img src="assets/lp/av-plus-tiny.svg" alt="plus"></span><div class="tv"><span>Telewizja i Amazon Prime</span><b>230 kanałów</b><img src="assets/lp/av-amazon-prime.svg" alt="Amazon Prime"></div>` : ''}</div>
         <div class="prs">
           ${st.map((x, k) => `${k ? '<div class="dv"></div>' : ''}<div class="pc">${o.od && !tv && !k ? '<span class="c" style="margin:0 4px 0 0">od</span>' : ''}<span class="v">${bNum(x[2])}</span><span class="c">zł/mies. + VAT</span><small>${bWhen(x)}</small></div>`).join('')}
@@ -2285,12 +2373,11 @@ function renderAvb(){
           <button class="rab" type="button" aria-expanded="false">Ceny zawierają rabaty<img src="assets/lp/av-plus-sm.svg" alt=""></button>
           <p class="rabt" hidden>Ceny netto. Uwzględniają rabat za e‑fakturę i zgody marketingowe.</p>
         </div>
+        ${pkNote()}
         <button class="cfg" type="button" data-bcfg="${o.id}">Konfiguruj</button>
-        ${pak ? '<button class="cfg2" type="button" data-b-pak>Zmień paczkę</button>' : ''}
         <p class="lh">W ofercie dostaniesz:</p>
         <ul class="inc">
           <li>${bullet}<span>Światłowód <b>${o.name}</b></span>${plusBtn()}</li>
-          ${pak ? `<li>${bullet}<span>Usługi w pakiecie <b>${lpPakName()}</b></span>${plusBtn('av-info')}</li>` : ''}
           ${tv ? `<li>${bullet}<span>Telewizja <b>230 kanałów</b> i Amazon Prime</span>${plusBtn('av-info')}</li>` : ''}
           <li>${bullet}<span>Modem <b>${MODEM[o.id]}</b></span>${plusBtn()}</li>
         </ul>
@@ -2302,7 +2389,6 @@ function renderAvb(){
       </div>
     </article>`;
   }).join('');
-  $('avb-pak').checked = pak; $('avb-pak').disabled = tv; $('avb-pak').closest('.tgl').classList.toggle('dis', tv);
   $('avb-tv').checked = lpb.tv && !bez; $('avb-tv').disabled = bez; $('avb-tv').closest('.tgl').classList.toggle('dis', bez);
   avbAlign(); avbNav();
 }
@@ -2329,14 +2415,12 @@ window.addEventListener('resize', () => { if (!$('view-avb').hidden){ avbAlign()
 $('view-avb').querySelectorAll('.bnav').forEach(b => b.addEventListener('click', () => {
   const el = $('avb-cards'); el.scrollBy({left:(b.classList.contains('next') ? 1 : -1) * (el.clientWidth - 40)});
 }));
-$('avb-pak').addEventListener('change', e => { lpb.pak = e.target.checked; renderB2B(); renderAvb(); });
 $('avb-tv').addEventListener('change', e => { lpb.tv = e.target.checked; renderB2B(); renderAvb(); });
-['b-pak', 'b-tv'].forEach(id => $(id).addEventListener('change', renderAvb));
+$('b-tv').addEventListener('change', renderAvb);
 document.querySelectorAll('[data-bperiod]').forEach(b => b.addEventListener('click', renderAvb));
 $('avb-cards').addEventListener('click', e => {
   const r = e.target.closest('.rab');
   if (r){ const on = r.getAttribute('aria-expanded') !== 'true'; r.setAttribute('aria-expanded', on); r.nextElementSibling.hidden = !on; avbAlign(); return; }
-  const pb = e.target.closest('[data-b-pak]'); if (pb) return openPanel('pak', pb, true);
   const cf = e.target.closest('[data-bcfg]'); if (cf){ lpb.speed = cf.dataset.bcfg; return isClient ? goCartB2B(true) : openClientModal(cf, true); }
   if (e.target.closest('[data-b-expert]')) return toast('Biznes Ekspert oddzwoni do Ciebie – poza prototypem', false);
 });
@@ -2534,6 +2618,7 @@ function renderSpeeds(){
         <div><dt>Umowa</dt><dd>${state.period === 'bez' ? 'Bezterminowa' : '24 miesiące'}</dd></div>
         <div><dt>Modem</dt><dd>${md.name}<small>${fmt(modemPrice(md, state.speed))}/mies.</small></dd></div>
         <div><dt>Instalacja</dt><dd>Technik w cenie<small>${inst.length ? inst.join(', ') : 'bez dodatków'}</small></dd></div>
+        ${isB2B && !pk ? `<div class="pk-row"><dt>Paczka usług</dt><dd>Zabezpiecz firmę<small>CyberTarcza i wsparcie IT · od ${zl(PAK_S)}/mies.</small></dd><button class="btn-s" type="button" id="pak-change">+ Dodaj</button></div>` : ''}
         ${pk ? `<div><dt>Paczka usług</dt><dd>${pk.name}<small>${pakServices(pk)}${pakUpRows(pk.id, state.pakL || [], state.pakUp).map(r => ' · ' + r.label).join('')}</small><small>${fmt(pakTotal(pk))}/mies.</small></dd><button class="btn-s" type="button" id="pak-change">Zmień</button></div>` : ''}
       </dl>
       ${pBadges('net')}
@@ -2586,7 +2671,7 @@ function renderServices(){
         ${feesHtml('devs', devRows(devs), '24', devOnce(devs))}${addDevTile('Dodaj kolejne urządzenie', 'Telefon na raty, bez abonamentu komórkowego')}</div></section>` : '';
   const devOffer = devs.length || isB2B ? '' : `<div class="sec-head"><h3>Dodaj urządzenie</h3><p>Kup telefon na raty – z abonamentem lub bez</p></div>${addDevTile('Dodaj urządzenie', 'Raty 0%, dostawa razem z zamówieniem')}`;
   const offers = isB2B
-    ? (has('pak') ? '' : card(svcById('pak'))) + group('Często kupowane razem', '', ['tv', 'dek']) + group('To może ci się przydać', '', ['multi', 'ct'])
+    ? group('Często kupowane razem', '', ['tv', 'dek']) + group('To może ci się przydać', '', ['multi', 'ct'])
     : group('Często kupowane razem', '', ['tv', 'dek'])
     + group('W zestawie taniej!', 'Dodaj usługi do światłowodu i zyskaj rabat!', ['mob'])
     + devOffer
