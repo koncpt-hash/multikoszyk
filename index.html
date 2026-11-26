@@ -3869,7 +3869,7 @@ function aiPick(m, label, val){
   m.answered = true; ai.msgs.push({me:true, text:label}, {typing:true}); renderAi();
   setTimeout(() => { ai.msgs.pop(); m.on(val); renderAi(); }, 700);
 }
-const PAK_AI = [PK_CONF, 'Czym różni się Paczka S od Paczki L?', 'Które 3 usługi wybrać do Paczki L?', 'Czy mojej firmie przyda się stały adres IP?'];
+const PAK_AI = [PK_CONF, 'Czym różni się Paczka S od Paczki L?', 'Które 3 usługi wybrać do Paczki L?'];
 function pakAnswer(t){
   const q = t.toLowerCase();
   if (/różni.*paczk|paczka s.*paczk|paczk.*s.*l\b/.test(q))
