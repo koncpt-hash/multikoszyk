@@ -1086,6 +1086,18 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .ai-dots i{width:6px;height:6px;border-radius:3px;background:#a885d8;animation:aidot 1s infinite ease-in-out}
 .ai-dots i:nth-child(2){animation-delay:.15s}.ai-dots i:nth-child(3){animation-delay:.3s}
 @keyframes aidot{50%{opacity:.25;transform:translateY(-2px)}}
+.ai-opts{display:flex;flex-direction:column;align-items:stretch;gap:8px}
+.ai-opt{display:flex;align-items:center;gap:10px;min-height:44px;padding:10px 14px;border:2px solid #ddd;border-radius:8px;background:#fff;font:inherit;font-weight:500;font-size:14px;line-height:20px;color:#232323;text-align:left;cursor:pointer}
+.ai-opt:hover:not(:disabled){border-color:#232323}
+.ai-opt.on{border-color:#ff7900}
+.ai-opt:disabled{color:#8f8f8f;cursor:default}
+.ai-opt .ck{width:20px;height:20px;flex:none;border:2px solid #232323;border-radius:4px;display:grid;place-items:center;background:#fff}
+.ai-opt.on .ck{background:#ff7900;border-color:#ff7900}
+.ai-opt.on .ck::after{content:'';width:10px;height:5px;border:solid #000;border-width:0 0 2px 2px;transform:translateY(-1px) rotate(-45deg)}
+.ai-opt:disabled .ck{border-color:#ccc;background:#f5f5f5}
+.ai-cnt{font-size:12px;color:#666;font-weight:500}
+.ai-next{align-self:flex-start}
+.ai-next:disabled{opacity:.4;cursor:default}
 .ai-act{border:2px solid #eee;border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:8px;background:#fff}
 .ai-act b{font-weight:700}
 .ai-act small{display:block;font-size:12px;color:#444;font-weight:500}
@@ -3766,10 +3778,10 @@ function aiClose(){ $('ai-win').hidden = true; $('ai-fab').hidden = !['cart', 't
 function renderAi(){
   $('ai-body').innerHTML = !ai.msgs.length
     ? `<div class="ai-hi"><img src="assets/ai/sparkles-colored.svg" alt=""><h2>Cześć!</h2><p>Powiedz co chcesz załatwić</p></div>
-       <div class="ai-chips">${AI_START.map(q => `<button class="ai-chip ai-stroke" type="button" data-ai="${q}">${q}</button>`).join('')}</div>`
+       <div class="ai-chips">${(isB2B ? [PK_CONF, ...AI_START.slice(0, 3)] : AI_START).map(q => `<button class="ai-chip ai-stroke" type="button" data-ai="${q}">${q}</button>`).join('')}</div>`
     : ai.msgs.map((m, i) => m.me ? `<div class="ai-msg me">${m.text}</div>`
       : m.typing ? '<div class="ai-msg bot"><div class="ai-dots" aria-label="Asystent pisze"><i></i><i></i><i></i></div></div>'
-      : `<div class="ai-msg bot"><p>${m.text}</p>${m.act ? `<div class="ai-act"><b>${m.act.title}</b><small>${m.act.sub}</small>
+      : `<div class="ai-msg bot"><p>${m.text}</p>${aiOptsHtml(m, i)}${m.act ? `<div class="ai-act"><b>${m.act.title}</b><small>${m.act.sub}</small>
           ${m.done ? '<span class="done">✓ Zastosowano w koszyku</span>' : `<div class="row2"><button class="sb-btn pri" type="button" data-ai-apply="${i}">Zastosuj</button><button class="sb-btn ghost" type="button" data-ai-skip="${i}">Nie teraz</button></div>`}</div>` : ''}</div>`).join('');
   $('ai-body').scrollTop = $('ai-body').scrollHeight;
 }
@@ -3779,7 +3791,85 @@ function aiAsk(text){
 }
 /* canned answers that read the live cart */
 /* suggested questions in the Paczki usług sidebar (LP and cart) and their answers */
-const PAK_AI = ['Czym różni się Paczka S od Paczki L?', 'Które 3 usługi wybrać do Paczki L?', 'Czy mojej firmie przyda się stały adres IP?'];
+/* ---------- package setup in a conversation: a few questions → Paczka S or L → 'Zastosuj' puts it in the cart ---------- */
+const PK_CONF = 'Skonfiguruj ze mną paczkę usług';
+const PK_NEEDS = [
+  {v:'ip', label:'Mamy monitoring, serwer lub VPN'},
+  {v:'sla', label:'Bez internetu firma stoi'},
+  {v:'bak', label:'Trzymamy ważne pliki na komputerach'},
+  {v:'off', label:'Potrzebujemy poczty, domeny lub strony WWW'},
+  {v:'adv', label:'Pracujemy na laptopach w kilku miejscach'}];
+const pkc = {pid:null, pick:[], qty:{}, up:[]};
+const pkBot = (text, extra = {}) => ai.msgs.push({text, ...extra});
+const pkOpt = id => PAK_L_OPTS.find(o => o.id === id);
+const pkPrice = id => svcById('pak').options.find(o => o.id === id).price;
+const pkNames = ids => ids.map(id => pkOpt(id).name).join(', ');
+const pkLOpts = ids => ids.map(id => ({v:id, label:pkOpt(id).name}));
+function pkConfStart(){
+  Object.assign(pkc, {pid:null, pick:[], qty:{}, up:[]});
+  return {text:'Chętnie! Zadam Ci kilka pytań i złożę paczkę. Każdy wybór zmienisz potem w koszyku.\nCzego potrzebuje Twoja firma?',
+    opts:[{v:'pakS', label:`Ochrona i pomoc IT na odległość – Paczka S, ${fmt(pkPrice('pakS'))}/mies.`},
+          {v:'pakL', label:`Więcej usług: IP, backup, poczta, serwis – Paczka L, ${fmt(pkPrice('pakL'))}/mies.`},
+          {v:'help', label:'Nie wiem – doradź mi'}],
+    on:v => v === 'help' ? pkBot('Zaznacz wszystko, co pasuje do Twojej firmy:', {opts:PK_NEEDS, multi:{min:0, none:'Żadne z tych'}, sel:[], on:pkNeeds})
+      : v === 'pakS' ? (pkc.pid = 'pakS', pkBot(`Paczka S to CyberTarcza stacjonarna rozszerzona i Wsparcie zdalne za ${fmt(pkPrice('pakS'))}/mies.${vatTag()}.`), pkUpsell())
+      : pkLStart()};
+}
+function pkLStart(){
+  pkc.pid = 'pakL';
+  pkBot(`W Paczce L masz na stałe CyberTarczę stacjonarną rozszerzoną i Wsparcie zdalne. Do tego wybierz 3 z 5 usług:`,
+    {opts:pkLOpts(PAK_L_OPTS.map(o => o.id)), multi:{min:PAK_L_N, max:PAK_L_N}, sel:[], on:pkPicks});
+}
+function pkNeeds(sel){
+  if (!sel.length){ pkc.pid = 'pakS'; pkBot(`W takim razie wystarczy Paczka S za ${fmt(pkPrice('pakS'))}/mies.${vatTag()}: CyberTarcza ochroni firmowe urządzenia, a informatyk pomoże Ci na odległość.`); return pkUpsell(); }
+  pkc.pid = 'pakL';
+  const n = sel.length, rest = PAK_L_OPTS.map(o => o.id).filter(id => !sel.includes(id));
+  if (n === PAK_L_N){ pkBot(`Polecam Paczkę L – mieści dokładnie te 3 usługi: ${pkNames(sel)}.`); return pkPicks(sel); }
+  if (n < PAK_L_N) return pkBot(`Polecam Paczkę L. Masz już: ${pkNames(sel)}. W paczce mieszczą się 3 usługi – dobierz jeszcze ${PAK_L_N - n === 1 ? 'jedną' : 'dwie'}:`,
+    {opts:pkLOpts(rest), multi:{min:PAK_L_N - n, max:PAK_L_N - n}, sel:[], on:s => pkPicks([...sel, ...s])});
+  pkBot(`Polecam Paczkę L, ale mieszczą się w niej 3 usługi, a pasuje ${n}. Które zostawiamy?`, {opts:pkLOpts(sel), multi:{min:PAK_L_N, max:PAK_L_N}, sel:[], on:pkPicks});
+}
+function pkPicks(pick){ pkc.pick = PAK_L_OPTS.map(o => o.id).filter(id => pick.includes(id)); pkc.qty = {}; pkQtyNext(); }
+function pkQtyNext(){
+  const o = pkc.pick.map(pkOpt).find(x => x.qty && pkc.qty[x.id] === undefined);
+  if (!o) return pkUpsell();
+  const q = {ip:'Ile stałych adresów IP potrzebujesz? 1 adres jest w cenie paczki.', off:'Ile kont Orange Office potrzebujesz? 1 jest w cenie paczki.', adv:'Na ilu stanowiskach chcesz Wsparcie Zaawansowane? 1 jest w cenie paczki.'}[o.id];
+  pkBot(q, {opts:o.qty.map((n, k) => ({v:String(n), label:`${o.id === 'ip' ? `${n} ${ipWord(n)}` : n} – ${k ? `+${fmt(k * o.step)}/mies.` : 'w cenie'}`})),
+    on:v => { pkc.qty[o.id] = +v; pkQtyNext(); }});
+}
+function pkUpsell(){
+  if (pkc.pid === 'pakS') return pkBot('Chcesz coś dorzucić do Paczki S?', {opts:pakUpFor('pakS').map(u => ({v:u.id, label:`${u.name} – +${fmt(u.price)}/mies.`})),
+    multi:{min:0, none:'Bez dodatków'}, sel:[], on:s => { pkc.up = s; pkSum(); }});
+  const again = pkc.pick.includes('bak'), bak = PAK_UP.find(u => u.id === 'bak');
+  pkBot(again ? `Masz już Backup 250 GB w paczce. Potrzebujesz więcej miejsca? Kolejne 250 GB to +${fmt(bak.price)}/mies.${vatTag()}.` : `Na koniec: chcesz dodać Backup 250 GB? To 250 GB w chmurze na firmowe pliki.`,
+    {opts:[{v:'y', label:`Tak, dodaj – +${fmt(bak.price)}/mies.`}, {v:'n', label:'Nie, dziękuję'}], on:v => { pkc.up = v === 'y' ? ['bak'] : []; pkSum(); }});
+}
+function pkSum(){
+  const {pid} = pkc, L = pid === 'pakL', o = svcById('pak').options.find(x => x.id === pid);
+  const pick = L ? [...pkc.pick] : [], qty = L ? {...pkc.qty} : {}, up = [...pkc.up];
+  const ups = pakUpRows(pid, pick, up);
+  const total = o.price + (L ? pakExtras(pick, qty).reduce((a, r) => a + r.steps[0][2], 0) : 0) + ups.reduce((a, r) => a + r.steps[0][2], 0);
+  const list = [...PAK_L_FIXED.map(x => x.name), ...pick.map(id => pklName(pkOpt(id), qty)), ...ups.map(r => `${r.label} (usługa dodatkowa)`)];
+  const had = (state.added.pak || []).length;
+  pkBot(`Gotowe! Oto Twoja ${o.name}:\n${list.map(x => `• ${x}`).join('\n')}\nRazem ${fmt(total)}/mies.${vatTag()}.`,
+    {act:{title:had ? `Zamień paczkę w koszyku na ${o.name.replace('Paczka', 'Paczkę')}` : `Dodaj do koszyka: ${o.name}`, sub:`${fmt(total)}/mies.${vatTag()} · trafi do sekcji Internet i do podsumowania opłat`, apply:() => {
+      state.added.pak = [pid]; state.pakL = L ? pick : null; state.pakLQty = L ? qty : null; state.pakUp = up;
+      fresh = new Set([`pak:${pid}`]);
+      setTimeout(() => $('pak-change')?.scrollIntoView({block:'center', behavior:'smooth'}), 50);
+      return had ? `Zamieniono paczkę na ${o.name.replace('Paczka', 'Paczkę')}` : `Dodano ${o.name}`; }}});
+}
+/* quick replies: single choice (one tap) or several (tick, then 'Dalej'); only the latest message is live */
+const aiOptsHtml = (m, i) => !m.opts || m.answered || i !== ai.msgs.length - 1 ? '' : m.multi
+  ? `<div class="ai-opts" role="group" aria-label="Wybierz">${m.opts.map(o => { const on = m.sel.includes(o.v), full = m.multi.max && m.sel.length >= m.multi.max && !on;
+      return `<button class="ai-opt ${on ? 'on' : ''}" type="button" data-ai-opt="${i}" data-v="${o.v}" aria-pressed="${on}" ${full ? 'disabled' : ''}><span class="ck" aria-hidden="true"></span>${o.label}</button>`; }).join('')}</div>
+     ${m.multi.max ? `<small class="ai-cnt">Wybrano ${m.sel.length} z ${m.multi.max}</small>` : ''}
+     <button class="sb-btn pri ai-next" type="button" data-ai-next="${i}" ${m.sel.length < m.multi.min ? 'disabled' : ''}>${!m.sel.length && m.multi.none ? m.multi.none : 'Dalej'}</button>`
+  : `<div class="ai-opts">${m.opts.map(o => `<button class="ai-opt" type="button" data-ai-opt="${i}" data-v="${o.v}">${o.label}</button>`).join('')}</div>`;
+function aiPick(m, label, val){
+  m.answered = true; ai.msgs.push({me:true, text:label}, {typing:true}); renderAi();
+  setTimeout(() => { ai.msgs.pop(); m.on(val); renderAi(); }, 700);
+}
+const PAK_AI = [PK_CONF, 'Czym różni się Paczka S od Paczki L?', 'Które 3 usługi wybrać do Paczki L?', 'Czy mojej firmie przyda się stały adres IP?'];
 function pakAnswer(t){
   const q = t.toLowerCase();
   if (/różni.*paczk|paczka s.*paczk|paczk.*s.*l\b/.test(q))
@@ -3791,6 +3881,8 @@ function pakAnswer(t){
   return null;
 }
 function aiAnswer(t){
+  if (t === PK_CONF || /skonfiguruj|konfigur.*paczk|dobierz.*paczk|złóż.*paczk|złożyć.*paczk/.test(t.toLowerCase()))
+    return isB2B ? pkConfStart() : {text:'Paczki usług są w ofercie dla firm. W tym koszyku mogę pomóc dobrać prędkość światłowodu, telewizję albo numer komórkowy.'};
   const fa = feesAnswer(t); if (fa) return fa;
   const pa = pakAnswer(t); if (pa) return pa;
   const q = t.toLowerCase(), sp = speedDef(state.speed, state.period);
@@ -3836,6 +3928,20 @@ document.addEventListener('click', e => {
     const msg = m.act.apply(); m.done = true;
     renderAll(); renderAi(); toast(`Asystent: ${msg}`);
     return;
+  }
+  const op = e.target.closest('[data-ai-opt]');
+  if (op){
+    const i = +op.dataset.aiOpt, m = ai.msgs[i], v = op.dataset.v;
+    if (!m.multi) return aiPick(m, m.opts.find(o => o.v === v).label, v);
+    m.sel = m.sel.includes(v) ? m.sel.filter(x => x !== v) : [...m.sel, v];
+    const top = $('ai-body').scrollTop; renderAi(); $('ai-body').scrollTop = top;
+    $('ai-body').querySelector(`[data-ai-opt="${i}"][data-v="${v}"]`)?.focus({preventScroll:true});
+    return;
+  }
+  const nx = e.target.closest('[data-ai-next]');
+  if (nx){
+    const m = ai.msgs[+nx.dataset.aiNext], picked = m.opts.filter(o => m.sel.includes(o.v));
+    return aiPick(m, picked.length ? picked.map(o => o.label).join(', ') : m.multi.none, picked.map(o => o.v));
   }
   const sk = e.target.closest('[data-ai-skip]'); if (sk){ ai.msgs[sk.dataset.aiSkip].act = null; renderAi(); }
 });
