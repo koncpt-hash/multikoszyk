@@ -529,6 +529,8 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
 .nrows dd{margin:0;flex:1;font-weight:700;color:#232323}
 .nrows dd small{display:block;font-weight:500;font-size:13px;color:#444}
 .nrows dd small.addr{color:#666;margin-top:2px}
+.pk-chips{flex-direction:row;flex-wrap:wrap;margin-top:12px}
+.pk-chips .ai-chip{font-size:13px;min-height:36px;padding:6px 12px}
 .net-box .pbadges{margin-top:12px}
 .ps{padding:4px 0 16px;border-bottom:2px solid #eee;display:flex;flex-direction:column;gap:10px}
 .ps:last-child{border-bottom:0}
@@ -2612,6 +2614,8 @@ function announceCart(){
 /* what a package holds and costs, for the Internet card */
 const pakServices = o => o.id === 'pakL' && state.pakL ? [...PAK_L_FIXED.map(x => x.name), ...state.pakL.map(id => pklName(PAK_L_OPTS.find(x => x.id === id), state.pakLQty || {}))].join(' · ') : PAK_L_FIXED.map(x => x.name).join(' · ');
 const pakTotal = o => o.price + (o.id === 'pakL' ? pakExtras().reduce((a, r) => a + r.steps[0][2], 0) : 0) + pakUpRows(o.id, state.pakL || [], state.pakUp).reduce((a, r) => a + r.steps[0][2], 0);
+/* AI hints under the package row in the business Internet card (open the assistant chat) */
+const pakAiChips = () => `<div class="ai-chips pk-chips">${PAK_AI.map(q => `<button class="ai-chip ai-stroke" type="button" data-ai="${q}"><img src="assets/ai/sparkles.svg" alt="">${q}</button>`).join('')}</div>`;
 function renderSpeeds(){
   const sp = speedDef(state.speed, state.period), md = curModem();
   const inst = state.inst.map(id => INSTALL.find(x => x.id === id).name);
@@ -2623,8 +2627,8 @@ function renderSpeeds(){
         <div><dt>Umowa</dt><dd>${state.period === 'bez' ? 'Bezterminowa' : '24 miesiące'}</dd></div>
         <div><dt>Modem</dt><dd>${md.name}<small>${fmt(modemPrice(md, state.speed))}/mies.</small></dd></div>
         <div><dt>Instalacja</dt><dd>Technik w cenie<small>${inst.length ? inst.join(', ') : 'bez dodatków'}</small></dd></div>
-        ${isB2B && !pk ? `<div class="pk-row"><dt>Paczka usług</dt><dd>Zabezpiecz firmę<small>CyberTarcza i wsparcie IT · od ${zl(PAK_S)}/mies.</small></dd><button class="btn-s" type="button" id="pak-change">+ Dodaj</button></div>` : ''}
-        ${pk ? `<div><dt>Paczka usług</dt><dd>${pk.name}<small>${pakServices(pk)}${pakUpRows(pk.id, state.pakL || [], state.pakUp).map(r => ' · ' + r.label).join('')}</small><small>${fmt(pakTotal(pk))}/mies.</small></dd><button class="btn-s" type="button" id="pak-change">Zmień</button></div>` : ''}
+        ${isB2B && !pk ? `<div class="pk-row"><dt>Paczka usług</dt><dd>Zabezpiecz firmę<small>CyberTarcza i wsparcie IT · od ${zl(PAK_S)}/mies.</small>${pakAiChips()}</dd><button class="btn-s" type="button" id="pak-change">+ Dodaj</button></div>` : ''}
+        ${pk ? `<div><dt>Paczka usług</dt><dd>${pk.name}<small>${pakServices(pk)}${pakUpRows(pk.id, state.pakL || [], state.pakUp).map(r => ' · ' + r.label).join('')}</small><small>${fmt(pakTotal(pk))}/mies.</small>${pakAiChips()}</dd><button class="btn-s" type="button" id="pak-change">Zmień</button></div>` : ''}
       </dl>
       ${pBadges('net')}
       ${feesHtml('net', [{label:`Abonament za Światłowód ${sp.name}`, steps:sp.steps}, {label:`Modem ${md.name}`, steps:flat(modemPrice(md, state.speed))}, ...(pk ? [{label:pk.name, steps:optSteps(pk)}, ...(pk.id === 'pakL' ? pakExtras() : []), ...pakUpRows(pk.id, state.pakL || [], state.pakUp)] : [])], state.period,
