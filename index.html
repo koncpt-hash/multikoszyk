@@ -128,6 +128,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .tgl .t b{font-weight:700}
 .tgl .t span{color:var(--c-text-light);font-weight:500}
 .tgl .t span u{font-weight:700;text-decoration:underline}
+.tgl .lnk{background:none;border:0;padding:0;font:inherit;font-weight:700;color:inherit;text-decoration:underline;cursor:pointer}
 .tgl input{position:absolute;opacity:0;width:1px;height:1px}
 .tgl .sw{width:48px;padding:2px;border-radius:24px;background:var(--c-input);display:flex;justify-content:flex-start;flex:none;transition:background .2s}
 .tgl .sw i{width:24px;height:24px;border-radius:40px;background:#fff;display:grid;place-items:center;transition:transform .2s}
@@ -1492,6 +1493,7 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
         </div>
         <div class="tgls">
           <label class="tgl"><span class="t"><b>Telewizja i Amazon Prime</b><span>230 kanałów z Extra TV <u>Szczegóły</u></span></span><input type="checkbox" id="b-tv"><span class="sw" aria-hidden="true"><i></i></span></label>
+          <label class="tgl"><span class="t"><b>Paczka S</b><span>Bezpieczny biznes z ochroną i wsparciem <button class="lnk" type="button" data-pkm>Szczegóły</button></span></span><input type="checkbox" id="b-pak"><span class="sw" aria-hidden="true"><i></i></span></label>
         </div>
         <div class="czas">
           <p id="bperiod-l">Czas trwania umowy</p>
@@ -1678,6 +1680,7 @@ Paczka L (44 zł/mies. netto) to:
     <div class="top">
       <div class="tgls">
         <label class="tgl"><span class="t"><b>Telewizja i Amazon Prime</b><span>230 kanałów z Extra TV <u>Szczegóły</u></span></span><input type="checkbox" id="avb-tv"><span class="sw" aria-hidden="true"><i></i></span></label>
+        <label class="tgl"><span class="t"><b>Paczka S</b><span>Bezpieczny biznes z ochroną i wsparciem <button class="lnk" type="button" data-pkm>Szczegóły</button></span></span><input type="checkbox" id="avb-pak"><span class="sw" aria-hidden="true"><i></i></span></label>
       </div>
       <p class="lab">Czas trwania umowy</p>
       <p class="hint">Telewizja i Amazon Prime są dostępne wyłącznie z umową na 24 miesiące.</p>
@@ -2192,12 +2195,13 @@ const lpb = {pak:false, tv:false, period:'24'};
 const bTV = () => lpb.tv && lpb.period === '24';
 /* package picked on the LP (sidebar "Zmień paczkę"): Paczka S by default, or Paczka L with its 3 services */
 /* packages are no longer chosen on the LP (only advertised there); kept so the cart start stays the same */
-const lpPakId = () => null;
+const lpPakId = () => lpb.pak ? 'pakS' : null;
 const lpPakName = () => lpPakId() === 'pakL' ? 'Paczka L' : 'Paczka S';
 const lpPakPrice = () => (lpPakId() === 'pakL' ? svcById('pak').options[1].price + pakExtras(lpb.pakL || [], lpb.pakLQty || {}).reduce((a, r) => a + r.steps[0][2], 0) : PAK_S)
   + pakUpRows(lpPakId(), lpb.pakL || [], lpb.pakUp).reduce((a, r) => a + r.steps[0][2], 0);
 /* the production TV prices include Paczka S; TV is independent of packages, so it is taken out */
-const bSteps = o => bTV() ? o.tv.map(([f, t, v]) => [f, t, v ? Math.round((v - PAK_S) * 100) / 100 : v]) : o.steps;
+const bPak = v => lpb.pak ? Math.round((v + PAK_S) * 100) / 100 : v;
+const bSteps = o => (bTV() ? o.tv.map(([f, t, v]) => [f, t, v ? Math.round((v - PAK_S) * 100) / 100 : v]) : o.steps).map(([f, t, v]) => [f, t, bPak(v)]);
 /* the package ad on every offer card: info only, the choice is in the cart */
 const pkNote = () => `<button class="pk-note" type="button" data-pkm><span class="tx"><b>Zabezpiecz firmę</b><span>CyberTarcza i wsparcie IT od ${zl(PAK_S)}/mies. + VAT – dodasz w koszyku. <u>Zobacz paczki usług</u></span></span><img src="assets/vas/safety.svg" alt=""></button>`;
 const bWhen = ([f, t]) => lpb.period === 'bez' && f === 1 && t === 1 ? 'w pierwszym miesiącu' : `z rabatami, od ${f}.${t ? ` do ${t}.` : ''} mies.`;
@@ -2210,15 +2214,17 @@ function renderB2B(){
     return `<article class="bdish"><div class="bh">${tv ? 'Extra TV za 30 zł/mies. przez rok' : o.badge}</div><div class="c">
       <div class="el"><span class="k">Światłowód</span><h3>${o.name}</h3></div>
       ${tv ? `<div class="tv"><span class="pls"><img src="assets/lp/av-plus-tiny.svg" alt="plus"></span><div class="t"><span>Telewizja i Amazon Prime</span><b>230 kanałów</b><img src="assets/lp/av-amazon-prime.svg" alt="Amazon Prime"></div></div>` : ''}
+      ${lpb.pak ? `<div class="tv"><span class="pls"><img src="assets/lp/av-plus-tiny.svg" alt="plus"></span><div class="t"><span>Usługi w pakiecie</span><b>Paczka S</b></div></div>` : ''}
       <div class="prs">${st.map((s, i) => `<div class="pr"><div class="hrow">${o.od && !tv && i === 0 ? '<span class="od">od</span>' : ''}<span class="v">${bNum(s[2])}</span><span class="cur">zł/mies. + VAT</span></div><span class="fine">${bWhen(s)}</span>${o.ter && !tv ? '<span class="ter">Oferta ograniczona terytorialnie</span>' : ''}</div>`).join('')}</div>
       ${avg != null ? `<div class="avg"><div><b>${bNum(avg)} zł/mies. + VAT</b><span>Średnia cena przez 2 lata</span></div><i title="Średnia z 24 miesięcy umowy">i</i></div>` : ''}
       <div class="sp"></div>
       <button class="cta" type="button" data-b-check="${o.id}">Sprawdź dostępność</button>
       <button class="cta2" type="button" data-b-expert>Dokończ z Biznes Ekspertem</button>
-      ${pkNote()}
+      ${lpb.pak ? '' : pkNote()}
     </div></article>`;
   }).join('');
   $('b-tv').disabled = lpb.period === 'bez'; $('b-tv').closest('.tgl').classList.toggle('dis', lpb.period === 'bez');
+  $('b-pak').checked = lpb.pak;
   $('b-tiles').scrollLeft = 0; bNav();
 }
 function bNav(){
@@ -2236,6 +2242,7 @@ $('view-lpb').querySelectorAll('.bnav').forEach(b => b.addEventListener('click',
   const el = $('b-tiles'); el.scrollBy({left:(b.classList.contains('next') ? 1 : -1) * (el.clientWidth - 40)});
 }));
 $('b-tv').addEventListener('change', e => { lpb.tv = e.target.checked; renderB2B(); });
+$('b-pak').addEventListener('change', e => { lpb.pak = e.target.checked; lpb.pakUp = []; renderB2B(); renderAvb(); });
 document.querySelectorAll('[data-bperiod]').forEach(b => b.addEventListener('click', () => {
   lpb.period = b.dataset.bperiod;
   document.querySelectorAll('[data-bperiod]').forEach(x => x.setAttribute('aria-pressed', x.dataset.bperiod === lpb.period));
@@ -2385,7 +2392,8 @@ function renderAvb(){
       <div class="stk">${tv ? 'Extra TV za 30 zł/mies. przez rok' : o.badge}</div>
       <div class="cb">
         <div class="nm"><span>Światłowód</span><h3>${o.name}</h3>
-          ${tv ? `<span class="pls"><img src="assets/lp/av-plus-tiny.svg" alt="plus"></span><div class="tv"><span>Telewizja i Amazon Prime</span><b>230 kanałów</b><img src="assets/lp/av-amazon-prime.svg" alt="Amazon Prime"></div>` : ''}</div>
+          ${tv ? `<span class="pls"><img src="assets/lp/av-plus-tiny.svg" alt="plus"></span><div class="tv"><span>Telewizja i Amazon Prime</span><b>230 kanałów</b><img src="assets/lp/av-amazon-prime.svg" alt="Amazon Prime"></div>` : ''}
+          ${lpb.pak ? `<span class="pls"><img src="assets/lp/av-plus-tiny.svg" alt="plus"></span><div class="tv"><span>Usługi w pakiecie</span><b>Paczka S</b></div>` : ''}</div>
         <div class="prs">
           ${st.map((x, k) => `${k ? '<div class="dv"></div>' : ''}<div class="pc">${o.od && !tv && !k ? '<span class="c" style="margin:0 4px 0 0">od</span>' : ''}<span class="v">${bNum(x[2])}</span><span class="c">zł/mies. + VAT</span><small>${bWhen(x)}</small></div>`).join('')}
           ${avg != null ? `<p class="avg2">Średnio <b>${bNum(avg)} zł/mies. + VAT</b> przez 2 lata</p>` : ''}
@@ -2397,6 +2405,7 @@ function renderAvb(){
         <ul class="inc">
           <li>${bullet}<span>Światłowód <b>${o.name}</b></span>${plusBtn()}</li>
           ${tv ? `<li>${bullet}<span>Telewizja <b>230 kanałów</b> i Amazon Prime</span>${plusBtn('av-info')}</li>` : ''}
+          ${lpb.pak ? `<li>${bullet}<span>Usługi w pakiecie <b>Paczka S</b>: CyberTarcza i Wsparcie zdalne</span></li>` : ''}
           <li>${bullet}<span>Modem <b>${MODEM[o.id]}</b></span>${plusBtn()}</li>
         </ul>
         <p class="lh">Dodatkowe opłaty:</p>
@@ -2404,10 +2413,11 @@ function renderAvb(){
           <li>${bullet}<span><b>60 zł + VAT</b> jednorazowa aktywacja</span>${plusBtn()}</li>
           <li>${bullet}<span><b>4,99 zł/mies. + VAT</b> za Modem ${MODEM[o.id]}</span></li>
         </ul>
-        ${pkNote()}
+        ${lpb.pak ? '' : pkNote()}
       </div>
     </article>`;
   }).join('');
+  $('avb-pak').checked = lpb.pak;
   $('avb-tv').checked = lpb.tv && !bez; $('avb-tv').disabled = bez; $('avb-tv').closest('.tgl').classList.toggle('dis', bez);
   avbAlign(); avbNav();
 }
@@ -2435,6 +2445,7 @@ $('view-avb').querySelectorAll('.bnav').forEach(b => b.addEventListener('click',
   const el = $('avb-cards'); el.scrollBy({left:(b.classList.contains('next') ? 1 : -1) * (el.clientWidth - 40)});
 }));
 $('avb-tv').addEventListener('change', e => { lpb.tv = e.target.checked; renderB2B(); renderAvb(); });
+$('avb-pak').addEventListener('change', e => { lpb.pak = e.target.checked; lpb.pakUp = []; renderB2B(); renderAvb(); });
 $('b-tv').addEventListener('change', renderAvb);
 document.querySelectorAll('[data-bperiod]').forEach(b => b.addEventListener('click', renderAvb));
 $('avb-cards').addEventListener('click', e => {
