@@ -128,6 +128,15 @@ button{font:inherit;color:inherit;cursor:pointer}
 .tgl .t b{font-weight:700}
 .tgl .t span{color:var(--c-text-light);font-weight:500}
 .tgl .t span u{font-weight:700;text-decoration:underline}
+.pkbox{margin-top:32px;background:#f5f5f5;border-radius:16px;padding:32px 24px;text-align:center}
+.pkbox .k{margin:0;font-size:24px;line-height:32px;font-weight:700;color:#666}
+.pkbox h3{margin:16px 0 0;font-size:24px;line-height:32px;font-weight:700;color:#232323}
+.pkbox .s{margin:4px 0 0;font-size:14px;line-height:20px;font-weight:500;color:#666}
+.pkbox ul{list-style:none;margin:24px 0 0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:16px}
+.pkbox li{position:relative;width:148px;min-height:112px;background:#fff;border-radius:16px;padding:20px 12px 14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-size:14px;line-height:18px;font-weight:700;color:#232323}
+.pkbox li img{width:40px;height:40px}
+.pkbox .tag{position:absolute;top:8px;left:8px;font-size:11px;line-height:14px;font-weight:700;color:#666;background:#f5f5f5;border-radius:4px;padding:2px 6px}
+@media (max-width:640px){.pkbox{padding:24px 16px}.pkbox .k,.pkbox h3{font-size:18px;line-height:24px}.pkbox ul{gap:8px}.pkbox li{width:calc(50% - 4px)}}
 .tgl .lnk{background:none;border:0;padding:0;font:inherit;font-weight:700;color:inherit;text-decoration:underline;cursor:pointer}
 .tgl input{position:absolute;opacity:0;width:1px;height:1px}
 .tgl .sw{width:48px;padding:2px;border-radius:24px;background:var(--c-input);display:flex;justify-content:flex-start;flex:none;transition:background .2s}
@@ -1510,6 +1519,20 @@ h1.ph1{font-size:28px;font-weight:700;margin:0}
         <button class="bnav next" type="button" aria-label="Następne oferty">›</button>
       </div>
       <div class="bdots" id="b-dots" aria-hidden="true"></div>
+      <div class="pkbox">
+        <p class="k">Na następnym kroku dodasz:</p>
+        <h3>Paczka L – elastyczny zestaw 5 usług</h3>
+        <p class="s">2 usługi na stałe i 3 z 5 do wyboru</p>
+        <ul>
+          <li><span class="tag">Na stałe</span><img src="assets/vas/cyber.svg" alt=""><span>CyberTarcza</span></li>
+          <li><span class="tag">Na stałe</span><img src="assets/vas/repair.svg" alt=""><span>Wsparcie zdalne</span></li>
+          <li><img src="assets/vas/ip.svg" alt=""><span>Stały adres IP</span></li>
+          <li><img src="assets/vas/sla.svg" alt=""><span>SLA 8H</span></li>
+          <li><img src="assets/vas/cloud.svg" alt=""><span>Backup 250 GB</span></li>
+          <li><img src="assets/vas/office.svg" alt=""><span>Orange Office</span></li>
+          <li><img src="assets/vas/laptop.svg" alt=""><span>Wsparcie Zaawansowane</span></li>
+        </ul>
+      </div>
     </div>
   </section>
 
